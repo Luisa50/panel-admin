@@ -1,0 +1,7 @@
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; z-index:2000;
+}
+.modal-card{
+  background:#fff; padding:16px; border-radius:10px; width:520px; max-width:95%;
+  box-shadow:0 10px 30px rgba(2,6,23,0.2);
+}
