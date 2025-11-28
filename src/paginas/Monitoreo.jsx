@@ -17,13 +17,18 @@ import { useEffect, useState } from "react";
 export default function Monitoreo() {
 
   const [cantidadAprendices, setCantidadAprendices] = useState([])
+  const [datosPorMes, setdatosPorMes] = useState([])
+
+  const [totalActividadesProceso, setTotalActividadesProceso] = useState([])
+  const [totalActividadesExitosas, setTotalActividadesExitosas] = useState([])
+  const [totalIncidencias, setTotalIncidencias] = useState([])
+  const [totalPorEstado, setTotalPorEstado] = useState([])
 
   useEffect(() => {
-
     const loadData = () => {
       fetch("http://healthymind10.runasp.net/api/Aprendiz/estadistica/por-mes")
         .then(res => res.json())
-        .then(json => {console.log(json)
+        .then(json => {
           setCantidadAprendices(json)
         })
         .catch(err => console.log('Error cargando API:', err))
@@ -35,11 +40,97 @@ export default function Monitoreo() {
 
         return () => clearInterval(intervalo);
   }, [])
+  useEffect(() => {
+    const loadData = () => {
+      fetch("http://healthymind10.runasp.net/api/Aprendiz/estadistica/crecimiento-mensual")
+        .then(res => res.json())
+        .then(json => {
+          setdatosPorMes(json)
+        })
+        .catch(err => console.log('Error cargando API:', err))
+      };
+        
+        loadData()
+        
+        const intervalo = setInterval(loadData, 5000);
 
+        return () => clearInterval(intervalo);
+  }, [])
+  useEffect(() => {
+      const loadData = () => {
+        fetch("http://healthymind10.runasp.net/api/Citas/citas/estado-proceso")
+          .then(res => res.json())
+          .then(json => {
+            setTotalActividadesProceso(json)
+          })
+          .catch(err => console.log('Error cargando API:', err))
+        };
+          
+          loadData()
+          
+          const intervalo = setInterval(loadData, 5000);
+  
+          return () => clearInterval(intervalo);
+    }, [])
+  useEffect(() => {
+      const loadData = () => {
+        fetch("http://healthymind10.runasp.net/api/Citas/estadistica/actividad-exitosa")
+          .then(res => res.json())
+          .then(json => {
+            setTotalActividadesExitosas(json)
+          })
+          .catch(err => console.log('Error cargando API:', err))
+        };
+          
+          loadData()
+          
+          const intervalo = setInterval(loadData, 5000);
+  
+          return () => clearInterval(intervalo);
+    }, [])
+  useEffect(() => {
+      const loadData = () => {
+        fetch("http://healthymind10.runasp.net/api/Citas/citas/estado-incidencias")
+          .then(res => res.json())
+          .then(json => {
+            setTotalIncidencias(json)
+          })
+          .catch(err => console.log('Error cargando API:', err))
+        };
+          
+          loadData()
+          
+          const intervalo = setInterval(loadData, 5000);
+  
+          return () => clearInterval(intervalo);
+    }, [])
+  useEffect(() => {
+      const loadData = () => {
+        fetch("http://healthymind10.runasp.net/api/Citas/estadistica/por-estado")
+          .then(res => res.json())
+          .then(json => {
+            setTotalPorEstado(json)
+          })
+          .catch(err => console.log('Error cargando API:', err))
+        };
+          
+          loadData()
+          
+          const intervalo = setInterval(loadData, 5000);
+  
+          return () => clearInterval(intervalo);
+    }, [])
+  
   const datosAPI = cantidadAprendices.reduce((acc, item) => {
     acc[item.mes] = item.total;
     return acc;
   }, {});
+
+  const estadosCitas = totalPorEstado.reduce((acc, item) => {
+    acc[item.estadoCita] = item.total;
+    return acc;
+  }, {});
+
   const usuariosPorMes = [
     { mes: "Ene", cantidad: datosAPI[1] ?? 0 },
     { mes: "Feb", cantidad: datosAPI[2] ?? 0 },
@@ -56,12 +147,12 @@ export default function Monitoreo() {
   ];
 
   const citas = [
-    { name: "Pendientes", value: 12 },
-    { name: "Programadas", value: 10 },
-    { name: "Reprogramadas", value: 6 },
-    { name: "Realizadas", value: 20 },
-    { name: "Canceladas", value: 4 },
-    { name: "No asistidas", value: 3 },
+    { name: "Pendientes", value: estadosCitas["pendiente"] ?? 0 },
+    { name: "Programadas", value: estadosCitas["programada"] ?? 0 },
+    { name: "Reprogramadas", value: estadosCitas["reprogramada"] ?? 0 },
+    { name: "Realizadas", value: estadosCitas["realizada"] ?? 0 },
+    { name: "Canceladas", value: estadosCitas["cancelado"] ?? 0 },
+    { name: "No asistidas", value: estadosCitas["no asistió"] ?? 0 },
   ];
 
 
@@ -75,17 +166,15 @@ export default function Monitoreo() {
   ];
 
   return (
-    <div className="container-fluid p-4">
-
-
-      <div className="row g-3 mb-4">
+    <div className="container-fluid p-0 mb-0">
+      <div className="row g-4 mb-4 pt-4">
         
         <div className="col-md-3">
           <div className="card stat-card dark-card">
             <div className="card-body">
               <p className="text-secondary m-0">Usuarios registrados por mes</p>
-              <h3 className="fw-bold">10%</h3>
-              <small className="text-success">21.3 promedio</small>
+              <h3 className="fw-bold">{datosPorMes.porcentajeCrecimiento}%</h3>
+              <small className="text-success">{datosPorMes.promedioMensual} promedio</small>
             </div>
           </div>
         </div>
@@ -94,8 +183,8 @@ export default function Monitoreo() {
           <div className="card stat-card">
             <div className="card-body">
               <p className="text-secondary m-0">Actividad Exitosa</p>
-              <h4 className="fw-bold">36.36%</h4>
-              <small className="text-danger">20 citas</small>
+              <h4 className="fw-bold">{totalActividadesExitosas.porcentaje}%</h4>
+              <small className="text-danger">{totalActividadesExitosas.exitosas} citas</small>
             </div>
           </div>
         </div>
@@ -104,8 +193,8 @@ export default function Monitoreo() {
           <div className="card stat-card">
             <div className="card-body">
               <p className="text-secondary m-0">Actividades en Proceso</p>
-              <h4 className="fw-bold">50.89%</h4>
-              <small className="text-success">28 citas</small>
+              <h4 className="fw-bold">{totalActividadesProceso.porcentajeEnProceso}%</h4>
+              <small className="text-success">{totalActividadesProceso.citasEnProceso} citas</small>
             </div>
           </div>
         </div>
@@ -114,8 +203,8 @@ export default function Monitoreo() {
           <div className="card stat-card">
             <div className="card-body">
               <p className="text-secondary m-0">Incidencias</p>
-              <h4 className="fw-bold">12.72%</h4>
-              <small className="text-danger">7 citas</small>
+              <h4 className="fw-bold">{totalIncidencias.porcentajeEnProceso}%</h4>
+              <small className="text-danger">{totalIncidencias.citasEnIncidencias} citas</small>
             </div>
           </div>
         </div>
@@ -126,8 +215,8 @@ export default function Monitoreo() {
       <div className="row g-4">
 
         {/* Line Chart */}
-        <div className="col-lg-8">
-          <div className="card graph-card p-3">
+        <div className="col-lg-8 col-md-8">
+          <div className="card graph-card p-5 h-100">
             <h5 className="fw-semibold mb-3">Usuarios Registrados los Ultimos Meses</h5>
             
             <LineChart width={650} height={300} data={usuariosPorMes}>
@@ -147,9 +236,9 @@ export default function Monitoreo() {
         </div>
 
 
-        <div className="col-lg-4">
+        <div className="col-lg-4 col-md-4">
           <div className="card graph-card p-3">
-            <h5 className="fw-semibold mb-3">Estados de Citas</h5>
+            <h5 className="fw-semibold mb-0">Estados de Citas</h5>
 
             <PieChart width={330} height={330}>
               <Pie
@@ -190,6 +279,7 @@ export default function Monitoreo() {
         </div>
 
       </div>
+      <br /><br />
     </div>
   );
 }
