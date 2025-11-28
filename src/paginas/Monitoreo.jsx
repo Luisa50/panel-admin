@@ -12,20 +12,47 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { useEffect, useState } from "react";
 
 export default function Monitoreo() {
 
+  const [cantidadAprendices, setCantidadAprendices] = useState([])
+
+  useEffect(() => {
+
+    const loadData = () => {
+      fetch("http://healthymind10.runasp.net/api/Aprendiz/estadistica/por-mes")
+        .then(res => res.json())
+        .then(json => {console.log(json)
+          setCantidadAprendices(json)
+        })
+        .catch(err => console.log('Error cargando API:', err))
+      };
+        
+        loadData()
+        
+        const intervalo = setInterval(loadData, 5000);
+
+        return () => clearInterval(intervalo);
+  }, [])
+
+  const datosAPI = cantidadAprendices.reduce((acc, item) => {
+    acc[item.mes] = item.total;
+    return acc;
+  }, {});
   const usuariosPorMes = [
-    { mes: "Ene", cantidad: 10 },
-    { mes: "Feb", cantidad: 18 },
-    { mes: "Mar", cantidad: 25 },
-    { mes: "Abr", cantidad: 22 },
-    { mes: "May", cantidad: 32 },
-    { mes: "Jun", cantidad: 20 },
-    { mes: "Jul", cantidad: 30 },
-    { mes: "Ago", cantidad: 16 },
-    { mes: "Sep", cantidad: 10 },
-    { mes: "Oct", cantidad: 32 },
+    { mes: "Ene", cantidad: datosAPI[1] ?? 0 },
+    { mes: "Feb", cantidad: datosAPI[2] ?? 0 },
+    { mes: "Mar", cantidad: datosAPI[3] ?? 0 },
+    { mes: "Abr", cantidad: datosAPI[4] ?? 0 },
+    { mes: "May", cantidad: datosAPI[5] ?? 0 },
+    { mes: "Jun", cantidad: datosAPI[6] ?? 0 },
+    { mes: "Jul", cantidad: datosAPI[7] ?? 0 },
+    { mes: "Ago", cantidad: datosAPI[8] ?? 0 },
+    { mes: "Sep", cantidad: datosAPI[9] ?? 0 },
+    { mes: "Oct", cantidad: datosAPI[10] ?? 0 },
+    { mes: "Nov", cantidad: datosAPI[11] ?? 0 },
+    { mes: "Dic", cantidad: datosAPI[12] ?? 0 },
   ];
 
   const citas = [
