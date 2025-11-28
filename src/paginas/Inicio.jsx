@@ -1,6 +1,8 @@
 import React from "react";
 import TarjetaResumen from "../componentes/TarjetaResumen";
 import { Users, UserCheck, Mail, AlertTriangle } from "lucide-react";
+import Monitoreo from "./Monitoreo";
+
 
 const Inicio = () => {
   return (
@@ -12,7 +14,7 @@ const Inicio = () => {
         <TarjetaResumen titulo="Solicitudes Pendientes" valor="12" icono={<Mail />} />
   
       </div>
-
+      <Monitoreo></Monitoreo>
 
       <footer className="footer-sena">
         Servicio Nacional de Aprendizaje SENA © 2025 — Todos los derechos reservados.
