@@ -116,6 +116,12 @@ body, html {
 
 }
 
+#carta-monitoreo:hover{
+  transition: 0.4s ease;
+  transform: scale(1.02);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.205);
+}
+
 .tarjeta-resumen {
   background: white;
   border-radius: 20px;
@@ -458,16 +464,19 @@ body, html {
   gap: 20px;
   border-right: 1px solid #e5e5e5;
   transition: width 0.25s ease;
+  
 }
 
 /* Ancho colapsado: solo iconos */
 .sidebar.colapsada {
   width: 70px;
+  
 }
 
 /* Ancho expandido */
 .sidebar.expandida {
   width: 220px;
+  
 }
 
 /* Parte superior (hamburguesa + logo) */
@@ -492,7 +501,12 @@ body, html {
 .sidebar-menu {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 30px;
+  flex-grow: 1;
+}
+
+#config{
+  margin-top: auto;
 }
 
 /* ITEMS */
@@ -505,6 +519,7 @@ body, html {
   cursor: pointer;
   transition: background 0.2s;
 }
+
 
 .sidebar-menu .item:hover {
   background: #eaeaea;

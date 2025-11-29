@@ -1,0 +1,98 @@
+/* ---------- CONTENEDOR GENERAL ---------- */
+.dataTables_wrapper {
+  font-family: "Segoe UI", sans-serif;
+  padding: 1rem;
+}
+
+/* ---------- TABLA ---------- */
+table.dataTable {
+  border-collapse: separate !important;
+  border-spacing: 0 6px !important;
+  width: 100% !important;
+}
+
+table.dataTable thead th {
+  background: #f7f7f7;
+  font-weight: 600;
+  padding: 12px;
+  border-bottom: 2px solid #ddd;
+}
+
+table.dataTable tbody tr {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+table.dataTable tbody tr:hover {
+  background: #eef7ff !important;
+}
+
+table.dataTable tbody td {
+  padding: 22px 10px;
+  border: none !important;
+}
+
+/* ---------- PAGINACIÓN ---------- */
+.dataTables_paginate .paginate_button {
+  padding: 6px 12px !important;
+  margin: 2px !important;
+  border-radius: 6px !important;
+  border: 1px solid #ddd !important;
+  background: #fff !important;
+  cursor: pointer;
+}
+
+.dataTables_paginate .paginate_button:hover {
+  background: #007bff !important;
+  color: #fff !important;
+  border-color: #007bff !important;
+}
+
+.dataTables_paginate .paginate_button.current {
+  background: #007bff !important;
+  color: #fff !important;
+  border-color: #007bff !important;
+}
+
+/* ---------- SEARCH ---------- */
+.dataTables_filter input {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin-left: 8px;
+  outline: none;
+}
+
+.dataTables_filter input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.4);
+}
+
+/* ---------- SELECT DE "ENTRIES" ---------- */
+.dataTables_length select {
+  border-radius: 6px;
+  padding: 5px;
+  border: 1px solid #ccc;
+}
+
+/* ---------- ENCABEZADOS ---------- */
+table.dataTable thead th {
+  background-color: #f0f3f7;
+  color: #333;
+  letter-spacing: 0.2px;
+}
+
+/* ---------- BOTÓNES DE ACCIONES ---------- */
+.btn-actions {
+  background: #007bff;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-actions:hover {
+  background: #0056b3;
+}

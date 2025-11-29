@@ -1,5 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../estilos/principal.css";
+
 import {
   LineChart,
   Line,
@@ -15,7 +16,6 @@ import {
 import { useEffect, useState } from "react";
 
 export default function Monitoreo() {
-
   const [cantidadAprendices, setCantidadAprendices] = useState([])
   const [datosPorMes, setdatosPorMes] = useState([])
 
@@ -25,8 +25,8 @@ export default function Monitoreo() {
   const [totalPorEstado, setTotalPorEstado] = useState([])
 
   useEffect(() => {
-    const loadData = () => {
-      fetch("http://healthymind10.runasp.net/api/Aprendiz/estadistica/por-mes")
+    const loadData = async () => {
+      await fetch("http://healthymind10.runasp.net/api/Aprendiz/estadistica/por-mes")
         .then(res => res.json())
         .then(json => {
           setCantidadAprendices(json)
@@ -41,8 +41,8 @@ export default function Monitoreo() {
         return () => clearInterval(intervalo);
   }, [])
   useEffect(() => {
-    const loadData = () => {
-      fetch("http://healthymind10.runasp.net/api/Aprendiz/estadistica/crecimiento-mensual")
+    const loadData = async () => {
+      await fetch("http://healthymind10.runasp.net/api/Aprendiz/estadistica/crecimiento-mensual")
         .then(res => res.json())
         .then(json => {
           setdatosPorMes(json)
@@ -57,8 +57,8 @@ export default function Monitoreo() {
         return () => clearInterval(intervalo);
   }, [])
   useEffect(() => {
-      const loadData = () => {
-        fetch("http://healthymind10.runasp.net/api/Citas/citas/estado-proceso")
+      const loadData = async () => {
+        await fetch("http://healthymind10.runasp.net/api/Citas/citas/estado-proceso")
           .then(res => res.json())
           .then(json => {
             setTotalActividadesProceso(json)
@@ -73,8 +73,8 @@ export default function Monitoreo() {
           return () => clearInterval(intervalo);
     }, [])
   useEffect(() => {
-      const loadData = () => {
-        fetch("http://healthymind10.runasp.net/api/Citas/estadistica/actividad-exitosa")
+      const loadData = async () => {
+        await fetch("http://healthymind10.runasp.net/api/Citas/estadistica/actividad-exitosa")
           .then(res => res.json())
           .then(json => {
             setTotalActividadesExitosas(json)
@@ -89,8 +89,8 @@ export default function Monitoreo() {
           return () => clearInterval(intervalo);
     }, [])
   useEffect(() => {
-      const loadData = () => {
-        fetch("http://healthymind10.runasp.net/api/Citas/citas/estado-incidencias")
+      const loadData = async () => {
+        await fetch("http://healthymind10.runasp.net/api/Citas/citas/estado-incidencias")
           .then(res => res.json())
           .then(json => {
             setTotalIncidencias(json)
@@ -105,8 +105,8 @@ export default function Monitoreo() {
           return () => clearInterval(intervalo);
     }, [])
   useEffect(() => {
-      const loadData = () => {
-        fetch("http://healthymind10.runasp.net/api/Citas/estadistica/por-estado")
+      const loadData = async () => {
+        await fetch("http://healthymind10.runasp.net/api/Citas/estadistica/por-estado")
           .then(res => res.json())
           .then(json => {
             setTotalPorEstado(json)
@@ -151,7 +151,7 @@ export default function Monitoreo() {
     { name: "Programadas", value: estadosCitas["programada"] ?? 0 },
     { name: "Reprogramadas", value: estadosCitas["reprogramada"] ?? 0 },
     { name: "Realizadas", value: estadosCitas["realizada"] ?? 0 },
-    { name: "Canceladas", value: estadosCitas["cancelado"] ?? 0 },
+    { name: "Canceladas", value: estadosCitas["cancelada"] ?? 0 },
     { name: "No asistidas", value: estadosCitas["no asistió"] ?? 0 },
   ];
 
@@ -170,7 +170,7 @@ export default function Monitoreo() {
       <div className="row g-4 mb-4 pt-4">
         
         <div className="col-md-3">
-          <div className="card stat-card dark-card">
+          <div className="card stat-card dark-card" id="carta-monitoreo">
             <div className="card-body">
               <p className="text-secondary m-0">Usuarios registrados por mes</p>
               <h3 className="fw-bold">{datosPorMes.porcentajeCrecimiento}%</h3>
@@ -180,7 +180,7 @@ export default function Monitoreo() {
         </div>
 
         <div className="col-md-3">
-          <div className="card stat-card">
+          <div className="card stat-card" id="carta-monitoreo">
             <div className="card-body">
               <p className="text-secondary m-0">Actividad Exitosa</p>
               <h4 className="fw-bold">{totalActividadesExitosas.porcentaje}%</h4>
@@ -190,7 +190,7 @@ export default function Monitoreo() {
         </div>
 
         <div className="col-md-3">
-          <div className="card stat-card">
+          <div className="card stat-card" id="carta-monitoreo">
             <div className="card-body">
               <p className="text-secondary m-0">Actividades en Proceso</p>
               <h4 className="fw-bold">{totalActividadesProceso.porcentajeEnProceso}%</h4>
@@ -200,7 +200,7 @@ export default function Monitoreo() {
         </div>
 
         <div className="col-md-3">
-          <div className="card stat-card">
+          <div className="card stat-card" id="carta-monitoreo">
             <div className="card-body">
               <p className="text-secondary m-0">Incidencias</p>
               <h4 className="fw-bold">{totalIncidencias.porcentajeEnProceso}%</h4>
@@ -216,7 +216,7 @@ export default function Monitoreo() {
 
         {/* Line Chart */}
         <div className="col-lg-8 col-md-8">
-          <div className="card graph-card p-5 h-100">
+          <div className="card graph-card p-5 h-100" >
             <h5 className="fw-semibold mb-3">Usuarios Registrados los Ultimos Meses</h5>
             
             <LineChart width={650} height={300} data={usuariosPorMes}>

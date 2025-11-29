@@ -1,91 +1,206 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
+import '../estilos/usuarios.css'
+import ReactDOM from "react-dom/client";
+import DataTable from 'datatables.net-react';
+import DT from 'datatables.net-dt';
+import 'datatables.net-select-dt';
+import 'datatables.net-responsive-dt';
+import AccionesAprendiz from "../componentes/AccionesAprendiz";
 
-function generarUsuariosMock() {
-  const nombres = [
-    ["Briyith", "Lorena", "Padilla", "Tierra"],
-    ["Carlos", "Andrés", "Gómez", ""],
-    ["María", "Lucía", "Ramírez", "Suárez"],
-    ["Sofía", "", "Rivers", ""],
-    ["Juan", "Diego", "Pérez", ""],
-    ["Luisa", "Fernanda", "Martínez", ""],
-    ["Pedro", "", "Salas", "López"],
-    ["Camila", "", "Torres", ""],
-    ["Andrés", "Felipe", "Paredes", ""],
-    ["Valeria", "", "Meza", ""],
-  ];
+// function generarUsuariosMock() {
+//   const nombres = [
+//     ["Briyith", "Lorena", "Padilla", "Tierra"],
+//     ["Carlos", "Andrés", "Gómez", ""],
+//     ["María", "Lucía", "Ramírez", "Suárez"],
+//     ["Sofía", "", "Rivers", ""],
+//     ["Juan", "Diego", "Pérez", ""],
+//     ["Luisa", "Fernanda", "Martínez", ""],
+//     ["Pedro", "", "Salas", "López"],
+//     ["Camila", "", "Torres", ""],
+//     ["Andrés", "Felipe", "Paredes", ""],
+//     ["Valeria", "", "Meza", ""],
+//   ];
 
-  const municipios = ["MALAMBO", "BARRANQUILLA", "CARTAGENA", "BOGOTÁ", "CALI"];
-  const estados = ["En formación", "Graduado", "En espera"];
+//   const municipios = ["MALAMBO", "BARRANQUILLA", "CARTAGENA", "BOGOTÁ", "CALI"];
+//   const estados = ["En formación", "Graduado", "En espera"];
 
-  const usuarios = [];
+//   const usuarios = [];
 
-  for (let i = 0; i < 20; i++) {
-    const base = nombres[i % nombres.length];
+//   for (let i = 0; i < 20; i++) {
+//     const base = nombres[i % nombres.length];
 
-    usuarios.push({
-      id: i + 1,
-      documento: 100000000 + i,
-      nombre: `${base[0]} ${base[1]} ${base[2]} ${base[3]}`,
-      correo: `${base[0].toLowerCase()}.${base[2].toLowerCase()}@soy.sena.edu.co`,
-      municipio: municipios[i % municipios.length],
-      estado: estados[i % estados.length],
-      activo: i % 2 === 0 ? "Activo" : "Inactivo",
-    });
-  }
+//     usuarios.push({
+//       id: i + 1,
+//       documento: 100000000 + i,
+//       nombre: `${base[0]} ${base[1]} ${base[2]} ${base[3]}`,
+//       correo: `${base[0].toLowerCase()}.${base[2].toLowerCase()}@soy.sena.edu.co`,
+//       municipio: municipios[i % municipios.length],
+//       estado: estados[i % estados.length],
+//       activo: i % 2 === 0 ? "Activo" : "Inactivo",
+//     });
+//   }
 
-  return usuarios;
-}
+//   return usuarios;
+// }
+
+const handleVer = (id) => {
+  console.log("Ver aprendiz", id);
+  // fetch GET /Aprendiz/{id}
+};
+
+const handleEditar = (id) => {
+  console.log("Editar aprendiz", id);
+  // fetch PUT /Aprendiz/{id}
+};
+
+const handleEliminar = async (id) => {
+  if (!window.confirm("¿Seguro que deseas eliminar este aprendiz?")) return;
+
+  await fetch(`http://healthymind10.runasp.net/api/Aprendiz/${id}`, {
+    method: "DELETE"
+  });
+
+  alert("Eliminado");
+  // Recargar tabla
+};
 
 export default function Usuarios() {
-  const [query, setQuery] = useState("");
-  const [pagina, setPagina] = useState(1);
-  const porPagina = 10;
+  DataTable.use(DT);
+  // const [query, setQuery] = useState("");
+  // const [pagina, setPagina] = useState(1);
+  // const porPagina = 10;
 
 
-  const [usuarios, setUsuarios] = useState(generarUsuariosMock());
+  //const [usuarios, setUsuarios] = useState(generarUsuariosMock());
+  const [usuarios, setUsuarios] = useState([]);
 
-  const filtrados = useMemo(() => {
-    const q = query.toLowerCase().trim();
-    if (!q) return usuarios;
-
-    return usuarios.filter(
-      (u) =>
-        u.nombre.toLowerCase().includes(q) ||
-        String(u.documento).includes(q) ||
-        u.correo.toLowerCase().includes(q)
-    );
-  }, [query, usuarios]);
-
-  const totalPaginas = Math.ceil(filtrados.length / porPagina);
-  const mostrar = filtrados.slice((pagina - 1) * porPagina, pagina * porPagina);
-
-
-  const toggleEstado = (id) => {
-    setUsuarios((prev) =>
-      prev.map((u) => {
-        if (u.id === id) {
-          const pregunta =
-            u.activo === "Activo"
-              ? "¿Deseas inactivar este usuario?"
-              : "¿Deseas activar este usuario?";
-
-          if (window.confirm(pregunta)) {
-            return {
-              ...u,
-              activo: u.activo === "Activo" ? "Inactivo" : "Activo",
-            };
-          }
-        }
-        return u;
+  useEffect(() => {
+    const loadData = async (pag = 1, lengthPag = 5) => {
+      await fetch(`http://healthymind10.runasp.net/api/Aprendiz/listar?Pagina=${pag}&TamanoPagina=${lengthPag}`)
+      .then(res => res.json())
+      .then(json => {setUsuarios(json.resultado)
+        console.log(json.resultado);
+        
       })
-    );
-  };
+    }
+
+    loadData(1, 3)
+  }, [])
+
+  const columnas = [
+    {
+      title: "Tipo documento",
+      data: "tipoDocumento"
+    },
+    {
+      title: "Número",
+      data: "nroDocumento"
+    },
+    {
+      title: "Nombre",
+      data: "nombres.primerNombre"
+    },
+    {
+      title: "Apellido",
+      data: "apellidos.primerApellido"
+    },
+    {
+      title: "Fecha Nacimiento",
+      data: "fechaNacimiento"
+    },
+    {
+      title: "Correo personal",
+      data: "contacto.correoPersonal"
+    },
+    {
+      title: "Telefono",
+      data: "contacto.telefono"
+    },
+    {
+      title: "Estado aprendiz",
+      data: "estadoAprendiz.estAprNombre"
+    },
+    {
+      title: "Población",
+      data: "tipoPoblacion"
+    },
+     {
+      title: "Acciones",
+      data: "codigo", // <-- el ID
+      orderable: false,
+      searchable: false,
+
+      createdCell: (td, id, rowData) => {
+        const root = ReactDOM.createRoot(td);
+        root.render(
+          <AccionesAprendiz 
+            id={id}
+            onVer={handleVer}
+            onEditar={handleEditar}
+            onEliminar={handleEliminar}
+          />
+        );
+      }
+  }
+  ]
+  // const filtrados = useMemo(() => {
+  //   const q = query.toLowerCase().trim();
+  //   if (!q) return usuarios;
+
+  //   return usuarios.filter(
+  //     (u) =>
+  //       u.nombre.toLowerCase().includes(q) ||
+  //       String(u.documento).includes(q) ||
+  //       u.correo.toLowerCase().includes(q)
+  //   );
+  // }, [query, usuarios]);
+
+  // const totalPaginas = Math.ceil(filtrados.length / porPagina);
+  // const mostrar = filtrados.slice((pagina - 1) * porPagina, pagina * porPagina);
+
+
+  // const toggleEstado = (id) => {
+  //   setUsuarios((prev) =>
+  //     prev.map((u) => {
+  //       if (u.id === id) {
+  //         const pregunta =
+  //           u.activo === "Activo"
+  //             ? "¿Deseas inactivar este usuario?"
+  //             : "¿Deseas activar este usuario?";
+
+  //         if (window.confirm(pregunta)) {
+  //           return {
+  //             ...u,
+  //             activo: u.activo === "Activo" ? "Inactivo" : "Activo",
+  //           };
+  //         }
+  //       }
+  //       return u;
+  //     })
+  //   );
+  // };
 
   return (
-    <div className="container mt-4">
+    <div className="container m-0">
       <h2>Listado de usuarios</h2>
 
-      <div className="d-flex justify-content-end mb-2">
+      <DataTable 
+        columns={columnas} 
+        data={usuarios}
+        options={{
+          lengthMenu: false,
+          lengthChange: false,
+          paging: false,
+          searching: false,
+          pageLength: usuarios.tamanoPagina,
+          deferRender: true,
+          info: false,
+          
+        }}
+        >
+        
+      </DataTable>
+      {/* <div className="d-flex justify-content-end mb-2">
         <input
           className="form-control"
           style={{ width: "220px" }}
@@ -172,7 +287,7 @@ export default function Usuarios() {
             </button>
           </li>
         </ul>
-      </nav>
+      </nav> */}
     </div>
     
   );
