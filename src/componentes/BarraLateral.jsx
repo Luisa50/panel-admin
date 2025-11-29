@@ -14,6 +14,7 @@ import {
 
 import "../estilos/principal.css";
 
+
 const BarraLateral = () => {
   const navigate = useNavigate();
   const [abierto, setAbierto] = useState(false);
