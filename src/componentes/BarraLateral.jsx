@@ -18,8 +18,10 @@ const BarraLateral = () => {
 
   return (
     <div className="barra-lateral">
-      <h2 className="m-0">Healthy</h2>
-      <h4>Mind</h4>
+      <div >
+        <h2 className="m-0">Healthy</h2>
+        <h4>Mind</h4>
+      </div>
       <div className="menu">
   
         <div className="menu-item" onClick={() => navigate("/inicio")}>
