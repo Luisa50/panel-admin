@@ -279,7 +279,7 @@ export default function Monitoreo() {
         </div>
 
       </div>
-      <br /><br />
+      
     </div>
   );
 }

@@ -13,6 +13,9 @@ function Layout() {
         <div className="layout-contenido">
           <Outlet />
         </div>
+        <footer className="footer-sena">
+        Servicio Nacional de Aprendizaje SENA © 2025 — Todos los derechos reservados.
+      </footer>
       </div>
     </div>
   );

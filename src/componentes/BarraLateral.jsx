@@ -18,12 +18,12 @@ const BarraLateral = () => {
 
   return (
     <div className="barra-lateral">
-      <h2>HealthyMind</h2>
-
+      <h2 className="m-0">Healthy</h2>
+      <h4>Mind</h4>
       <div className="menu">
   
         <div className="menu-item" onClick={() => navigate("/inicio")}>
-          <Home size={20} /> Inicio
+          <Home size={20} /> Dashboard
         </div>
 
 
@@ -41,18 +41,12 @@ const BarraLateral = () => {
           <Mail size={20} /> Solicitudes
       </div>
 
-
-        <div className="menu-item" onClick={() => navigate("/monitoreo")}>
-          <BarChart2 size={20} /> Monitoreo
-        </div>
-
-
         <div className="menu-item" onClick={() => navigate("/soporte")}>
           <Wrench size={20} /> Soporte
         </div>
 
-
-        <div className="menu-item" onClick={() => navigate("/configuracion")}>
+        <hr className="mt-5"/>
+        <div className="menu-item" id="config" onClick={() => navigate("/configuracion")}>
           <Settings size={20} /> Configuración
         </div>
       </div>

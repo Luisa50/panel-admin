@@ -55,9 +55,7 @@ const Inicio = () => {
       </div>
       <Monitoreo></Monitoreo>
 
-      <footer className="footer-sena">
-        Servicio Nacional de Aprendizaje SENA © 2025 — Todos los derechos reservados.
-      </footer>
+      
     </>
   );
 };
