@@ -14,13 +14,28 @@ export default function BarraSuperior() {
 
   return (
     <div className="barra-superior">
+      
+
+      <div 
+        className="notificaciones-icono"
+        onClick={() => {
+          setNotifAbiertas(!notifAbiertas);
+          setMenuAbierto(false);
+        }}
+      >
+        <Bell size={20} className="icono-notif" />
+        <span className="burbuja">3</span>
+      </div>
+
+ 
       <div
         className="avatar-contenedor"
         onClick={() => {
           setMenuAbierto(!menuAbierto);
           setNotifAbiertas(false);
         }}
-      >  <div className="avatar-icono"> 
+      >
+        <div className="avatar-icono">
           <User size={20} />
           <span className="nombre">Admin</span>
         </div>
@@ -34,28 +49,23 @@ export default function BarraSuperior() {
             <span className="correo">admin@sistema.com</span>
           </div>
 
-
           <div
             className="item-menu-usuario"
             onClick={() => {
-              setMenuAbierto(false);   
-              navigate("/perfil");     
+              setMenuAbierto(false);
+              navigate("/perfil");
             }}
           >
             <User size={16} />
             Perfil
           </div>
 
-          <div
-            className="item-menu-usuario item-salir"
-            onClick={cerrarSesion}
-          >
+          <div className="item-menu-usuario item-salir" onClick={cerrarSesion}>
             <LogOut size={16} />
             Cerrar sesión
           </div>
         </div>
       )}
-
 
     </div>
   );

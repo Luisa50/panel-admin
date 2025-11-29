@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -5,51 +6,67 @@ import {
   Users,
   UserCheck,
   Mail,
-  ClipboardList,
   BarChart2,
   Wrench,
   Settings,
+  Menu,
 } from "lucide-react";
 
 import "../estilos/principal.css";
 
 const BarraLateral = () => {
   const navigate = useNavigate();
+  const [abierto, setAbierto] = useState(false);
 
   return (
-    <div className="barra-lateral">
-      <div >
-        <h2 className="m-0">Healthy</h2>
-        <h4>Mind</h4>
-      </div>
-      <div className="menu">
-  
-        <div className="menu-item" onClick={() => navigate("/inicio")}>
-          <Home size={20} /> Dashboard
-        </div>
+    <div className={`sidebar ${abierto ? "expandida" : "colapsada"}`}>
 
+      <div className="sidebar-top">
+        <button
+          className="btn btn-light boton-hamburguesa"
+          onClick={() => setAbierto(!abierto)}
+        >
+          <Menu size={22} />
+        </button>
 
-        <div className="menu-item" onClick={() => navigate("/usuarios")}>
-          <Users size={20} /> Usuarios
-        </div>
-
-
-        <div className="menu-item" onClick={() => navigate("/psicologos")}>
-          <UserCheck size={20} /> Psicólogas
-        </div>
-
-
-       <div className="menu-item" onClick={() => navigate("/solicitudes")}>
-          <Mail size={20} /> Solicitudes
+        {abierto && <span className="logo-texto">HealthyMind</span>}
       </div>
 
-        <div className="menu-item" onClick={() => navigate("/soporte")}>
-          <Wrench size={20} /> Soporte
+
+      <div className="sidebar-menu">
+        <div className="item" onClick={() => navigate("/inicio")}>
+          <Home size={20} />
+          {abierto && <span>Inicio</span>}
         </div>
 
-        <hr className="mt-5"/>
-        <div className="menu-item" id="config" onClick={() => navigate("/configuracion")}>
-          <Settings size={20} /> Configuración
+        <div className="item" onClick={() => navigate("/usuarios")}>
+          <Users size={20} />
+          {abierto && <span>Usuarios</span>}
+        </div>
+
+        <div className="item" onClick={() => navigate("/psicologos")}>
+          <UserCheck size={20} />
+          {abierto && <span>Psicólogas</span>}
+        </div>
+
+        <div className="item" onClick={() => navigate("/solicitudes")}>
+          <Mail size={20} />
+          {abierto && <span>Solicitudes</span>}
+        </div>
+
+        <div className="item" onClick={() => navigate("/monitoreo")}>
+          <BarChart2 size={20} />
+          {abierto && <span>Monitoreo</span>}
+        </div>
+
+        <div className="item" onClick={() => navigate("/soporte")}>
+          <Wrench size={20} />
+          {abierto && <span>Soporte</span>}
+        </div>
+
+        <div className="item" onClick={() => navigate("/configuracion")}>
+          <Settings size={20} />
+          {abierto && <span>Configuración</span>}
         </div>
       </div>
     </div>
@@ -57,3 +74,4 @@ const BarraLateral = () => {
 };
 
 export default BarraLateral;
+

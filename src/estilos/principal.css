@@ -447,3 +447,181 @@ body, html {
   background: white;
   border-radius: 10px;
 }
+/* ---- SIDEBAR ---- */
+
+.sidebar {
+  background: #111827;
+  height: 100vh;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-right: 1px solid #e5e5e5;
+  transition: width 0.25s ease;
+}
+
+/* Ancho colapsado: solo iconos */
+.sidebar.colapsada {
+  width: 70px;
+}
+
+/* Ancho expandido */
+.sidebar.expandida {
+  width: 220px;
+}
+
+/* Parte superior (hamburguesa + logo) */
+.sidebar-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.boton-hamburguesa {
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+
+.logo-texto {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* MENU */
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ITEMS */
+.sidebar-menu .item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sidebar-menu .item:hover {
+  background: #eaeaea;
+}
+
+.sidebar-menu .item span {
+  font-size: 15px;
+  font-weight: 500;
+  color: #ffffff;
+}
+.sidebar .item svg {
+  color: white !important;
+}
+
+
+.sidebar-menu .item:hover {
+  background: rgba(201, 7, 7, 0.12);
+}
+
+.sidebar-menu .item span {
+  color: white;
+}
+.barra-superior {
+  width: 100%;
+  height: 60px;
+  background: #ffffff;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 20px;
+  position: relative;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+/* ICONO NOTIFICACIONES */
+.notificaciones-icono {
+  position: relative;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.icono-notif {
+  color: #444;
+}
+
+.burbuja {
+  background: #ff3b3b;
+  color: white;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+}
+
+/* AVATAR */
+.avatar-contenedor {
+  cursor: pointer;
+}
+
+.avatar-icono {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.avatar-icono svg {
+  color: #444;
+}
+
+.nombre {
+  font-weight: 600;
+}
+
+/* MENÚ USUARIO */
+.menu-usuario {
+  position: absolute;
+  top: 65px;
+  right: 10px;
+  width: 180px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.item-menu-usuario {
+  padding: 8px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.item-menu-usuario:hover {
+  background: #f2f2f2;
+}
+
+/* MENÚ NOTIFICACIONES */
+.menu-notificaciones {
+  position: absolute;
+  top: 65px;
+  right: 160px;
+  width: 220px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.notif-item {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.notif-item:last-child {
+  border-bottom: none;
+}
