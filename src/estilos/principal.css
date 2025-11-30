@@ -33,7 +33,7 @@ body, html {
   flex: 1;
   overflow-y: auto;
   overflow-x: auto;
-  padding: 20px;
+  padding: 0px 20px 0px 20px;
   width: 100%;
   min-width: 0; 
 }

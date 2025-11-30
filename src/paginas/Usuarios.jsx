@@ -67,87 +67,110 @@ export default function Usuarios() {
   DataTable.use(DT);
   const [usuarios, setUsuarios] = useState([]);
   const [informacion, setInformacion] = useState([])
-  const [cantidadReg, setCantidadReg] = useState([])
+  const [cantidadReg, setCantidadReg] = useState(5)
+  const [loading, setLoading] = useState(false);
+
 
   const loadData = async (pag = 1, lengthPag = 5) => {
-        await fetch(`http://healthymind10.runasp.net/api/Aprendiz/listar?Pagina=${pag}&TamanoPagina=${lengthPag}`)
-        .then(res => res.json())
-        .then(json => {setUsuarios(json.resultado)
-          setInformacion(json)
-          console.log(json.resultado);
-          
-        })
+        setLoading(true);
+        try {
+          const res = await fetch(`http://healthymind10.runasp.net/api/Aprendiz/listar?Pagina=${pag}&TamanoPagina=${lengthPag}`);
+          const json = await res.json();
+          setUsuarios(json.resultado);
+          setInformacion(json);
+        } catch (error) {
+          console.error("Error al cargar datos:", error);
+        }
+        setLoading(false);
       }
   useEffect(() => {
-    loadData()
+      const fetchData = async () => {
+      await loadData();
+    };
+    fetchData();
   }, [])
 
   const columnas = [
-    {
-      title: "Tipo documento",
-      data: "tipoDocumento"
-    },
-    {
-      title: "Número",
-      data: "nroDocumento"
-    },
-    {
-      title: "Nombre",
-      data: "nombres.primerNombre"
-    },
-    {
-      title: "Apellido",
-      data: "apellidos.primerApellido"
-    },
-    {
-      title: "Fecha Nacimiento",
-      data: "fechaNacimiento"
-    },
-    {
-      title: "Correo personal",
-      data: "contacto.correoPersonal"
-    },
-    {
-      title: "Telefono",
-      data: "contacto.telefono"
-    },
-    {
-      title: "Estado aprendiz",
-      data: "estadoAprendiz.estAprNombre"
-    },
-    {
-      title: "Población",
-      data: "tipoPoblacion"
-    },
-     {
-      title: "Acciones",
-      data: "codigo", // <-- el ID
-      orderable: false,
-      searchable: false,
+  { title: "Tipo documento", data: "tipoDocumento" },
+  
+  { title: "Número", data: "nroDocumento" },
 
-      createdCell: (td, id) => {
-        const root = ReactDOM.createRoot(td);
-        root.render(
-          <AccionesAprendiz 
-            id={id}
-            onVer={handleVer}
-            onEditar={handleEditar}
-            onEliminar={handleEliminar}
-          />
-        );
-      }
+  {
+    title: "Nombre",
+    data: "nombres",
+    render: (n) => n?.primerNombre ?? "—"
+  },
+  {
+    title: "Apellido",
+    data: "apellidos",
+    render: (a) => a?.primerApellido ?? "—"
+  },
+  {
+    title: "Fecha Nacimiento",
+    data: "fechaNacimiento",
+    render: (f) => f ?? "—"
+  },
+  {
+    title: "Correo personal",
+    data: "contacto",
+    render: (c) => c?.correoPersonal ?? "—"
+  },
+  {
+    title: "Telefono",
+    data: "contacto",
+    render: (c) => c?.telefono ?? "—"
+  },
+  {
+    title: "Estado aprendiz",
+    data: "estadoAprendiz",
+    render: (e) => e?.estAprNombre ?? "—"
+  },
+  {
+    title: "Población",
+    data: "tipoPoblacion",
+    render: (p) => p ?? "—"
+  },
+  {
+    title: "Acciones",
+    data: "codigo",
+    orderable: false,
+    searchable: false,
+    createdCell: (td, id) => {
+      const root = ReactDOM.createRoot(td);
+      root.render(
+        <AccionesAprendiz
+          id={id}
+          onVer={handleVer}
+          onEditar={handleEditar}
+          onEliminar={handleEliminar}
+        />
+      );
+    }
   }
 ]
 
 
+
   return (
+    <>
+    
+    {loading && (
+        <div className="loader-overlay">
+          <div className="loader"></div>
+        </div>
+      )}
+
     <div className="container m-0">
-      <div className="encabezado">
         <h2>Listado de usuarios</h2>
+      <div className="encabezado">
+        <div class="input-group mb-0" onClick={() => alert("click")}>
+          <span class="input-group-text bg-success text-light" id="aggreg">+</span>
+          <span className="input-group-text bg-success text-light" id="aggreg">Agregar</span>
+        </div>
         <select class="seleccionCantidad" onChange={(e) => {
           const nuevaCantidad = parseInt(e.target.value);
           setCantidadReg(nuevaCantidad);
-          loadData(informacion.paginaActual, nuevaCantidad)
+          loadData(informacion?.paginaActual ?? 1, nuevaCantidad)
         }}>
           <option value="5" defaultChecked>5</option>
           <option value="10">10</option>
@@ -163,7 +186,7 @@ export default function Usuarios() {
           lengthChange: false,
           paging: false,
           searching: false,
-          pageLength: usuarios.tamanoPagina,
+          pageLength: informacion?.tamanoPagina ?? 5,
           deferRender: true,
           info: false,
           
@@ -196,6 +219,6 @@ export default function Usuarios() {
       </div>
 
     </div>
-    
+    </>
   );
 }
