@@ -3,7 +3,6 @@ import TarjetaResumen from "../componentes/TarjetaResumen";
 import { Users, UserCheck, Mail, AlertTriangle } from "lucide-react";
 import Monitoreo from "./Monitoreo";
 
-//hola
 
 const Inicio = () => {
   const [totalAprendices, setTotalAprendices] = useState([])
