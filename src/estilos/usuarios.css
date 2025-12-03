@@ -101,6 +101,7 @@ table.dataTable thead th {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 14px;
   width: 100%;
   .seleccionCantidad{
     width: 60px;
@@ -139,4 +140,9 @@ table.dataTable thead th {
 
 #aggreg{
   cursor: pointer;
+}
+
+.modal-body {
+  max-height: 70vh;  /* Ajusta la altura visible */
+  overflow-y: auto;  /* Activa el scroll interno */
 }
