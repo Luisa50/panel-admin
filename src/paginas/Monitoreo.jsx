@@ -33,7 +33,6 @@ export default function Monitoreo() {
         })
         .catch(err => console.log('Error cargando API:', err))
       };
-        
         loadData()
         
         const intervalo = setInterval(loadData, 5000);

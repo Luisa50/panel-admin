@@ -30,7 +30,7 @@
 .login-box select {
   padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 10px;
 }
 
 .login-box button {

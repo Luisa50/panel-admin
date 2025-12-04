@@ -296,8 +296,8 @@ export default function ModalEjemplo({
                 <div className="btn-group" role="group" >
                   <button type="button" id="btnCerrarModal" 
                   aria-label="First group" 
-                  class="btn btn-secondary" data-bs-dismiss="modal"><X/> Cancelar</button>
-                  <button type="submit" class="btn btn-success" aria-label="Second group"><Save /> Guardar</button>
+                  class="btn btn-secondary" data-bs-dismiss="modal"><X/> </button>
+                  <button type="submit" class="btn btn-success" aria-label="Second group"><Save /></button>
                 </div>
               </div>
             </form>

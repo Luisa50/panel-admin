@@ -333,10 +333,6 @@ const handleEliminar = async (id) => {
           data-bs-toggle="modal" 
           data-bs-target="#exampleModal"
           id="aggreg">+</span>
-          <span className="input-group-text bg-success text-light" 
-          data-bs-toggle="modal" 
-          data-bs-target="#exampleModal"
-          id="aggreg">Agregar</span>
         </div>
         <select class="seleccionCantidad" onChange={(e) => {
           const nuevaCantidad = parseInt(e.target.value);
@@ -348,6 +344,8 @@ const handleEliminar = async (id) => {
           <option value="15">15</option>
         </select>
       </div>
+
+      
 
       <TablasInfo
       columnas={columnas}
@@ -361,7 +359,7 @@ const handleEliminar = async (id) => {
           disabled={!informacion.paginaAnterior}
           onClick={() => loadData(informacion.paginaAnterior, cantidadReg)}
         >
-          Anterior
+          <i class="bi bi-chevron-compact-left"></i>
         </button>
 
         <button className="btn btn-primary">
@@ -373,7 +371,7 @@ const handleEliminar = async (id) => {
           disabled={!informacion.paginaSiguiente}
           onClick={() => loadData(informacion.paginaSiguiente, cantidadReg)}
         >
-          Siguiente
+          <i class="bi bi-chevron-compact-right"></i>
         </button>
 
       </div>

@@ -22,7 +22,7 @@ export default function FormularioPerfil() {
     contraseña: "admin1234"
   });
 
-  //  Nos permite manejar cambios
+  //  manejar cambios
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };

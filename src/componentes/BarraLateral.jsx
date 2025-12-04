@@ -42,7 +42,7 @@ const BarraLateral = () => {
 
         <div className="item" onClick={() => navigate("/usuarios")}>
           <Users size={20} />
-          {abierto && <span>Usuarios</span>}
+          {abierto && <span>Aprendices</span>}
         </div>
 
         <div className="item" onClick={() => navigate("/psicologos")}>
@@ -55,10 +55,6 @@ const BarraLateral = () => {
           {abierto && <span>Solicitudes</span>}
         </div>
 
-        <div className="item" onClick={() => navigate("/monitoreo")}>
-          <BarChart2 size={20} />
-          {abierto && <span>Monitoreo</span>}
-        </div>
 
         <hr id="config" className="border border-light border-0.5 opacity-50"/>
         <div className="item" id="config" onClick={() => navigate("/soporte")}>

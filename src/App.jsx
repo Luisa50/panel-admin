@@ -20,7 +20,6 @@ export default function App() {
         <Route path="/usuarios" element={<Usuarios />} />
         <Route path="/psicologos" element={<Psicologos />} />
         <Route path="/solicitudes" element={<Solicitudes />} />
-        <Route path="/monitoreo" element={<Monitoreo />} />
         <Route path="/configuracion" element={<Configuracion />} />
 
         
