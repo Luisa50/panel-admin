@@ -47,7 +47,7 @@ const BarraLateral = () => {
 
         <div className="item" onClick={() => navigate("/psicologos")}>
           <UserCheck size={20} />
-          {abierto && <span>Psicólogas</span>}
+          {abierto && <span>Psicólogos</span>}
         </div>
 
         <div className="item" onClick={() => navigate("/solicitudes")}>

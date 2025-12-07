@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import '../estilos/usuarios.css'
 import ReactDOM from "react-dom/client";
-import ModalEjemplo from '../componentes/ModalEjemplo.jsx'
+import ModalEjemplo from '../componentes/modalsPost/ModalEjemplo.jsx'
 import TablasInfo from '../componentes/TablasInfo.jsx'
 import DataTable from 'datatables.net-react';
 import DT from 'datatables.net-dt';

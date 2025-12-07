@@ -1,133 +1,315 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
+import '../estilos/usuarios.css'
+import ReactDOM from "react-dom/client";
+import ModalEjemplo from '../componentes/modalsPost/ModalEjemplo.jsx'
+import TablasInfo from '../componentes/TablasInfo.jsx'
+import DataTable from 'datatables.net-react';
+import DT from 'datatables.net-dt';
+import 'datatables.net-select-dt';
+import 'datatables.net-responsive-dt';
+import AccionesAprendiz from "../componentes/AccionesAprendiz";
+import ModalPsicologo from "../componentes/modalsPost/ModalPsicologo.jsx";
 
-function generarPsicologasMock() {
-  const nombres = [
-    ["Laura", "Marcela", "Díaz"],
-    ["Carolina", "Paola", "Santos"],
-    ["Vanessa", "", "Beltrán"],
-    ["Maryory", "", "Durán"],
-    ["Valentina", "", "Mejía"],
-    ["Camila", "", "Torres"],
-    ["Lina", "María", "García"],
-    ["Sofía", "", "Castro"],
-    ["Daniela", "", "Ríos"],
-    ["Paula", "Andrea", "Bello"],
-  ];
 
-  const psicologas = [];
+export default function Usuarios() {
+  DataTable.use(DT);
+  const [usuarios, setUsuarios] = useState([]);
+  const [informacion, setInformacion] = useState([])
+  const [cantidadReg, setCantidadReg] = useState(5)
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+              nroDocumento: "",
+              nombre: "",
+              apellido: "",
+              especialidad: "",
+              telefono: "",
+              fechaNacimiento: "",
+              direccion: "",
+              correoInstitucional: "",
+              correoPersonal: "",
+              psiPassword: ""
+          });
 
-  for (let i = 0; i < 20; i++) {
-    const base = nombres[i % nombres.length];
+  const loadData = async (pag = 1, lengthPag = 5) => {
+        setLoading(true);
+        try {
+          const res = await fetch(`http://healthymind10.runasp.net/api/psicologo/listar?Pagina=${pag}&TamanoPagina=${lengthPag}`);
+          const json = await res.json();
+          setUsuarios(json.resultados);
+          setInformacion(json);
+          console.log(json.resultados);
+          console.log(json);
+          
+        } catch (error) {
+          console.error("Error al cargar datos:", error);
+        }
+        setLoading(false);
+    }
 
-    psicologas.push({
-      id: i + 1,
-      documento: 80000000 + i,
-      nombre: `${base[0]} ${base[1]} ${base[2]}`,
-      correo: `${base[0].toLowerCase()}.${base[2].toLowerCase()}@sena.edu.co`,
+
+
+  const handleChange = (e) => {
+      const { name, value } = e.target;
+
+      setFormData({
+        ...formData,
+        [name]: name === "estadoAprendiz" ? Number(value) : value
+      });
+     };
+
+    const columnas = [
+    { title: "Número", 
+      data: "psiDocumento",
+    render: (f) => f ?? "—"
+    },
+  
+    {
+      title: "Nombre",
+      data: "psiNombre",
+      render: (n) => n ?? "—"
+    },
+    {
+      title: "Apellido",
+      data: "psiApellido",
+      render: (a) => a ?? "—"
+    },
+    {
+      title: "Especialidad",
+      data: "psiEspecialidad",
+      render: (f) => f ?? "—"
+    },
+    {
+      title: "Telefono",
+      data: "psiTelefono",
+      render: (c) => c ?? "—"
+    },
+    {
+      title: "Fecha de registro",
+      data: "psiFechaRegistro",
+      render: (e) => e ?? "—"
+    },
+    {
+      title: "Fecha de nacimiento",
+      data: "psiFechaNac",
+      render: (p) => p ?? "—"
+    },
+    {
+      title: "Localización",
+      data: "psiDireccion",
+      render: (p) => p ?? "—"
+    },
+    {
+      title: "Correo institucional",
+      data: "psiCorreoInstitucional",
+      render: (c) => c ?? "—"
+    },
+    {
+      title: "Correo personal",
+      data: "psiCorreoPersonal",
+      render: (c) => c ?? "—"
+    },
+    {
+      title: "Estado del registro",
+      data: "psiEstadoRegistro",
+      createdCell: (td, estado, row) => {
+              const color = estado === "activo" ? "green" : "red";
+              const texto = estado ?? "—";
+
+              td.innerHTML = `
+                <div style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                  <span style="
+                    display:inline-block;
+                    width:10px;
+                    height:10px;
+                    border-radius:50%;
+                    background:${color};
+                  "></span>
+                  ${texto}
+                </div>
+              `;
+
+              td.onclick = () => cambiarEstado(row.psiCodigo);
+            }
+    },
+    {
+      title: "Acciones",
+      data: "psiCodigo",
+      orderable: false,
+      searchable: false,
+      
+      createdCell: (td, id) => {
+        const root = ReactDOM.createRoot(td);
+        root.render(
+          <AccionesAprendiz
+            id={id}
+            onVer={handleVer}
+            onEditar={handleEditar}
+            onEliminar={handleEliminar}
+          />
+        );
+      }
+    }
+  ]
+
+const cambiarEstado = async (id) => {
+      await fetch(`http://healthymind10.runasp.net/api/psicologo/cambiar-estado/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      
     });
+    alert("Se ha cambiado el estado correctamente");
+    loadData();
+    }
+
+const handleVer = (id) => {
+  console.log("Ver aprendiz", id);
+  // fetch GET /Aprendiz/{id}
+};
+
+const handleEditar = (id) => {
+  console.log("Editar aprendiz", id);
+  // fetch PUT /Aprendiz/{id}
+};
+
+const handleEliminar = async (id) => {
+    if (!window.confirm("¿Seguro que deseas eliminar este registro?")) return;
+
+    await fetch(`http://healthymind10.runasp.net/api/psicologo/eliminar/${id}`, {
+      method: "DELETE"
+    });
+    alert("Eliminado");
+    loadData();
+  };
+
+      const limpiarFormulario = () => {
+      setFormData({
+          nroDocumento: "",
+          nombre: "",
+          apellido: "",
+          telefono: "",
+          especialidad: "",
+          fechaNacimiento: "",
+          direccion: "",
+          correoInstitucional: "",
+          correoPersonal: "",
+          psiPassword: ""
+        });
+
+    };
+    
+  const enviarPost = async (e) => {
+    e.preventDefault();
+
+    const cuerpoPost = {
+      psiDocumento: formData.nroDocumento,
+      psiNombre: formData.nombre,
+      psiApellido: formData.apellido,
+      psiEspecialidad: formData.especialidad,
+      psiTelefono: formData.telefono,
+      psiFechaNac: formData.fechaNacimiento,
+      psiDireccion: formData.direccion,
+      psiCorreoInstitucional: formData.correoInstitucional,
+      psiCorreoPersonal: formData.correoPersonal,
+      psiPassword: formData.psiPassword,
+      psiFirma: "string"
+    }
+
+    
+
+
+    const res = await fetch("http://healthymind10.runasp.net/api/Psicologo", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cuerpoPost)
+    });
+
+    if (res.ok) {
+      alert("Psicólogo creado correctamente");
+      loadData();
+      limpiarFormulario();
+      document.getElementById("btnCerrarModal").click();
+    } else {
+      alert("Error al crear aprendiz");
+      document.getElementById("btnCerrarModal").click();
+    }
   }
 
-  return psicologas;
-}
+  useEffect(() => {
+      const fetchData = async () => {
+      await loadData();
+    };
+    fetchData();
+  }, [])
 
-export default function Psicologos() {
-  const [query, setQuery] = useState("");
-  const [pagina, setPagina] = useState(1);
-  const porPagina = 10;
 
-  const [psicologas] = useState(generarPsicologasMock());
+  
 
-  const filtrados = useMemo(() => {
-    const q = query.toLowerCase().trim();
-    if (!q) return psicologas;
-
-    return psicologas.filter(
-      (p) =>
-        p.nombre.toLowerCase().includes(q) ||
-        String(p.documento).includes(q) ||
-        p.correo.toLowerCase().includes(q)
-    );
-  }, [query, psicologas]);
-
-  const totalPaginas = Math.ceil(filtrados.length / porPagina);
-  const mostrar = filtrados.slice((pagina - 1) * porPagina, pagina * porPagina);
 
   return (
-    <div className="container mt-4">
-      <h2>Psicólogas SENA</h2>
+    <>
+    <ModalPsicologo
+      formData={formData}
+      handleChange={handleChange}
+      enviarPost={enviarPost}
+    />
+    {loading && (
+        <div className="loader-overlay">
+          <div className="loader"></div>
+        </div>
+      )}
 
-      <div className="d-flex justify-content-end mb-2">
-        <input
-          className="form-control"
-          style={{ width: "220px" }}
-          placeholder="Buscar…"
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setPagina(1);
-          }}
-        />
+    <div className="container-fluid pb-4">
+        <h2>Listado de psicologos</h2>
+      <div className="encabezado">
+        <div class="input-group">
+          <span class="input-group-text bg-success text-light"
+          data-bs-toggle="modal" 
+          data-bs-target="#exampleModal"
+          id="aggreg">+</span>
+        </div>
+        <select class="seleccionCantidad" onChange={(e) => {
+          const nuevaCantidad = parseInt(e.target.value);
+          setCantidadReg(nuevaCantidad);
+          loadData(informacion?.paginaActual ?? 1, nuevaCantidad)
+        }}>
+          <option value="5" defaultChecked>5</option>
+          <option value="10">10</option>
+          <option value="15">15</option>
+        </select>
       </div>
 
-      <div className="table-responsive">
-        <table className="table table-striped table-bordered text-center">
-          <thead className="table-dark">
-            <tr>
-              <th>#</th>
-              <th>Documento</th>
-              <th>Nombre completo</th>
-              <th>Correo institucional</th>
-            </tr>
-          </thead>
+      
 
-          <tbody>
-            {mostrar.map((p, i) => (
-              <tr key={p.id}>
-                <td>{(pagina - 1) * porPagina + i + 1}</td>
-                <td>{p.documento}</td>
-                <td>{p.nombre}</td>
-                <td>{p.correo}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <TablasInfo
+      columnas={columnas}
+      datos={usuarios}
+      informacion={informacion}
+      />
+      <div className="btn-group mt-3">
+
+        <button 
+          className="btn btn-outline-primary"
+          disabled={!informacion.paginaAnterior}
+          onClick={() => loadData(informacion.paginaAnterior, cantidadReg)}
+        >
+          <i class="bi bi-chevron-compact-left"></i>
+        </button>
+
+        <button className="btn btn-primary">
+          {informacion.paginaActual}
+        </button>
+
+        <button 
+          className="btn btn-outline-primary"
+          disabled={!informacion.paginaSiguiente}
+          onClick={() => loadData(informacion.paginaSiguiente, cantidadReg)}
+        >
+          <i class="bi bi-chevron-compact-right"></i>
+        </button>
+
       </div>
 
-      <nav>
-        <ul className="pagination justify-content-center">
-          <li className="page-item">
-            <button
-              className="page-link"
-              disabled={pagina === 1}
-              onClick={() => setPagina(pagina - 1)}
-            >
-              «
-            </button>
-          </li>
-
-          {[...Array(totalPaginas)].map((_, i) => (
-            <li
-              key={i}
-              className={`page-item ${pagina === i + 1 ? "active" : ""}`}
-            >
-              <button className="page-link" onClick={() => setPagina(i + 1)}>
-                {i + 1}
-              </button>
-            </li>
-          ))}
-
-          <li className="page-item">
-            <button
-              className="page-link"
-              disabled={pagina === totalPaginas}
-              onClick={() => setPagina(pagina + 1)}
-            >
-              »
-            </button>
-          </li>
-        </ul>
-      </nav>
     </div>
+    </>
   );
 }
-
