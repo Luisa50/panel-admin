@@ -9,6 +9,7 @@ import 'datatables.net-select-dt';
 import 'datatables.net-responsive-dt';
 import AccionesAprendiz from "../componentes/AccionesAprendiz";
 import ModalPsicologo from "../componentes/modalsPost/ModalPsicologo.jsx";
+import Modalver from "../componentes/modalsPost/ModalVer.jsx";
 
 
 export default function Usuarios() {
@@ -17,6 +18,7 @@ export default function Usuarios() {
   const [informacion, setInformacion] = useState([])
   const [cantidadReg, setCantidadReg] = useState(5)
   const [loading, setLoading] = useState(false);
+  const [dataVer, setDataVer] = useState({});
   const [formData, setFormData] = useState({
               nroDocumento: "",
               nombre: "",
@@ -161,9 +163,16 @@ const cambiarEstado = async (id) => {
     loadData();
     }
 
-const handleVer = (id) => {
-  console.log("Ver aprendiz", id);
-  // fetch GET /Aprendiz/{id}
+const handleVer = async (id) => {
+  try {
+    const res = await fetch(`http://healthymind10.runasp.net/api/psicologo/${id}`);
+    const json = await res.json();
+    setDataVer(json[0]);
+    console.log(json);
+    
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 const handleEditar = (id) => {
@@ -210,8 +219,7 @@ const handleEliminar = async (id) => {
       psiDireccion: formData.direccion,
       psiCorreoInstitucional: formData.correoInstitucional,
       psiCorreoPersonal: formData.correoPersonal,
-      psiPassword: formData.psiPassword,
-      psiFirma: "string"
+      psiPassword: formData.psiPassword
     }
 
     
@@ -252,6 +260,7 @@ const handleEliminar = async (id) => {
       handleChange={handleChange}
       enviarPost={enviarPost}
     />
+    <Modalver formData={dataVer} />
     {loading && (
         <div className="loader-overlay">
           <div className="loader"></div>
