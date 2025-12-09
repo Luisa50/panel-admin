@@ -234,6 +234,20 @@ const handleEliminar = async (id) => {
     }
   }
 
+  const busquedaDinamica = async (text) => {
+      if (text.length < 3) return loadData()
+      await fetch(`http://healthymind10.runasp.net/api/psicologo/busqueda-dinamica?texto=${text}`)
+            .then(res => res.json())
+            .then(json => setUsuarios(json)
+            )
+    }
+    useEffect(() => {
+        const fetchData = async () => {
+        await loadData();
+      };
+      fetchData();
+    }, [])
+
   useEffect(() => {
       const fetchData = async () => {
       await loadData();
@@ -276,22 +290,32 @@ const handleEliminar = async (id) => {
 
     <div className="container-fluid pb-4">
         <h2>Listado de psicologos</h2>
-      <div className="encabezado">
-        <div class="input-group">
-          <span class="input-group-text bg-success text-light"
-          data-bs-toggle="modal" 
-          data-bs-target="#exampleModal"
-          id="aggreg">+</span>
+      <div className="encabezado w-100">
+        <div class="d-flex align-items-center justify-content-between gap-2 w-100">
+          <select className="seleccionCantidad" onChange={(e) => {
+            const nuevaCantidad = parseInt(e.target.value);
+            setCantidadReg(nuevaCantidad);
+            loadData(informacion?.paginaActual ?? 1, nuevaCantidad)
+          }}>
+            <option value="5" defaultChecked>5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+          </select>
+          <div className="d-flex align-items-center gap-2">
+              <input
+                className="form-control"
+                style={{ width: "220px" }}
+                placeholder="Buscar…"
+                onChange={(e) => busquedaDinamica(e.target.value)}
+              />
+              <span class="input-group-text bg-success text-light"
+              data-bs-toggle="modal" 
+              data-bs-target="#exampleModal"
+              id="aggreg">
+                +
+              </span>
+            </div>
         </div>
-        <select class="seleccionCantidad" onChange={(e) => {
-          const nuevaCantidad = parseInt(e.target.value);
-          setCantidadReg(nuevaCantidad);
-          loadData(informacion?.paginaActual ?? 1, nuevaCantidad)
-        }}>
-          <option value="5" defaultChecked>5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-        </select>
       </div>
 
       
