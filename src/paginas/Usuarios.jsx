@@ -3,6 +3,7 @@ import '../estilos/usuarios.css'
 import ReactDOM from "react-dom/client";
 import ModalEjemplo from '../componentes/modalsPost/ModalEjemplo.jsx'
 import TablasInfo from '../componentes/TablasInfo.jsx'
+import Modalver from "../componentes/modalsPost/ModalVer.jsx";
 import DataTable from 'datatables.net-react';
 import DT from 'datatables.net-dt';
 import 'datatables.net-select-dt';
@@ -17,6 +18,7 @@ export default function Usuarios() {
   const [cantidadReg, setCantidadReg] = useState(5)
   const [municipioTexto, setMunicipioTexto] = useState("");
   const [listaMunicipios, setListaMunicipios] = useState([]);
+    const [dataVer, setDataVer] = useState({});
   const buscarTimeout = React.useRef(null);
   const [loading, setLoading] = useState(false);
   const [estadoApr, setEstadoApr] = useState([])
@@ -110,11 +112,7 @@ export default function Usuarios() {
       data: "contacto",
       render: (c) => c?.correoPersonal ?? "—"
     },
-    {
-      title: "Telefono",
-      data: "contacto",
-      render: (c) => c?.telefono ?? "—"
-    },
+    
     {
       title: "Estado aprendiz",
       data: "estadoAprendiz",
@@ -150,7 +148,7 @@ export default function Usuarios() {
     },
     {
       title: "Acciones",
-      data: "codigo",
+      data: "nroDocumento",
       orderable: false,
       searchable: false,
       
@@ -196,9 +194,17 @@ const cambiarEstado = async (id) => {
     loadData();
     }
 
-const handleVer = (id) => {
+const handleVer = async (id) => {
   console.log("Ver aprendiz", id);
-  // fetch GET /Aprendiz/{id}
+  try {
+    const res = await fetch(`http://healthymind10.runasp.net/api/aprendiz/${id}`);
+    const json = await res.json();
+    setDataVer(json[0]);
+    console.log(json);
+    
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 const handleEditar = (id) => {
@@ -311,6 +317,27 @@ const handleEliminar = async (id) => {
       seleccionarMunicipio={seleccionarMunicipio}
       estadoApr={estadoApr}
     />
+    <Modalver 
+        id="modalVer"
+        titulo="Detalles del aprendiz"
+        data={dataVer}
+        campos={[
+            { nombre: "tipoDocumento", label: "Tipo de Documento" },
+            { nombre: "nroDocumento", label: "Número de Documento" },
+            { nombre: "nombres.primerNombre", label: "Nombre" },
+            { nombre: "nombres.segundoNombre", label: "Segundo Nombre" },
+            { nombre: "apellidos.primerApellido", label: "Apellido" },
+            { nombre: "apellidos.segundoApellido", label: "Segundo Apellido" },
+            { nombre: "ubicacion.departamento", label: "Departamento" },
+            { nombre: "ubicacion.municipio", label: "Municipio" },
+            { nombre: "ubicacion.direccion", label: "Dirección" },
+            { nombre: "contacto.telefono", label: "Teléfono" },
+            { nombre: "contacto.correoPersonal", label: "Correo Personal" },
+            { nombre: "contacto.correoInstitucional", label: "Correo Institucional" },
+            { nombre: "contacto.acudiente.acudienteNombre", label: "Nombre Acudiente" },
+            { nombre: "contacto.acudiente.acudienteApellido", label: "Apellido Acudiente" },
+            { nombre: "contacto.acudiente.acudienteTelefono", label: "Teléfono Acudiente" }
+        ]} />
     {loading && (
         <div className="loader-overlay">
           <div className="loader"></div>

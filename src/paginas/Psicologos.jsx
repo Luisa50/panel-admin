@@ -10,6 +10,7 @@ import 'datatables.net-responsive-dt';
 import AccionesAprendiz from "../componentes/AccionesAprendiz";
 import ModalPsicologo from "../componentes/modalsPost/ModalPsicologo.jsx";
 import Modalver from "../componentes/modalsPost/ModalVer.jsx";
+import { LucideAlertCircle } from "lucide-react";
 
 
 export default function Usuarios() {
@@ -86,11 +87,6 @@ export default function Usuarios() {
       render: (c) => c ?? "—"
     },
     {
-      title: "Fecha de registro",
-      data: "psiFechaRegistro",
-      render: (e) => e ?? "—"
-    },
-    {
       title: "Fecha de nacimiento",
       data: "psiFechaNac",
       render: (p) => p ?? "—"
@@ -103,11 +99,6 @@ export default function Usuarios() {
     {
       title: "Correo institucional",
       data: "psiCorreoInstitucional",
-      render: (c) => c ?? "—"
-    },
-    {
-      title: "Correo personal",
-      data: "psiCorreoPersonal",
       render: (c) => c ?? "—"
     },
     {
@@ -154,6 +145,7 @@ export default function Usuarios() {
   ]
 
 const cambiarEstado = async (id) => {
+      if (!window.confirm("¿Seguro que deseas cambiar este estado?")) return;
       await fetch(`http://healthymind10.runasp.net/api/psicologo/cambiar-estado/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -260,7 +252,22 @@ const handleEliminar = async (id) => {
       handleChange={handleChange}
       enviarPost={enviarPost}
     />
-    <Modalver formData={dataVer} />
+    <Modalver 
+    id="modalVer"
+    titulo="Detalles del psicólogo"
+    data={dataVer}
+    campos={[
+        { nombre: "psiDocumento", label: "Documento" },
+        { nombre: "psiNombre", label: "Nombre" },
+        { nombre: "psiApellido", label: "Apellido" },
+        { nombre: "psiEspecialidad", label: "Especialidad" },
+        { nombre: "psiTelefono", label: "Teléfono" },
+        { nombre: "psiFechaNac", label: "Fecha de nacimiento" },
+        { nombre: "psiDireccion", label: "Dirección" },
+        { nombre: "psiCorreoInstitucional", label: "Correo Institucional" },
+        { nombre: "psiCorreoPersonal", label: "Correo Personal" },
+        { nombre: "psiEstadoRegistro", label: "Estado" }
+    ]} />
     {loading && (
         <div className="loader-overlay">
           <div className="loader"></div>

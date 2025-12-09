@@ -2,7 +2,6 @@ import React from "react";
 import { X, Save } from "lucide-react";
 
 export default function ModalPsicologo({
-  formData,
   handleChange,
   enviarPost,
 }) {
