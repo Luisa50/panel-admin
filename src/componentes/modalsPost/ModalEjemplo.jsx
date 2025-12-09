@@ -8,14 +8,17 @@ export default function ModalEjemplo({
     listaMunicipios,
     handleBuscarMunicipio,
     seleccionarMunicipio,
-    estadoApr
+    estadoApr,
+    modo
 }) {
   return (
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar aprendiz</h1>
+            <h1 class="modal-title fs-5" id="exampleModalLabel">
+              {modo === "crear" ? "Agregar aprendiz" : "Editar aprendiz"}
+            </h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -28,6 +31,7 @@ export default function ModalEjemplo({
                         <select class="form-select" id="floatingSelect"
                         name="tipoDocumento"
                         aria-label="Floating label select example" 
+                        value={formData.tipoDocumento}
                         onChange={handleChange}
                         required>
                           <option value=""></option>
@@ -43,6 +47,7 @@ export default function ModalEjemplo({
                         <input type="text" class="form-control" 
                         name="nroDocumento"
                         id="floatingInputGrid" placeholder="jsakldfj" 
+                        value={formData.nroDocumento}
                         onChange={handleChange}
                         required/>
                         <label for="floatingInputGrid">Número de documento</label>
@@ -53,6 +58,7 @@ export default function ModalEjemplo({
                         <input type="date" class="form-control text-dark" 
                         name="fechaNacimiento"
                         id="floatingInputGrid" placeholder="fecha de nacimiento"
+                        value={formData.fechaNacimiento}
                         onChange={handleChange}
                         required/>
                         <label for="floatingInputGrid">Fecha de nacimiento</label>
@@ -65,7 +71,8 @@ export default function ModalEjemplo({
                       <div class="form-floating">
                         <input type="text" class="form-control" 
                         name="nombre"
-                        id="floatingInputGrid" placeholder="Nombre" 
+                        id="floatingInputGrid" placeholder="Nombre"
+                        value={formData.nombre}
                         onChange={handleChange}
                         required/>
                         <label for="floatingSelect">Nombre</label>
@@ -76,6 +83,7 @@ export default function ModalEjemplo({
                         <input type="text" class="form-control" 
                         name="segundoNombre"
                         id="floatingInputGrid" placeholder="Segundo nombre" 
+                        value={formData.segundoNombre}
                         onChange={handleChange}
                         />
                         <label for="floatingInputGrid">Segundo nombre</label>
@@ -89,6 +97,7 @@ export default function ModalEjemplo({
                         <input type="text" class="form-control" 
                         name="apellido"
                         id="floatingInputGrid" placeholder="Apellido" 
+                        value={formData.apellido}
                         onChange={handleChange}
                         required/>
                         <label for="floatingSelect">Apellido</label>
@@ -99,6 +108,7 @@ export default function ModalEjemplo({
                         <input type="text" class="form-control" 
                         name="segundoApellido"
                         id="floatingInputGrid" placeholder="Segundo apellido" 
+                        value={formData.segundoApellido}
                         onChange={handleChange}
                         required/>
                         <label for="floatingInputGrid">Segundo apellido</label>
@@ -114,6 +124,7 @@ export default function ModalEjemplo({
                         <input type="email" class="form-control" 
                         name="correoInstitucional"
                         id="floatingInputGrid" placeholder="Correo institucional" 
+                        value={formData.correoInstitucional}
                         onChange={handleChange}
                         required/>
                         <label for="floatingSelect">Correo institucional</label>
@@ -126,6 +137,7 @@ export default function ModalEjemplo({
                         <input type="email" class="form-control" 
                         name="correoPersonal"
                         id="floatingInputGrid" placeholder="Correo personal" 
+                        value={formData.correoPersonal}
                         onChange={handleChange}
                         required/>
                         <label for="floatingSelect">Correo personal</label>
@@ -136,6 +148,7 @@ export default function ModalEjemplo({
                         <input type="text" class="form-control" 
                         name="telefono"
                         id="floatingInputGrid" placeholder="Teléfono" 
+                        value={formData.telefono}
                         onChange={handleChange}
                         required/>
                         <label for="floatingInputGrid">Teléfono</label>
@@ -149,6 +162,7 @@ export default function ModalEjemplo({
                         <input type="text" class="form-control" 
                         name="acudienteNombre"
                         id="floatingInputGrid" placeholder="Nombre del acudiente" 
+                        value={formData.acudienteNombre}
                         onChange={handleChange}
                         required/>
                         <label for="floatingSelect">Nombre del acudiente</label>
@@ -159,6 +173,7 @@ export default function ModalEjemplo({
                         <input type="text" class="form-control" 
                         name="acudienteApellido"
                         id="floatingInputGrid" placeholder="Apellido del acudiente" 
+                        value={formData.acudienteApellido}
                         onChange={handleChange}
                         required/>
                         <label for="floatingInputGrid">Apellido del acudiente</label>
@@ -169,6 +184,7 @@ export default function ModalEjemplo({
                         <input type="text" class="form-control" 
                         name="acudienteTelefono"
                         id="floatingInputGrid" placeholder="Teléfono del acudiente" 
+                        value={formData.acudienteTelefono}
                         onChange={handleChange}
                         required/>
                         <label for="floatingInputGrid">Teléfono del acudiente</label>
@@ -217,6 +233,7 @@ export default function ModalEjemplo({
                         <input type="text" class="form-control" 
                         name="direccion"
                         id="floatingInputGrid" placeholder="Dirección" 
+                        value={formData.direccion}
                         onChange={handleChange}
                         required/>
                         <label for="floatingSelect">Dirección</label>
@@ -233,6 +250,7 @@ export default function ModalEjemplo({
                         <input type="text" class="form-control" 
                         name="patologia"
                         id="floatingInputGrid" placeholder="Patología" 
+                        value={formData.patologia}
                         onChange={handleChange}
                         required/>
                         <label for="floatingSelect">Patología</label>
@@ -243,6 +261,7 @@ export default function ModalEjemplo({
                         <select class="form-select" 
                         name="tipoPoblacion"
                         id="floatingSelect" aria-label="Floating label select example"
+                        value={formData.tipoPoblacion}
                         onChange={handleChange}
                         required>
                           <option value=""></option>
@@ -263,6 +282,7 @@ export default function ModalEjemplo({
                         <input type="text" class="form-control" 
                         name="eps"
                         id="floatingInputGrid" placeholder="eps" 
+                        value={formData.eps}
                         onChange={handleChange}
                         required/>
                         <label for="floatingSelect">Eps</label>
@@ -276,6 +296,7 @@ export default function ModalEjemplo({
                         <select class="form-select" 
                         name="estadoAprendiz"
                         id="floatingSelect" aria-label="Floating label select example"
+                        value={formData.estadoAprendiz}
                         onChange={handleChange}
                         required>
                           <option value=""></option>
@@ -296,8 +317,16 @@ export default function ModalEjemplo({
                 <div className="btn-group" role="group" >
                   <button type="button" id="btnCerrarModal" 
                   aria-label="First group" 
-                  class="btn btn-secondary" data-bs-dismiss="modal"><X/> </button>
-                  <button type="submit" class="btn btn-success" aria-label="Second group"><Save /></button>
+                  class="btn btn-secondary" 
+                  data-bs-dismiss="modal">
+                    <X/> 
+                    </button>
+
+                  <button type="submit" 
+                  class="btn btn-success" 
+                  aria-label="Second group">
+                    <Save />
+                    </button>
                 </div>
               </div>
             </form>

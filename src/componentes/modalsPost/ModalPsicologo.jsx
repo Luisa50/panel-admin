@@ -2,8 +2,10 @@ import React from "react";
 import { X, Save } from "lucide-react";
 
 export default function ModalPsicologo({
+  formData,
   handleChange,
   enviarPost,
+  modo
 }) {
   return (
     <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -11,7 +13,9 @@ export default function ModalPsicologo({
         <div className="modal-content">
 
           <div className="modal-header">
-            <h1 className="modal-title fs-5" id="exampleModalLabel">Agregar psicólogo</h1>
+            <h1 className="modal-title fs-5" id="exampleModalLabel">
+              {modo === "crear" ? "Agregar psicólogo" : "Editar psicólogo"}
+            </h1>
             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
 
@@ -27,6 +31,7 @@ export default function ModalPsicologo({
                           class="form-control"
                           name="nroDocumento"
                           placeholder="Documento"
+                          value={formData.nroDocumento}
                           onChange={handleChange}
                           required
                         />
@@ -41,6 +46,7 @@ export default function ModalPsicologo({
                           class="form-control"
                           name="nombre"
                           placeholder="Nombre"
+                          value={formData.nombre}
                           onChange={handleChange}
                           required
                         />
@@ -55,6 +61,7 @@ export default function ModalPsicologo({
                           class="form-control"
                           name="apellido"
                           placeholder="Apellido"
+                          value={formData.apellido}
                           onChange={handleChange}
                           required
                         />
@@ -71,6 +78,7 @@ export default function ModalPsicologo({
                           className="form-control"
                           name="correoInstitucional"
                           placeholder="Correo institucional"
+                          value={formData.correoInstitucional}
                           onChange={handleChange}
                           required
                         />
@@ -85,6 +93,7 @@ export default function ModalPsicologo({
                           className="form-control"
                           name="correoPersonal"
                           placeholder="Correo personal"
+                          value={formData.correoPersonal}
                           onChange={handleChange}
                           required
                         />
@@ -98,6 +107,7 @@ export default function ModalPsicologo({
                           type="date"
                           className="form-control text-dark"
                           name="fechaNacimiento"
+                          value={formData.fechaNacimiento}
                           onChange={handleChange}
                           required
                         />
@@ -114,6 +124,7 @@ export default function ModalPsicologo({
                           className="form-control"
                           name="telefono"
                           placeholder="Teléfono"
+                          value={formData.telefono}
                           onChange={handleChange}
                           required
                         />
@@ -128,6 +139,7 @@ export default function ModalPsicologo({
                           className="form-control"
                           name="especialidad"
                           placeholder="Especialidad"
+                          value={formData.especialidad}
                           onChange={handleChange}
                           required
                         />
@@ -145,6 +157,7 @@ export default function ModalPsicologo({
                           className="form-control"
                           name="direccion"
                           placeholder="Dirección"
+                          value={formData.direccion}
                           onChange={handleChange}
                           required
                         />
@@ -153,7 +166,7 @@ export default function ModalPsicologo({
                     </div>
                   </div>
 
-                  {/* PASSWORD */}
+                  {modo === "crear" ? 
                   <div className="row g-3 pb-4">
                     <div className="col-12">
                       <div className="form-floating">
@@ -162,6 +175,7 @@ export default function ModalPsicologo({
                           className="form-control"
                           name="psiPassword"
                           placeholder="Contraseña"
+                          value={formData.psiPassword}
                           onChange={handleChange}
                           required
                         />
@@ -169,7 +183,7 @@ export default function ModalPsicologo({
                       </div>
                     </div>
                   </div>
-
+                  : ""}
                 </div>
               </div>
 
@@ -183,7 +197,6 @@ export default function ModalPsicologo({
                   >
                     <X />
                   </button>
-
                   <button type="submit" className="btn btn-success">
                     <Save />
                   </button>

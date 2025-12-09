@@ -6,9 +6,25 @@ export default function AccionesAprendiz({ id, onVer, onEditar, onEliminar }) {
       <button className="btn btn-info btn-sm" 
       data-bs-toggle="modal"
       data-bs-target="#modalVer"
-      onClick={() => onVer(id)}><i class="bi bi-eye"></i></button>
-      <button className="btn btn-warning btn-sm" onClick={() => onEditar(id)}><i class="bi bi-pencil-square"></i></button>
-      <button className="btn btn-danger btn-sm" onClick={() => onEliminar(id)}><i class="bi bi-trash"></i></button>
+      onClick={() => onVer(id)}>
+        <i class="bi bi-eye"></i>
+        </button>
+
+
+      <button className="btn btn-warning btn-sm"
+      data-bs-toggle="modal" 
+      data-bs-target="#exampleModal"
+      onClick={() => {
+        onEditar(id)
+        }}>
+        <i class="bi bi-pencil-square"></i>
+        </button>
+
+
+      <button className="btn btn-danger btn-sm" 
+      onClick={() => onEliminar(id)}>
+        <i class="bi bi-trash"></i>
+        </button>
     </div>
   );
 }

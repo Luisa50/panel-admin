@@ -20,6 +20,8 @@ export default function Usuarios() {
   const [cantidadReg, setCantidadReg] = useState(5)
   const [loading, setLoading] = useState(false);
   const [dataVer, setDataVer] = useState({});
+  const [modo, setModo] = useState({})
+  const [idEditar, setIdEditar] = useState({})
   const [formData, setFormData] = useState({
               nroDocumento: "",
               nombre: "",
@@ -161,15 +163,29 @@ const handleVer = async (id) => {
     const json = await res.json();
     setDataVer(json[0]);
     console.log(json);
-    
   } catch (err) {
     console.error(err);
   }
 };
 
-const handleEditar = (id) => {
-  console.log("Editar aprendiz", id);
-  // fetch PUT /Aprendiz/{id}
+const handleEditar = async (id) => {
+  const res = await fetch(`http://healthymind10.runasp.net/api/psicologo/${id}`);
+  const json = await res.json();
+
+  setFormData({
+    nroDocumento: json[0].psiDocumento,
+    nombre: json[0].psiNombre,
+    apellido: json[0].psiApellido,
+    especialidad: json[0].psiEspecialidad,
+    telefono: json[0].psiTelefono,
+    fechaNacimiento: json[0].psiFechaNac.split("T")[0],
+    direccion: json[0].psiDireccion,
+    correoInstitucional: json[0].psiCorreoInstitucional,
+    correoPersonal: json[0].psiCorreoPersonal
+  });
+
+  setModo("editar")
+  setIdEditar(json[0].psiCodigo);
 };
 
 const handleEliminar = async (id) => {
@@ -182,21 +198,20 @@ const handleEliminar = async (id) => {
     loadData();
   };
 
-      const limpiarFormulario = () => {
-      setFormData({
-          nroDocumento: "",
-          nombre: "",
-          apellido: "",
-          telefono: "",
-          especialidad: "",
-          fechaNacimiento: "",
-          direccion: "",
-          correoInstitucional: "",
-          correoPersonal: "",
-          psiPassword: ""
-        });
-
-    };
+  const limpiarFormulario = () => {
+  setFormData({
+      nroDocumento: "",
+      nombre: "",
+      apellido: "",
+      telefono: "",
+      especialidad: "",
+      fechaNacimiento: "",
+      direccion: "",
+      correoInstitucional: "",
+      correoPersonal: "",
+      psiPassword: ""
+    });
+};
     
   const enviarPost = async (e) => {
     e.preventDefault();
@@ -210,26 +225,37 @@ const handleEliminar = async (id) => {
       psiFechaNac: formData.fechaNacimiento,
       psiDireccion: formData.direccion,
       psiCorreoInstitucional: formData.correoInstitucional,
-      psiCorreoPersonal: formData.correoPersonal,
-      psiPassword: formData.psiPassword
+      psiCorreoPersonal: formData.correoPersonal
     }
 
+    if (modo === "crear") {
+    cuerpoPost.psiPassword = formData.psiPassword;
+    }
+
+    const url = modo === "crear"
+              ? "http://healthymind10.runasp.net/api/Psicologo"
+              : `http://healthymind10.runasp.net/api/Psicologo/editar/${idEditar}`;
     
-
-
-    const res = await fetch("http://healthymind10.runasp.net/api/Psicologo", {
-      method: "POST",
+    const method = modo === "crear" ? "POST" : "PUT";
+    
+    const res = await fetch(url, {
+      method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(cuerpoPost)
     });
 
     if (res.ok) {
-      alert("Psicólogo creado correctamente");
-      loadData();
-      limpiarFormulario();
+      alert(modo === "crear" 
+          ? "Psicólogo creado correctamente"
+          : "Psicólogo actualizado correctamente");
+
+    loadData();
+    limpiarFormulario();
       document.getElementById("btnCerrarModal").click();
     } else {
-      alert("Error al crear aprendiz");
+      alert(modo === "crear" 
+        ? "Error al crear el psicólogo" 
+        : "Error al editar el psicólogo");
       document.getElementById("btnCerrarModal").click();
     }
   }
@@ -265,6 +291,7 @@ const handleEliminar = async (id) => {
       formData={formData}
       handleChange={handleChange}
       enviarPost={enviarPost}
+      modo={modo}
     />
     <Modalver 
     id="modalVer"
@@ -311,6 +338,10 @@ const handleEliminar = async (id) => {
               <span class="input-group-text bg-success text-light"
               data-bs-toggle="modal" 
               data-bs-target="#exampleModal"
+              onClick={() => {
+                limpiarFormulario();
+                setModo("crear");
+              }}
               id="aggreg">
                 +
               </span>

@@ -22,6 +22,8 @@ export default function Usuarios() {
   const buscarTimeout = React.useRef(null);
   const [loading, setLoading] = useState(false);
   const [estadoApr, setEstadoApr] = useState([])
+  const [modo, setModo] = useState({})
+  const [idEditar, setIdEditar] = useState({})
   const [formData, setFormData] = useState({
               tipoDocumento: "",
               nroDocumento: "",
@@ -195,22 +197,57 @@ const cambiarEstado = async (id) => {
     }
 
 const handleVer = async (id) => {
-  console.log("Ver aprendiz", id);
+  
   try {
     const res = await fetch(`http://healthymind10.runasp.net/api/aprendiz/${id}`);
     const json = await res.json();
     setDataVer(json[0]);
-    console.log(json);
     
   } catch (err) {
     console.error(err);
   }
 };
 
-const handleEditar = (id) => {
-  console.log("Editar aprendiz", id);
-  // fetch PUT /Aprendiz/{id}
+const handleEditar = async (id) => {
+  const res = await fetch(`http://healthymind10.runasp.net/api/aprendiz/${id}`);
+  const json = await res.json();
+  
+
+  setFormData({
+    tipoDocumento: json[0].tipoDocumento,
+    nroDocumento: json[0].nroDocumento,
+    fechaNacimiento: json[0].fechaNacimiento.split("T")[0],
+    nombre: json[0].nombres.primerNombre,
+    segundoNombre: json[0].nombres.segundoNombre,
+    apellido: json[0].apellidos.primerApellido,
+    segundoApellido: json[0].apellidos.segundoApellido,
+    correoInstitucional: json[0].contacto.correoInstitucional,
+    correoPersonal: json[0].contacto.correoPersonal,
+    telefono: json[0].contacto.telefono,
+    municipio: json[0].ubicacion.municipioID,
+    direccion: json[0].ubicacion.direccion,
+    eps: json[0].eps,
+    patologia: json[0].patologia,
+    estadoAprendiz: json[0].estadoAprendiz.estAprCodigo,
+    tipoPoblacion: json[0].tipoPoblacion,
+    acudienteNombre: json[0].contacto.acudiente.acudienteNombre,
+    acudienteApellido: json[0].contacto.acudiente.acudienteApellido,
+    acudienteTelefono: json[0].contacto.acudiente.acudienteTelefono
+  });
+  setMunicipioTexto(`${json[0].ubicacion.municipio} - ${json[0].ubicacion.departamento}`);
+  setModo("editar")
+  setIdEditar(json[0].codigo);
 };
+
+useEffect(() => {
+  const cargarEstadosAprendiz = async () => {
+    const res = await fetch("http://healthymind10.runasp.net/api/EstadoAprendiz");
+    const json = await res.json();
+    setEstadoApr(json);
+  };
+
+  cargarEstadosAprendiz();
+}, []);
 
 const handleEliminar = async (id) => {
     if (!window.confirm("¿Seguro que deseas eliminar este aprendiz?")) return;
@@ -274,22 +311,29 @@ const handleEliminar = async (id) => {
       aprAcudApellido: formData.acudienteApellido
     }
 
-    
+    const url = modo === "crear" 
+              ? "http://healthymind10.runasp.net/api/Aprendiz"
+              : `http://healthymind10.runasp.net/api/Aprendiz/editar/${idEditar}`
 
+    const method = modo === "crear" ? "POST" : "PUT";
 
-    const res = await fetch("http://healthymind10.runasp.net/api/Aprendiz", {
-      method: "POST",
+    const res = await fetch(url, {
+      method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(cuerpoPost)
     });
 
     if (res.ok) {
-      alert("Aprendiz creado correctamente");
+      alert(modo === "crear" 
+          ? "Aprendiz creado correctamente"
+          : "Aprendiz actualizado correctamente");
       loadData();
       limpiarFormulario();
       document.getElementById("btnCerrarModal").click();
     } else {
-      alert("Error al crear aprendiz");
+      alert(modo === "crear" 
+        ? "Error al crear el aprendiz" 
+        : "Error al editar el aprendiz");
       document.getElementById("btnCerrarModal").click();
     }
   }
@@ -354,15 +398,7 @@ const handleEliminar = async (id) => {
     <div className="container-fluid pb-4">
         <h2>Listado de usuarios</h2>
       <div className="encabezado w-100">
-        <div class="d-flex align-items-center justify-content-between gap-2 w-100" onClick={async () => {
-          await fetch("http://healthymind10.runasp.net/api/EstadoAprendiz")
-            .then(res => res.json())
-            .then(json => {
-              setEstadoApr(json)
-              console.log(json);
-            })
-          
-        }}>
+        <div class="d-flex align-items-center justify-content-between gap-2 w-100">
         <select className="seleccionCantidad" onChange={(e) => {
           const nuevaCantidad = parseInt(e.target.value);
           setCantidadReg(nuevaCantidad);
