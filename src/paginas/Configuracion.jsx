@@ -17,7 +17,6 @@ export default function Configuracion() {
 
         <select className="form-select w-50">
           <option>Español</option>
-          <option>Inglés</option>
         </select>
       </div>
 
@@ -32,7 +31,6 @@ export default function Configuracion() {
             <label className="form-label fw-semibold">Tema</label>
             <select className="form-select">
               <option>Modo Claro</option>
-              <option>Modo Oscuro</option>
             </select>
           </div>
 
@@ -40,7 +38,6 @@ export default function Configuracion() {
             <label className="form-label fw-semibold">Tamaño de Fuente</label>
             <select className="form-select">
               <option>Normal</option>
-              <option>Grande</option>
             </select>
           </div>
         </div>

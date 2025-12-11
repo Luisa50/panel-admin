@@ -10,10 +10,10 @@ import {
   Wrench,
   Settings,
   Menu,
+  FileText
 } from "lucide-react";
 
 import "../estilos/principal.css";
-
 
 const BarraLateral = () => {
   const navigate = useNavigate();
@@ -21,7 +21,6 @@ const BarraLateral = () => {
 
   return (
     <div className={`sidebar ${abierto ? "expandida" : "colapsada"}`}>
-
       <div className="sidebar-top">
         <button
           className="btn btn-light boton-hamburguesa"
@@ -29,12 +28,11 @@ const BarraLateral = () => {
         >
           <Menu size={22} />
         </button>
-
         {abierto && <span className="logo-texto">HealthyMind</span>}
       </div>
 
-
       <div className="sidebar-menu">
+
         <div className="item" onClick={() => navigate("/inicio")}>
           <Home size={20} />
           {abierto && <span>Inicio</span>}
@@ -52,25 +50,29 @@ const BarraLateral = () => {
 
         <div className="item" onClick={() => navigate("/solicitudes")}>
           <Mail size={20} />
-          {abierto && <span>Solicitudes</span>}
+          {abierto && <span>Reportes</span>}
         </div>
 
+        <div className="item" onClick={() => navigate("/fichas")}>
+          <FileText size={20} />
+          {abierto && <span>Fichas</span>}
+        </div>
 
         <hr id="config" className="border border-light border-0.5 opacity-50"/>
+
         <div className="item" id="config" onClick={() => navigate("/soporte")}>
           <Wrench size={20} />
           {abierto && <span>Soporte</span>}
         </div>
 
-
         <div className="item" id="config" onClick={() => navigate("/configuracion")}>
           <Settings size={20} />
           {abierto && <span>Configuración</span>}
         </div>
+
       </div>
     </div>
   );
 };
 
 export default BarraLateral;
-

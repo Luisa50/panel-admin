@@ -6,7 +6,7 @@ import Layout from "./componentes/Layout";
 import PerfilAdministrador from "./paginas/PerfilAdministrador";
 import Psicologos from "./paginas/Psicologos";
 import Solicitudes from "./paginas/Solicitudes";
-import Monitoreo from "./paginas/Monitoreo";
+import Fichas from "./paginas/Fichas";
 import Configuracion from "./paginas/Configuracion";
 
 
@@ -21,6 +21,7 @@ export default function App() {
         <Route path="/psicologos" element={<Psicologos />} />
         <Route path="/solicitudes" element={<Solicitudes />} />
         <Route path="/configuracion" element={<Configuracion />} />
+        <Route path="/fichas" element={<Fichas />} />
 
         
         <Route path="/perfil" element={<PerfilAdministrador />} />
