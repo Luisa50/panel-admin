@@ -7,11 +7,11 @@ import ReactDOM from "react-dom/client";
 import Swal from "sweetalert2";
 import ModalFicha from "../componentes/modalsPost/ModalFicha";
 
-DataTable.use(DT);
 
 const API = "http://healthymind10.runasp.net/api/Ficha";
 
 export default function Fichas() {
+  DataTable.use(DT);
   const [fichas, setFichas] = useState([]);
   const [modo, setModo] = useState("");
   const [idEditar, setIdEditar] = useState(null);
@@ -21,7 +21,7 @@ export default function Fichas() {
     ficFechaInicio: "",
     ficFechaFin: "",
     ficEstadoFormacion: "",
-    ficProgramaFK: ""
+    ficProgramaFk: ""
   });
 
   const loadData = async () => {
@@ -40,7 +40,7 @@ export default function Fichas() {
       }));
       setFichas(datos);
     } catch (error) {
-      Swal.fire("Error", "No se pudieron cargar las fichas", "error");
+      Swal.fire("Error", "No se pudieron cargar las fichas", error);
     }
   };
 
@@ -55,7 +55,6 @@ export default function Fichas() {
       let res;
       if (modo === "crear") {
         const cuerpoPost = { ...formData };
-        delete cuerpoPost.ficCodigo;
         res = await fetch(API, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -74,7 +73,7 @@ export default function Fichas() {
       }
       loadData();
     } catch (error) {
-      Swal.fire("Error", "No se pudo enviar la ficha", "error");
+      Swal.fire("Error", "No se pudo enviar la ficha", error);
     }
   };
 
