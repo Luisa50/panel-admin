@@ -48,14 +48,14 @@ const BarraLateral = () => {
           {abierto && <span>Psicólogos</span>}
         </div>
 
-        <div className="item" onClick={() => navigate("/solicitudes")}>
-          <Mail size={20} />
-          {abierto && <span>Reportes</span>}
-        </div>
-
         <div className="item" onClick={() => navigate("/fichas")}>
           <FileText size={20} />
           {abierto && <span>Fichas</span>}
+        </div>
+
+        <div className="item" onClick={() => navigate("/solicitudes")}>
+          <Mail size={20} />
+          {abierto && <span>Reportes</span>}
         </div>
 
         <hr id="config" className="border border-light border-0.5 opacity-50"/>
