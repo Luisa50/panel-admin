@@ -418,6 +418,9 @@ const handleEliminar = async (id) => {
             <span class="input-group-text bg-success text-light"
             data-bs-toggle="modal" 
             data-bs-target="#exampleModal"
+            onClick={() => {
+              setModo("crear")
+            }}
             id="aggreg">
               +
             </span>
