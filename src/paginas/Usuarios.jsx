@@ -150,7 +150,7 @@ export default function Usuarios() {
     },
     {
       title: "Acciones",
-      data: "nroDocumento",
+      data: "codigo",
       orderable: false,
       searchable: false,
       
