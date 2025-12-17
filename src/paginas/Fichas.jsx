@@ -19,7 +19,6 @@ export default function Fichas() {
   const [dataVer, setDataVer] = useState({});
   const [modo, setModo] = useState("crear");
   const [idEditar, setIdEditar] = useState(null);
-
   const [formData, setFormData] = useState({
     ficCodigo: "",
     ficJornada: "",
@@ -29,13 +28,18 @@ export default function Fichas() {
     ficProgramaFK: "",
   });
 
-  const loadData = async () => {
+  const loadData = async (url = "http://healthymind10.runasp.net/api/Ficha") => {
     try {
-      const res = await fetch("http://healthymind10.runasp.net/api/Ficha");
+      const res = await fetch(url);
       if (!res.ok) return;
       const json = await res.json();
       setFichas(json ?? []);
-      setInformacion({ total: json.length });
+      setInformacion({
+        total: json.length,
+        paginaActual: 1,
+        paginaAnterior: null,
+        paginaSiguiente: null,
+      });
     } catch (err) {
       console.error(err);
     }
@@ -94,9 +98,7 @@ export default function Fichas() {
   const handleEliminar = async (id) => {
     if (!window.confirm("¿Seguro que deseas eliminar esta ficha?")) return;
     try {
-      await fetch(`http://healthymind10.runasp.net/api/Ficha/Eliminar/${id}`, {
-        method: "DELETE",
-      });
+      await fetch(`http://healthymind10.runasp.net/api/Ficha/Eliminar/${id}`, { method: "DELETE" });
       alert("Ficha eliminada");
       loadData();
     } catch (err) {
@@ -125,7 +127,6 @@ export default function Fichas() {
       loadData();
       limpiarFormulario();
 
-
       const modalEl = document.getElementById("modalFicha");
       const modal = Modal.getInstance(modalEl);
       modal?.hide();
@@ -151,9 +152,7 @@ export default function Fichas() {
   const busquedaDinamica = async (text) => {
     if (text.length < 3) return loadData();
     try {
-      const res = await fetch(
-        `http://healthymind10.runasp.net/api/Ficha/busqueda-dinamica?texto=${text}`
-      );
+      const res = await fetch(`http://healthymind10.runasp.net/api/Ficha/busqueda-dinamica?texto=${text}`);
       const json = await res.json();
       setFichas(json);
     } catch (err) {
@@ -178,7 +177,7 @@ export default function Fichas() {
     {
       title: "Programa",
       data: "programaFormacion",
-      render: (p) => (p?.progNombre ?? "—"),
+      render: (p) => p?.progNombre ?? "—",
     },
     {
       title: "Acciones",
@@ -205,13 +204,7 @@ export default function Fichas() {
 
   return (
     <>
-
-      <ModalFicha
-        formData={formData}
-        handleChange={handleChange}
-        enviar={enviarPost}
-        modo={modo}
-      />
+      <ModalFicha formData={formData} handleChange={handleChange} enviar={enviarPost} modo={modo} />
 
       <Modalver
         id="modalVer"
@@ -230,19 +223,43 @@ export default function Fichas() {
       <div className="container-fluid pb-4">
         <h2>Listado de Fichas</h2>
 
-        <div className="encabezado d-flex justify-content-between mb-2">
+        {/* Buscador y botón + */}
+        <div className="d-flex justify-content-end mb-2 align-items-center gap-2">
           <input
-            className="form-control w-25"
+            className="form-control"
+            style={{ width: "220px" }}
             placeholder="Buscar…"
             onChange={(e) => busquedaDinamica(e.target.value)}
           />
-
           <button className="btn btn-success" onClick={abrirModal}>
             +
           </button>
         </div>
 
         <TablasInfo columnas={columnas} datos={fichas} informacion={informacion} />
+
+        {/* Paginación */}
+        <div className="d-flex justify-content-start mt-3">
+          <div className="btn-group">
+            <button
+              className="btn btn-outline-primary"
+              disabled={!informacion.paginaAnterior}
+              onClick={() => loadData(informacion.paginaAnterior)}
+            >
+              <i className="bi bi-chevron-compact-left"></i>
+            </button>
+
+            <button className="btn btn-primary">{informacion.paginaActual}</button>
+
+            <button
+              className="btn btn-outline-primary"
+              disabled={!informacion.paginaSiguiente}
+              onClick={() => loadData(informacion.paginaSiguiente)}
+            >
+              <i className="bi bi-chevron-compact-right"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </>
   );

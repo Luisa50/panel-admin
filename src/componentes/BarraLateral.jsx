@@ -62,7 +62,7 @@ const BarraLateral = () => {
 
         <div className="item" id="config" onClick={() => navigate("/soporte")}>
           <Wrench size={20} />
-          {abierto && <span>Soporte</span>}
+          {abierto && <span>Informes</span>}
         </div>
 
         <div className="item" id="config" onClick={() => navigate("/configuracion")}>
