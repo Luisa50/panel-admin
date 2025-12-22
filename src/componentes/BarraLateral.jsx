@@ -60,7 +60,7 @@ const BarraLateral = () => {
 
         <hr id="config" className="border border-light border-0.5 opacity-50"/>
 
-        <div className="item" id="config" onClick={() => navigate("/soporte")}>
+        <div className="item" id="config" onClick={() => navigate("/informes")}>
           <Wrench size={20} />
           {abierto && <span>Informes</span>}
         </div>
