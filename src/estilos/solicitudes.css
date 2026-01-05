@@ -1,0 +1,23 @@
+.solicitudes-container {
+  padding: 20px;
+}
+
+.lista-solicitudes {
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.solicitud-item {
+  background: white;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.paginado {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}

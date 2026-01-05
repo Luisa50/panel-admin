@@ -1,0 +1,77 @@
+.barra-superior {
+  width: 100%;
+  height: 60px;
+  background: #ffffff;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 20px;
+  position: relative;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+/* Notificaciones */
+.notificaciones-icono {
+  position: relative;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.burbuja, .notif-dot {
+  background: #ff3b3b;
+  color: white;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+}
+
+/* Avatar */
+.avatar-contenedor {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.avatar-circulo {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #0d6efd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Menú usuario */
+.menu-usuario {
+  position: absolute;
+  top: 65px;
+  right: 10px;
+  width: 220px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  padding: 16px;
+  z-index: 1000;
+}
+
+.item-menu-usuario {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.item-menu-usuario:hover {
+  background: #f1f5ff;
+}
+
+.item-salir {
+  color: #d93025;
+}

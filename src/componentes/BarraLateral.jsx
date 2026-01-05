@@ -13,7 +13,7 @@ import {
   FileText
 } from "lucide-react";
 
-import "../estilos/principal.css";
+import "../estilos/barraLateral.css";
 
 const BarraLateral = () => {
   const navigate = useNavigate();

@@ -1,0 +1,95 @@
+.barra-lateral {
+  text-align: center;
+  align-items: center;
+  flex: 0 0 230px;
+  background: #111827;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  transition: 0.4s ease;
+}
+
+.barra-lateral:hover {
+  box-shadow: 0 0 15px rgb(71, 71, 71);
+}
+
+.barra-lateral h2 {
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  background: #00ae3a;
+}
+
+/* Sidebar nueva */
+.sidebar {
+  background: #111827;
+  height: 100vh;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: width 0.25s ease;
+}
+
+.sidebar.colapsada { width: 70px; }
+.sidebar.expandida { width: 220px; }
+
+.sidebar-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-texto {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  flex-grow: 1;
+}
+
+#config {
+  margin-top: auto;
+}
+
+.sidebar-menu .item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.sidebar-menu .item:hover {
+  background: rgba(201, 7, 7, 0.12);
+}
+
+.sidebar-menu .item span {
+  color: white;
+  font-size: 15px;
+}

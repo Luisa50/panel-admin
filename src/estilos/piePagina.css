@@ -1,0 +1,8 @@
+.footer-sena {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px;
+  background: rgb(21, 108, 158);
+  width: 100%;
+}
