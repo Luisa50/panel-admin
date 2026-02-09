@@ -53,10 +53,11 @@ const BarraLateral = () => {
           {abierto && <span>Fichas</span>}
         </div>
 
-        <div className="item" onClick={() => navigate("/solicitudes")}>
+        <div className="item" onClick={() => navigate("/reportes")}>
           <Mail size={20} />
           {abierto && <span>Reportes</span>}
         </div>
+
 
         <hr id="config" className="border border-light border-0.5 opacity-50"/>
 

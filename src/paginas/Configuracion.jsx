@@ -7,7 +7,7 @@ export default function Configuracion() {
 
   return (
     <div className="container p-4">
-      <h3 className="fw-bold mb-4">⚙️ Configuración del Sistema</h3>
+      <h3 className="fw-bold mb-4"> Configuración del Sistema</h3>
 
 
       <div className="card shadow-sm mb-4 p-4">

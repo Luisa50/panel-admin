@@ -1,0 +1,207 @@
+
+.overlay-informe {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+
+.hoja-a4 {
+  background: white;
+  width: 794px;   
+  min-height: 1123px;
+  padding: 40px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  position: relative;
+  font-family: Arial, sans-serif;
+}
+
+
+.encabezado {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.encabezado h2 {
+  margin-bottom: 5px;
+  font-size: 22px;
+  letter-spacing: 1px;
+}
+
+
+.resumen {
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+
+.tabla-usuarios table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.tabla-usuarios th,
+.tabla-usuarios td {
+  border: 1px solid #ccc;
+  padding: 6px 8px;
+  text-align: left;
+}
+
+.tabla-usuarios th {
+  background: #f2f2f2;
+  font-weight: bold;
+}
+
+.pie {
+  margin-top: 40px;
+  font-size: 11px;
+  text-align: center;
+  color: #666;
+}
+
+
+.acciones {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+}
+
+.acciones button {
+  padding: 8px 16px;
+  cursor: pointer;
+  border: none;
+  background: #2f80ed;
+  color: white;
+  border-radius: 4px;
+}
+
+.acciones button:last-child {
+  background: #828282;
+}
+
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .hoja-a4,
+  .hoja-a4 * {
+    visibility: visible;
+  }
+
+  .hoja-a4 {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    min-height: 100%;
+    box-shadow: none;
+  }
+
+  .acciones {
+    display: none;
+  }
+
+  .overlay-informe {
+    background: none;
+  }
+}
+
+.pagina-informe {
+  display: flex;
+  justify-content: center;   
+  background: #e5e5e5;
+  padding: 30px 0;
+}
+
+
+.hoja-a4 {
+  width: 215.9mm;            
+  min-height: 279.4mm;      
+  background: white;
+  padding: 25mm;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  box-sizing: border-box;
+}
+@media print {
+  body {
+    background: white;
+  }
+
+  .pagina-informe {
+    padding: 0;
+  }
+
+  .hoja-a4 {
+    box-shadow: none;
+    width: 215.9mm;
+    min-height: 279.4mm;
+    padding: 20mm;
+  }
+
+  .no-print {
+    display: none;
+  }
+
+  @page {
+    size: letter;
+    margin: 0;
+  }
+}
+.tabla-usuarios {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tabla-usuarios table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px; 
+}
+
+.tabla-usuarios th,
+.tabla-usuarios td {
+  padding: 8px;
+  font-size: 13px;
+  text-align: left;
+  word-break: break-word;
+  white-space: normal;
+}
+.bloque {
+  margin-bottom: 25px;
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin: 25px 0;
+}
+
+.kpi {
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  border: 1px solid #e0e0e0;
+}
+
+.kpi h3 {
+  margin: 0;
+  font-size: 24px;
+  color: #2f80ff;
+}
+
+.kpi span {
+  font-size: 13px;
+  color: #666;
+}
