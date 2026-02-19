@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell } from "lucide-react";
 import { AppContext } from "../context/AppContext";
+import { logout } from "../services/auth";
 
 export default function BarraSuperior() {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export default function BarraSuperior() {
   const notifRef = useRef(null);
 
   const cerrarSesion = () => {
-    localStorage.removeItem("logged");
+    logout();
     navigate("/");
   };
 

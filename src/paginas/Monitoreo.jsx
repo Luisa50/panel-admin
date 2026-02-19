@@ -14,111 +14,87 @@ import {
   Cell,
 } from "recharts";
 import { useEffect, useState } from "react";
+import { fetchWithAuth } from "../services/auth";
 
 export default function Monitoreo() {
-  const [cantidadAprendices, setCantidadAprendices] = useState([])
-  const [datosPorMes, setdatosPorMes] = useState([])
+  const [cantidadAprendices, setCantidadAprendices] = useState([]);
+  const [datosPorMes, setdatosPorMes] = useState({});
+  const [totalActividadesProceso, setTotalActividadesProceso] = useState({});
+  const [totalActividadesExitosas, setTotalActividadesExitosas] = useState({});
+  const [totalIncidencias, setTotalIncidencias] = useState({});
+  const [totalPorEstado, setTotalPorEstado] = useState([]);
 
-  const [totalActividadesProceso, setTotalActividadesProceso] = useState([])
-  const [totalActividadesExitosas, setTotalActividadesExitosas] = useState([])
-  const [totalIncidencias, setTotalIncidencias] = useState([])
-  const [totalPorEstado, setTotalPorEstado] = useState([])
+  useEffect(() => {
+    const loadData = () => {
+      fetchWithAuth("http://healthymind10.runasp.net/api/Aprendiz/estadistica/por-mes")
+        .then((res) => res.json())
+        .then((json) => setCantidadAprendices(Array.isArray(json) ? json : []))
+        .catch((err) => console.log("Error cargando API:", err));
+    };
+    loadData();
+    const intervalo = setInterval(loadData, 5000);
+    return () => clearInterval(intervalo);
+  }, []);
 
   useEffect(() => {
-    const loadData = async () => {
-      await fetch("http://healthymind10.runasp.net/api/Aprendiz/estadistica/por-mes")
-        .then(res => res.json())
-        .then(json => {
-          setCantidadAprendices(json)
-        })
-        .catch(err => console.log('Error cargando API:', err))
-      };
-        loadData()
-        
-        const intervalo = setInterval(loadData, 5000);
+    const loadData = () => {
+      fetchWithAuth("http://healthymind10.runasp.net/api/Aprendiz/estadistica/crecimiento-mensual")
+        .then((res) => res.json())
+        .then((json) => setdatosPorMes(json ?? {}))
+        .catch((err) => console.log("Error cargando API:", err));
+    };
+    loadData();
+    const intervalo = setInterval(loadData, 5000);
+    return () => clearInterval(intervalo);
+  }, []);
 
-        return () => clearInterval(intervalo);
-  }, [])
   useEffect(() => {
-    const loadData = async () => {
-      await fetch("http://healthymind10.runasp.net/api/Aprendiz/estadistica/crecimiento-mensual")
-        .then(res => res.json())
-        .then(json => {
-          setdatosPorMes(json)
-        })
-        .catch(err => console.log('Error cargando API:', err))
-      };
-        
-        loadData()
-        
-        const intervalo = setInterval(loadData, 5000);
+    const loadData = () => {
+      fetchWithAuth("http://healthymind10.runasp.net/api/Citas/citas/estado-proceso")
+        .then((res) => res.json())
+        .then((json) => setTotalActividadesProceso(json ?? {}))
+        .catch((err) => console.log("Error cargando API:", err));
+    };
+    loadData();
+    const intervalo = setInterval(loadData, 5000);
+    return () => clearInterval(intervalo);
+  }, []);
 
-        return () => clearInterval(intervalo);
-  }, [])
   useEffect(() => {
-      const loadData = async () => {
-        await fetch("http://healthymind10.runasp.net/api/Citas/citas/estado-proceso")
-          .then(res => res.json())
-          .then(json => {
-            setTotalActividadesProceso(json)
-          })
-          .catch(err => console.log('Error cargando API:', err))
-        };
-          
-          loadData()
-          
-          const intervalo = setInterval(loadData, 5000);
-  
-          return () => clearInterval(intervalo);
-    }, [])
+    const loadData = () => {
+      fetchWithAuth("http://healthymind10.runasp.net/api/Citas/estadistica/actividad-exitosa")
+        .then((res) => res.json())
+        .then((json) => setTotalActividadesExitosas(json ?? {}))
+        .catch((err) => console.log("Error cargando API:", err));
+    };
+    loadData();
+    const intervalo = setInterval(loadData, 5000);
+    return () => clearInterval(intervalo);
+  }, []);
+
   useEffect(() => {
-      const loadData = async () => {
-        await fetch("http://healthymind10.runasp.net/api/Citas/estadistica/actividad-exitosa")
-          .then(res => res.json())
-          .then(json => {
-            setTotalActividadesExitosas(json)
-          })
-          .catch(err => console.log('Error cargando API:', err))
-        };
-          
-          loadData()
-          
-          const intervalo = setInterval(loadData, 5000);
-  
-          return () => clearInterval(intervalo);
-    }, [])
+    const loadData = () => {
+      fetchWithAuth("http://healthymind10.runasp.net/api/Citas/citas/estado-incidencias")
+        .then((res) => res.json())
+        .then((json) => setTotalIncidencias(json ?? {}))
+        .catch((err) => console.log("Error cargando API:", err));
+    };
+    loadData();
+    const intervalo = setInterval(loadData, 5000);
+    return () => clearInterval(intervalo);
+  }, []);
+
   useEffect(() => {
-      const loadData = async () => {
-        await fetch("http://healthymind10.runasp.net/api/Citas/citas/estado-incidencias")
-          .then(res => res.json())
-          .then(json => {
-            setTotalIncidencias(json)
-          })
-          .catch(err => console.log('Error cargando API:', err))
-        };
-          
-          loadData()
-          
-          const intervalo = setInterval(loadData, 5000);
-  
-          return () => clearInterval(intervalo);
-    }, [])
-  useEffect(() => {
-      const loadData = async () => {
-        await fetch("http://healthymind10.runasp.net/api/Citas/estadistica/por-estado")
-          .then(res => res.json())
-          .then(json => {
-            setTotalPorEstado(json)
-          })
-          .catch(err => console.log('Error cargando API:', err))
-        };
-          
-          loadData()
-          
-          const intervalo = setInterval(loadData, 5000);
-  
-          return () => clearInterval(intervalo);
-    }, [])
+    const loadData = () => {
+      fetchWithAuth("http://healthymind10.runasp.net/api/Citas/estadistica/por-estado")
+        .then((res) => res.json())
+        .then((json) => setTotalPorEstado(Array.isArray(json) ? json : []))
+        .catch((err) => console.log("Error cargando API:", err));
+    };
+    loadData();
+    const intervalo = setInterval(loadData, 5000);
+    return () => clearInterval(intervalo);
+  }, []);
   
   const datosAPI = cantidadAprendices.reduce((acc, item) => {
     acc[item.mes] = item.total;
@@ -172,8 +148,8 @@ export default function Monitoreo() {
           <div className="card stat-card dark-card" id="carta-monitoreo">
             <div className="card-body">
               <p className="text-secondary m-0">Usuarios registrados por mes</p>
-              <h3 className="fw-bold">{datosPorMes.porcentajeCrecimiento}%</h3>
-              <small className="text-success">{datosPorMes.promedioMensual} promedio</small>
+              <h3 className="fw-bold">{datosPorMes?.porcentajeCrecimiento ?? "—"}%</h3>
+              <small className="text-success">{datosPorMes?.promedioMensual ?? "—"} promedio</small>
             </div>
           </div>
         </div>
@@ -182,8 +158,8 @@ export default function Monitoreo() {
           <div className="card stat-card" id="carta-monitoreo">
             <div className="card-body">
               <p className="text-secondary m-0">Actividad Exitosa</p>
-              <h4 className="fw-bold">{totalActividadesExitosas.porcentaje}%</h4>
-              <small className="text-danger">{totalActividadesExitosas.exitosas} citas</small>
+              <h4 className="fw-bold">{totalActividadesExitosas?.porcentaje ?? "—"}%</h4>
+              <small className="text-danger">{totalActividadesExitosas?.exitosas ?? "—"} citas</small>
             </div>
           </div>
         </div>
@@ -192,8 +168,8 @@ export default function Monitoreo() {
           <div className="card stat-card" id="carta-monitoreo">
             <div className="card-body">
               <p className="text-secondary m-0">Actividades en Proceso</p>
-              <h4 className="fw-bold">{totalActividadesProceso.porcentajeEnProceso}%</h4>
-              <small className="text-success">{totalActividadesProceso.citasEnProceso} citas</small>
+              <h4 className="fw-bold">{totalActividadesProceso?.porcentajeEnProceso ?? "—"}%</h4>
+              <small className="text-success">{totalActividadesProceso?.citasEnProceso ?? "—"} citas</small>
             </div>
           </div>
         </div>
@@ -202,8 +178,8 @@ export default function Monitoreo() {
           <div className="card stat-card" id="carta-monitoreo">
             <div className="card-body">
               <p className="text-secondary m-0">Incidencias</p>
-              <h4 className="fw-bold">{totalIncidencias.porcentajeEnProceso}%</h4>
-              <small className="text-danger">{totalIncidencias.citasEnIncidencias} citas</small>
+              <h4 className="fw-bold">{totalIncidencias?.porcentajeEnProceso ?? "—"}%</h4>
+              <small className="text-danger">{totalIncidencias?.citasEnIncidencias ?? "—"} citas</small>
             </div>
           </div>
         </div>

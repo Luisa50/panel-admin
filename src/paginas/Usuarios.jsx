@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import '../estilos/usuarios.css'
+import "../estilos/usuarios.css";
 import ReactDOM from "react-dom/client";
-import ModalEjemplo from '../componentes/modalsPost/ModalEjemplo.jsx'
-import TablasInfo from '../componentes/TablasInfo.jsx'
+import ModalEjemplo from "../componentes/modalsPost/ModalEjemplo.jsx";
+import TablasInfo from "../componentes/TablasInfo.jsx";
 import Modalver from "../componentes/modalsPost/ModalVer.jsx";
-import DataTable from 'datatables.net-react';
-import DT from 'datatables.net-dt';
-import 'datatables.net-select-dt';
-import 'datatables.net-responsive-dt';
+import DataTable from "datatables.net-react";
+import DT from "datatables.net-dt";
+import "datatables.net-select-dt";
+import "datatables.net-responsive-dt";
 import AccionesAprendiz from "../componentes/AccionesAprendiz";
+import { fetchWithAuth } from "../services/auth";
 
 
 export default function Usuarios() {
@@ -58,11 +59,11 @@ export default function Usuarios() {
     clearTimeout(buscarTimeout);
     buscarTimeout.current = setTimeout(async () => {
       try {
-        const res = await fetch(
-          `http://healthymind10.runasp.net/api/Ciudad/buscar?texto=${texto}`
+        const res = await fetchWithAuth(
+          `http://healthymind10.runasp.net/api/Ciudad/buscar?texto=${encodeURIComponent(texto)}`
         );
         const data = await res.json();
-        setListaMunicipios(data);
+        setListaMunicipios(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Error buscando municipios:", err);
       }
@@ -170,94 +171,122 @@ export default function Usuarios() {
 
 
 const loadData = async (pag = 1, lengthPag = 5) => {
-        setLoading(true);
-        try {
-          const res = await fetch(`http://healthymind10.runasp.net/api/Aprendiz/listar?Pagina=${pag}&TamanoPagina=${lengthPag}`);
-          const json = await res.json();
-          setUsuarios(json.resultado);
-          setInformacion(json);
-        } catch (error) {
-          console.error("Error al cargar datos:", error);
-        }
-        setLoading(false);
-}
+  setLoading(true);
+  try {
+    const res = await fetchWithAuth(
+      `http://healthymind10.runasp.net/api/Aprendiz/listar?Pagina=${pag}&TamanoPagina=${lengthPag}`
+    );
+    const json = await res.json();
+    setUsuarios(json?.resultado ?? []);
+    setInformacion(json ?? {});
+  } catch (error) {
+    console.error("Error al cargar datos:", error);
+  }
+  setLoading(false);
+};
 
 const cambiarEstado = async (id) => {
-      const cuerpoPost = {
-        RazonEliminacion: "prueba"
+  const cuerpoPost = { RazonEliminacion: "prueba" };
+  try {
+    await fetchWithAuth(
+      `http://healthymind10.runasp.net/api/Aprendiz/cambiar-estado/${id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cuerpoPost),
       }
-
-      await fetch(`http://healthymind10.runasp.net/api/Aprendiz/cambiar-estado/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(cuerpoPost)
-    });
+    );
     alert("Se ha cambiado el estado correctamente");
     loadData();
-    }
+  } catch (err) {
+    console.error(err);
+    alert("Error al cambiar el estado");
+  }
+};
 
 const handleVer = async (id) => {
-  
   try {
-    const res = await fetch(`http://healthymind10.runasp.net/api/aprendiz/${id}`);
+    const res = await fetchWithAuth(
+      `http://healthymind10.runasp.net/api/aprendiz/${id}`
+    );
     const json = await res.json();
-    setDataVer(json[0]);
-    
+    setDataVer(Array.isArray(json) ? json[0] ?? {} : json ?? {});
   } catch (err) {
     console.error(err);
   }
 };
 
 const handleEditar = async (id) => {
-  const res = await fetch(`http://healthymind10.runasp.net/api/aprendiz/${id}`);
-  const json = await res.json();
-  
+  try {
+    const res = await fetchWithAuth(
+      `http://healthymind10.runasp.net/api/aprendiz/${id}`
+    );
+    const json = await res.json();
+    const item = Array.isArray(json) ? json[0] : json;
+    if (!item) return;
 
-  setFormData({
-    tipoDocumento: json[0].tipoDocumento,
-    nroDocumento: json[0].nroDocumento,
-    fechaNacimiento: json[0].fechaNacimiento.split("T")[0],
-    nombre: json[0].nombres.primerNombre,
-    segundoNombre: json[0].nombres.segundoNombre,
-    apellido: json[0].apellidos.primerApellido,
-    segundoApellido: json[0].apellidos.segundoApellido,
-    correoInstitucional: json[0].contacto.correoInstitucional,
-    correoPersonal: json[0].contacto.correoPersonal,
-    telefono: json[0].contacto.telefono,
-    municipio: json[0].ubicacion.municipioID,
-    direccion: json[0].ubicacion.direccion,
-    eps: json[0].eps,
-    patologia: json[0].patologia,
-    estadoAprendiz: json[0].estadoAprendiz.estAprCodigo,
-    tipoPoblacion: json[0].tipoPoblacion,
-    acudienteNombre: json[0].contacto.acudiente.acudienteNombre,
-    acudienteApellido: json[0].contacto.acudiente.acudienteApellido,
-    acudienteTelefono: json[0].contacto.acudiente.acudienteTelefono
-  });
-  setMunicipioTexto(`${json[0].ubicacion.municipio} - ${json[0].ubicacion.departamento}`);
-  setModo("editar")
-  setIdEditar(json[0].codigo);
+    setFormData({
+      tipoDocumento: item.tipoDocumento ?? "",
+      nroDocumento: item.nroDocumento ?? "",
+      fechaNacimiento: item.fechaNacimiento?.split("T")[0] ?? "",
+      nombre: item.nombres?.primerNombre ?? "",
+      segundoNombre: item.nombres?.segundoNombre ?? "",
+      apellido: item.apellidos?.primerApellido ?? "",
+      segundoApellido: item.apellidos?.segundoApellido ?? "",
+      correoInstitucional: item.contacto?.correoInstitucional ?? "",
+      correoPersonal: item.contacto?.correoPersonal ?? "",
+      telefono: item.contacto?.telefono ?? "",
+      municipio: item.ubicacion?.municipioID ?? "",
+      direccion: item.ubicacion?.direccion ?? "",
+      eps: item.eps ?? "",
+      patologia: item.patologia ?? "",
+      estadoAprendiz: item.estadoAprendiz?.estAprCodigo ?? "",
+      tipoPoblacion: item.tipoPoblacion ?? "",
+      acudienteNombre: item.contacto?.acudiente?.acudienteNombre ?? "",
+      acudienteApellido: item.contacto?.acudiente?.acudienteApellido ?? "",
+      acudienteTelefono: item.contacto?.acudiente?.acudienteTelefono ?? "",
+    });
+    setMunicipioTexto(
+      item.ubicacion
+        ? `${item.ubicacion.municipio ?? ""} - ${item.ubicacion.departamento ?? ""}`
+        : ""
+    );
+    setModo("editar");
+    setIdEditar(item.codigo);
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 useEffect(() => {
   const cargarEstadosAprendiz = async () => {
-    const res = await fetch("http://healthymind10.runasp.net/api/EstadoAprendiz");
-    const json = await res.json();
-    setEstadoApr(json);
+    try {
+      const res = await fetchWithAuth(
+        "http://healthymind10.runasp.net/api/EstadoAprendiz"
+      );
+      const json = await res.json();
+      setEstadoApr(Array.isArray(json) ? json : []);
+    } catch (err) {
+      console.error("Error cargando estados aprendiz:", err);
+    }
   };
-
   cargarEstadosAprendiz();
 }, []);
 
 const handleEliminar = async (id) => {
-    if (!window.confirm("¿Seguro que deseas eliminar este aprendiz?")) return;
-
-    await fetch(`http://healthymind10.runasp.net/api/Aprendiz/eliminar/${id}`, {
-      method: "DELETE"
-    });
+  if (!window.confirm("¿Seguro que deseas eliminar este aprendiz?")) return;
+  try {
+    await fetchWithAuth(
+      `http://healthymind10.runasp.net/api/Aprendiz/eliminar/${id}`,
+      { method: "DELETE" }
+    );
     alert("Eliminado");
     loadData();
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Error al eliminar");
+  }
+};
 
       const limpiarFormulario = () => {
       setFormData({
@@ -317,34 +346,48 @@ const handleEliminar = async (id) => {
 
     const method = modo === "crear" ? "POST" : "PUT";
 
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(cuerpoPost)
-    });
+    try {
+      const res = await fetchWithAuth(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cuerpoPost),
+      });
 
-    if (res.ok) {
-      alert(modo === "crear" 
-          ? "Aprendiz creado correctamente"
-          : "Aprendiz actualizado correctamente");
-      loadData();
-      limpiarFormulario();
-      document.getElementById("btnCerrarModal").click();
-    } else {
-      alert(modo === "crear" 
-        ? "Error al crear el aprendiz" 
-        : "Error al editar el aprendiz");
-      document.getElementById("btnCerrarModal").click();
+      if (res.ok) {
+        alert(
+          modo === "crear"
+            ? "Aprendiz creado correctamente"
+            : "Aprendiz actualizado correctamente"
+        );
+        loadData();
+        limpiarFormulario();
+        document.getElementById("btnCerrarModal").click();
+      } else {
+        alert(
+          modo === "crear"
+            ? "Error al crear el aprendiz"
+            : "Error al editar el aprendiz"
+        );
+        document.getElementById("btnCerrarModal").click();
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error de conexión");
     }
-  }
+  };
 
   const busquedaDinamica = async (text) => {
-    if (text.length < 3) return loadData()
-    await fetch(`http://healthymind10.runasp.net/api/aprendiz/busqueda-dinamica?texto=${text}`)
-          .then(res => res.json())
-          .then(json => setUsuarios(json)
-          )
-  }
+    if (text.length < 3) return loadData();
+    try {
+      const res = await fetchWithAuth(
+        `http://healthymind10.runasp.net/api/aprendiz/busqueda-dinamica?texto=${encodeURIComponent(text)}`
+      );
+      const json = await res.json();
+      setUsuarios(Array.isArray(json) ? json : []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   useEffect(() => {
       const fetchData = async () => {
       await loadData();
@@ -436,27 +479,41 @@ const handleEliminar = async (id) => {
       informacion={informacion}
       />
       <div className="btn-group mt-3">
-
-        <button 
+        <button
+          type="button"
           className="btn btn-outline-primary"
           disabled={!informacion.paginaAnterior}
           onClick={() => loadData(informacion.paginaAnterior, cantidadReg)}
+          aria-label="Página anterior"
         >
-          <i class="bi bi-chevron-compact-left"></i>
+          <i className="bi bi-chevron-compact-left"></i>
         </button>
 
-        <button className="btn btn-primary">
-          {informacion.paginaActual}
-        </button>
+        {Array.from(
+          { length: informacion?.totalPaginas ?? 0 },
+          (_, i) => i + 1
+        ).map((num) => (
+          <button
+            key={num}
+            type="button"
+            className={`btn ${informacion?.paginaActual === num ? "btn-primary" : "btn-outline-primary"}`}
+            onClick={() => loadData(num, cantidadReg)}
+            aria-label={`Página ${num}`}
+            aria-current={informacion?.paginaActual === num ? "page" : undefined}
+          >
+            {num}
+          </button>
+        ))}
 
-        <button 
+        <button
+          type="button"
           className="btn btn-outline-primary"
           disabled={!informacion.paginaSiguiente}
           onClick={() => loadData(informacion.paginaSiguiente, cantidadReg)}
+          aria-label="Página siguiente"
         >
-          <i class="bi bi-chevron-compact-right"></i>
+          <i className="bi bi-chevron-compact-right"></i>
         </button>
-
       </div>
 
     </div>

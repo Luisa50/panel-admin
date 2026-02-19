@@ -1,17 +1,28 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { login } from "../services/auth";
 import "../estilos/login.css";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [role, setRole] = useState("admin");
-  const [usuario, setUsuario] = useState("");
+  const [correoPersonal, setCorreoPersonal] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("Rol seleccionado:", role);
-    navigate("/inicio");
+    setError("");
+    setLoading(true);
+
+    try {
+      await login({ correoPersonal, password });
+      navigate("/inicio");
+    } catch (err) {
+      setError(err.message || "Error al iniciar sesión");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -28,38 +39,40 @@ export default function Login() {
             <input type="text" style={{ display: "none" }} />
             <input type="password" style={{ display: "none" }} />
 
-            <select
-              className="login-input"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-            >
-              <option value="admin">Admin</option>
-            </select>
-
             <input
-              type="text"
-              name="fake-user"
+              type="email"
+              name="correoPersonal"
               autoComplete="off"
-              placeholder="Username"
+              placeholder="Correo personal"
               className="login-input"
-              value={usuario}
-              onChange={(e) => setUsuario(e.target.value)}
+              value={correoPersonal}
+              onChange={(e) => setCorreoPersonal(e.target.value)}
               required
             />
 
             <input
               type="password"
-              name="fake-password"
+              name="password"
               autoComplete="new-password"
-              placeholder="Password"
+              placeholder="Contraseña"
               className="login-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
 
-            <button type="submit" className="login-button">
-              Ingresar
+            {error && (
+              <div className="login-error" role="alert">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="login-button"
+              disabled={loading}
+            >
+              {loading ? "Ingresando…" : "Ingresar"}
             </button>
           </form>
         </div>

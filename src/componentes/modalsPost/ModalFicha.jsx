@@ -1,6 +1,15 @@
 import React from "react";
 
-export default function ModalFicha({ modo, formData, handleChange, enviar }) {
+export default function ModalFicha({
+  modo,
+  formData,
+  handleChange,
+  enviar,
+  programaTexto = "",
+  listaProgramas = [],
+  handleBuscarPrograma,
+  seleccionarPrograma,
+}) {
   const soloLectura = modo === "ver";
 
   return (
@@ -88,17 +97,48 @@ export default function ModalFicha({ modo, formData, handleChange, enviar }) {
                 <option value="cancelada">Cancelada</option>
               </select>
 
-             
-              <label className="mt-2">Programa (Código FK)</label>
-              <input
-                className="form-control"
-                type="number"
-                name="ficProgramaFK"
-                value={formData.ficProgramaFK}
-                onChange={handleChange}
-                disabled={soloLectura}
-                required
-              />
+              <label className="mt-2">Programa</label>
+              {soloLectura ? (
+                <input
+                  className="form-control"
+                  type="text"
+                  value={programaTexto}
+                  disabled
+                  readOnly
+                />
+              ) : (
+                <div className="position-relative">
+                  <input type="hidden" name="ficProgramaFK" value={formData.ficProgramaFK} />
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Escriba al menos 3 letras para buscar programa..."
+                    autoComplete="off"
+                    value={programaTexto}
+                    onChange={handleBuscarPrograma}
+                  />
+                  {listaProgramas.length > 0 && (
+                    <div
+                      className="list-group position-absolute w-100"
+                      style={{ zIndex: 1000, maxHeight: "200px", overflowY: "auto" }}
+                    >
+                      {listaProgramas.map((prog) => (
+                        <button
+                          key={prog.progCodigo}
+                          type="button"
+                          className="list-group-item list-group-item-action text-start"
+                          onClick={() => seleccionarPrograma(prog)}
+                        >
+                          {prog.progNombre}
+                          {prog.area?.areaNombre && (
+                            <span className="text-muted small ms-1"> — {prog.area.areaNombre}</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
             </div>
 

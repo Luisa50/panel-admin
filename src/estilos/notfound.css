@@ -1,0 +1,56 @@
+.notfound-container {
+  height: 100vh;
+  min-height: 100vh;
+  background: url("/Fondo%20pantalla%20login.jpg") center center / cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.notfound-content {
+  text-align: center;
+  padding: 2.5rem 3rem;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  max-width: 420px;
+}
+
+.notfound-title {
+  margin: 0 0 0.5rem;
+  font-size: 4rem;
+  font-weight: 700;
+  color: #333;
+  line-height: 1;
+}
+
+.notfound-mensaje {
+  margin: 0 0 0.5rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.notfound-sub {
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+.notfound-link {
+  display: inline-block;
+  padding: 12px 24px;
+  background: #4a6cf7;
+  color: white;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.notfound-link:hover {
+  background: #3d5ce0;
+  color: white;
+}

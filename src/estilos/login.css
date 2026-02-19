@@ -3,27 +3,31 @@ body {
   font-family: "Segoe UI", sans-serif;
 }
 
-/* Fondo */
+/* Fondo con imagen */
 .login-container {
   height: 100vh;
-  background: linear-gradient(135deg, #ffffff,);
+  min-height: 100vh;
+  background: url("/Fondo%20pantalla%20login.jpg") center center / cover no-repeat;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
+  padding-left: 5%;
+  box-sizing: border-box;
 }
 
-/* Card */
+/* Card: a la izquierda y un poco más grande */
 .login-card {
-  width: 380px;
+  width: 420px;
+  max-width: 90vw;
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.25);
   background: white;
 }
 
-/* Imagen superior */
+/* Imagen superior del card */
 .login-image {
-  height: 230px;
+  height: 260px;
 }
 
 .login-image img {
@@ -36,9 +40,9 @@ body {
 /* Formulario */
 .login-form {
   background: #ced5f1;
-  padding: 40px 30px;
+  padding: 44px 36px;
   text-align: center;
-  color: #ffffff; /* texto general negro */
+  color: #ffffff;
 }
 
 .login-form h2 {
@@ -95,4 +99,18 @@ body {
 
 .login-button:hover {
   background: white;
+}
+
+.login-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.login-error {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(220, 53, 69, 0.15);
+  color: #721c24;
+  font-size: 13px;
 }

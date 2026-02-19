@@ -1,27 +1,25 @@
 import React, { useState, useEffect } from "react";
-import '../estilos/usuarios.css'
+import "../estilos/usuarios.css";
 import ReactDOM from "react-dom/client";
-import ModalEjemplo from '../componentes/modalsPost/ModalEjemplo.jsx'
-import TablasInfo from '../componentes/TablasInfo.jsx'
-import DataTable from 'datatables.net-react';
-import DT from 'datatables.net-dt';
-import 'datatables.net-select-dt';
-import 'datatables.net-responsive-dt';
+import TablasInfo from "../componentes/TablasInfo.jsx";
+import DataTable from "datatables.net-react";
+import DT from "datatables.net-dt";
+import "datatables.net-select-dt";
+import "datatables.net-responsive-dt";
 import AccionesAprendiz from "../componentes/AccionesAprendiz";
 import ModalPsicologo from "../componentes/modalsPost/ModalPsicologo.jsx";
 import Modalver from "../componentes/modalsPost/ModalVer.jsx";
-import { LucideAlertCircle } from "lucide-react";
+import { fetchWithAuth } from "../services/auth";
 
-
-export default function Usuarios() {
+export default function Psicologos() {
   DataTable.use(DT);
   const [usuarios, setUsuarios] = useState([]);
-  const [informacion, setInformacion] = useState([])
-  const [cantidadReg, setCantidadReg] = useState(5)
+  const [informacion, setInformacion] = useState({});
+  const [cantidadReg, setCantidadReg] = useState(5);
   const [loading, setLoading] = useState(false);
   const [dataVer, setDataVer] = useState({});
-  const [modo, setModo] = useState({})
-  const [idEditar, setIdEditar] = useState({})
+  const [modo, setModo] = useState("crear");
+  const [idEditar, setIdEditar] = useState(null);
   const [formData, setFormData] = useState({
               nroDocumento: "",
               nombre: "",
@@ -36,20 +34,19 @@ export default function Usuarios() {
           });
 
   const loadData = async (pag = 1, lengthPag = 5) => {
-        setLoading(true);
-        try {
-          const res = await fetch(`http://healthymind10.runasp.net/api/psicologo/listar?Pagina=${pag}&TamanoPagina=${lengthPag}`);
-          const json = await res.json();
-          setUsuarios(json.resultados);
-          setInformacion(json);
-          console.log(json.resultados);
-          console.log(json);
-          
-        } catch (error) {
-          console.error("Error al cargar datos:", error);
-        }
-        setLoading(false);
+    setLoading(true);
+    try {
+      const res = await fetchWithAuth(
+        `http://healthymind10.runasp.net/api/psicologo/listar?Pagina=${pag}&TamanoPagina=${lengthPag}`
+      );
+      const json = await res.json();
+      setUsuarios(json?.resultados ?? json?.resultado ?? []);
+      setInformacion(json ?? {});
+    } catch (error) {
+      console.error("Error al cargar datos:", error);
     }
+    setLoading(false);
+  };
 
 
 
@@ -146,56 +143,73 @@ export default function Usuarios() {
     }
   ]
 
-const cambiarEstado = async (id) => {
-      if (!window.confirm("¿Seguro que deseas cambiar este estado?")) return;
-      await fetch(`http://healthymind10.runasp.net/api/psicologo/cambiar-estado/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      
-    });
-    alert("Se ha cambiado el estado correctamente");
-    loadData();
+  const cambiarEstado = async (id) => {
+    if (!window.confirm("¿Seguro que deseas cambiar este estado?")) return;
+    try {
+      await fetchWithAuth(
+        `http://healthymind10.runasp.net/api/psicologo/cambiar-estado/${id}`,
+        { method: "PUT", headers: { "Content-Type": "application/json" } }
+      );
+      alert("Se ha cambiado el estado correctamente");
+      loadData();
+    } catch (err) {
+      console.error(err);
+      alert("Error al cambiar el estado");
     }
+  };
 
-const handleVer = async (id) => {
-  try {
-    const res = await fetch(`http://healthymind10.runasp.net/api/psicologo/${id}`);
-    const json = await res.json();
-    setDataVer(json[0]);
-    console.log(json);
-  } catch (err) {
-    console.error(err);
-  }
-};
+  const handleVer = async (id) => {
+    try {
+      const res = await fetchWithAuth(
+        `http://healthymind10.runasp.net/api/psicologo/${id}`
+      );
+      const json = await res.json();
+      setDataVer(Array.isArray(json) ? json[0] ?? {} : json ?? {});
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-const handleEditar = async (id) => {
-  const res = await fetch(`http://healthymind10.runasp.net/api/psicologo/${id}`);
-  const json = await res.json();
+  const handleEditar = async (id) => {
+    try {
+      const res = await fetchWithAuth(
+        `http://healthymind10.runasp.net/api/psicologo/${id}`
+      );
+      const json = await res.json();
+      const item = Array.isArray(json) ? json[0] : json;
+      if (!item) return;
 
-  setFormData({
-    nroDocumento: json[0].psiDocumento,
-    nombre: json[0].psiNombre,
-    apellido: json[0].psiApellido,
-    especialidad: json[0].psiEspecialidad,
-    telefono: json[0].psiTelefono,
-    fechaNacimiento: json[0].psiFechaNac.split("T")[0],
-    direccion: json[0].psiDireccion,
-    correoInstitucional: json[0].psiCorreoInstitucional,
-    correoPersonal: json[0].psiCorreoPersonal
-  });
+      setFormData({
+        nroDocumento: item.psiDocumento ?? "",
+        nombre: item.psiNombre ?? "",
+        apellido: item.psiApellido ?? "",
+        especialidad: item.psiEspecialidad ?? "",
+        telefono: item.psiTelefono ?? "",
+        fechaNacimiento: item.psiFechaNac?.split("T")[0] ?? "",
+        direccion: item.psiDireccion ?? "",
+        correoInstitucional: item.psiCorreoInstitucional ?? "",
+        correoPersonal: item.psiCorreoPersonal ?? "",
+      });
+      setModo("editar");
+      setIdEditar(item.psiCodigo);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-  setModo("editar")
-  setIdEditar(json[0].psiCodigo);
-};
-
-const handleEliminar = async (id) => {
+  const handleEliminar = async (id) => {
     if (!window.confirm("¿Seguro que deseas eliminar este registro?")) return;
-
-    await fetch(`http://healthymind10.runasp.net/api/psicologo/eliminar/${id}`, {
-      method: "DELETE"
-    });
-    alert("Eliminado");
-    loadData();
+    try {
+      await fetchWithAuth(
+        `http://healthymind10.runasp.net/api/psicologo/eliminar/${id}`,
+        { method: "DELETE" }
+      );
+      alert("Eliminado");
+      loadData();
+    } catch (err) {
+      console.error(err);
+      alert("Error al eliminar");
+    }
   };
 
   const limpiarFormulario = () => {
@@ -225,61 +239,64 @@ const handleEliminar = async (id) => {
       psiFechaNac: formData.fechaNacimiento,
       psiDireccion: formData.direccion,
       psiCorreoInstitucional: formData.correoInstitucional,
-      psiCorreoPersonal: formData.correoPersonal
-    }
-
+      psiCorreoPersonal: formData.correoPersonal,
+    };
     if (modo === "crear") {
-    cuerpoPost.psiPassword = formData.psiPassword;
+      cuerpoPost.psiPassword = formData.psiPassword;
     }
 
-    const url = modo === "crear"
-              ? "http://healthymind10.runasp.net/api/Psicologo"
-              : `http://healthymind10.runasp.net/api/Psicologo/editar/${idEditar}`;
-    
+    const url =
+      modo === "crear"
+        ? "http://healthymind10.runasp.net/api/Psicologo"
+        : `http://healthymind10.runasp.net/api/Psicologo/editar/${idEditar}`;
     const method = modo === "crear" ? "POST" : "PUT";
-    
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(cuerpoPost)
-    });
 
-    if (res.ok) {
-      alert(modo === "crear" 
-          ? "Psicólogo creado correctamente"
-          : "Psicólogo actualizado correctamente");
+    try {
+      const res = await fetchWithAuth(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cuerpoPost),
+      });
 
-    loadData();
-    limpiarFormulario();
-      document.getElementById("btnCerrarModal").click();
-    } else {
-      alert(modo === "crear" 
-        ? "Error al crear el psicólogo" 
-        : "Error al editar el psicólogo");
-      document.getElementById("btnCerrarModal").click();
+      if (res.ok) {
+        alert(
+          modo === "crear"
+            ? "Psicólogo creado correctamente"
+            : "Psicólogo actualizado correctamente"
+        );
+        loadData();
+        limpiarFormulario();
+        document.getElementById("btnCerrarModal").click();
+      } else {
+        alert(
+          modo === "crear"
+            ? "Error al crear el psicólogo"
+            : "Error al editar el psicólogo"
+        );
+        document.getElementById("btnCerrarModal").click();
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error de conexión");
     }
-  }
+  };
 
   const busquedaDinamica = async (text) => {
-      if (text.length < 3) return loadData()
-      await fetch(`http://healthymind10.runasp.net/api/psicologo/busqueda-dinamica?texto=${text}`)
-            .then(res => res.json())
-            .then(json => setUsuarios(json)
-            )
+    if (text.length < 3) return loadData();
+    try {
+      const res = await fetchWithAuth(
+        `http://healthymind10.runasp.net/api/psicologo/busqueda-dinamica?texto=${encodeURIComponent(text)}`
+      );
+      const json = await res.json();
+      setUsuarios(Array.isArray(json) ? json : []);
+    } catch (err) {
+      console.error(err);
     }
-    useEffect(() => {
-        const fetchData = async () => {
-        await loadData();
-      };
-      fetchData();
-    }, [])
+  };
 
   useEffect(() => {
-      const fetchData = async () => {
-      await loadData();
-    };
-    fetchData();
-  }, [])
+    loadData();
+  }, []);
 
 
   
@@ -318,7 +335,7 @@ const handleEliminar = async (id) => {
     <div className="container-fluid pb-4">
         <h2>Listado de psicologos</h2>
       <div className="encabezado w-100">
-        <div class="d-flex align-items-center justify-content-between gap-2 w-100">
+        <div className="d-flex align-items-center justify-content-between gap-2 w-100">
           <select className="seleccionCantidad" onChange={(e) => {
             const nuevaCantidad = parseInt(e.target.value);
             setCantidadReg(nuevaCantidad);
@@ -335,7 +352,7 @@ const handleEliminar = async (id) => {
                 placeholder="Buscar…"
                 onChange={(e) => busquedaDinamica(e.target.value)}
               />
-              <span class="input-group-text bg-success text-light"
+              <span className="input-group-text bg-success text-light"
               data-bs-toggle="modal" 
               data-bs-target="#exampleModal"
               onClick={() => {
@@ -357,27 +374,41 @@ const handleEliminar = async (id) => {
       informacion={informacion}
       />
       <div className="btn-group mt-3">
-
-        <button 
+        <button
+          type="button"
           className="btn btn-outline-primary"
           disabled={!informacion.paginaAnterior}
           onClick={() => loadData(informacion.paginaAnterior, cantidadReg)}
+          aria-label="Página anterior"
         >
-          <i class="bi bi-chevron-compact-left"></i>
+          <i className="bi bi-chevron-compact-left"></i>
         </button>
 
-        <button className="btn btn-primary">
-          {informacion.paginaActual}
-        </button>
+        {Array.from(
+          { length: informacion?.totalPaginas ?? 0 },
+          (_, i) => i + 1
+        ).map((num) => (
+          <button
+            key={num}
+            type="button"
+            className={`btn ${informacion?.paginaActual === num ? "btn-primary" : "btn-outline-primary"}`}
+            onClick={() => loadData(num, cantidadReg)}
+            aria-label={`Página ${num}`}
+            aria-current={informacion?.paginaActual === num ? "page" : undefined}
+          >
+            {num}
+          </button>
+        ))}
 
-        <button 
+        <button
+          type="button"
           className="btn btn-outline-primary"
           disabled={!informacion.paginaSiguiente}
           onClick={() => loadData(informacion.paginaSiguiente, cantidadReg)}
+          aria-label="Página siguiente"
         >
-          <i class="bi bi-chevron-compact-right"></i>
+          <i className="bi bi-chevron-compact-right"></i>
         </button>
-
       </div>
 
     </div>

@@ -44,3 +44,61 @@
   background: #f4f5f7;
   min-height: 100vh;
 }
+
+/* Overlay cuando no hay token (acceso denegado) */
+.layout-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.layout-overlay-panel {
+  text-align: center;
+  max-width: 420px;
+  padding: 2.5rem 2rem;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.layout-overlay-icon {
+  color: #6c757d;
+  margin-bottom: 1.25rem;
+  opacity: 0.9;
+}
+
+.layout-overlay-titulo {
+  margin: 0 0 0.5rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.layout-overlay-mensaje {
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+.layout-overlay-boton {
+  padding: 0.6rem 1.5rem;
+  border-radius: 10px;
+  border: none;
+  background: #4a6cf7;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.layout-overlay-boton:hover {
+  background: #3d5ce0;
+}

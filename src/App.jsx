@@ -15,6 +15,7 @@ import InformeGeneral from "./paginas/InformeGeneral";
 
 
 import Notificaciones from "./paginas/Notificaciones";
+import NotFound from "./paginas/NotFound";
 
 export default function App() {
   return (
@@ -39,6 +40,8 @@ export default function App() {
       
         <Route path="/notificaciones" element={<Notificaciones />} />
       </Route>
+
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
