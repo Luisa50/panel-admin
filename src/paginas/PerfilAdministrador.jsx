@@ -1,257 +1,252 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../estilos/PerfilAdministrador.css";
 
-export default function FormularioPerfil() {
+export default function PerfilUsuario() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    nombres: "Laura Marcela",
-    apellidos: "Gómez Rodríguez",
-    tipoDocumento: "Cédula",
-    documento: "1032456789",
-    nacimiento: "1998-07-15",
-    genero: "Femenino",
-    correo: "laura.gomez@healthymind.com",
-    telefono: "3204567890",
+    nombres: "Luisa Fernanda",
+    apellidos: "Gómez Pérez",
+    correo: "luisa@email.com",
+    telefono: "3001234567",
+    rol: "Administrador",
+    estado: "Activo",
     ciudad: "Bogotá",
     direccion: "Calle 123 #45-67",
+
     eps: "Sanitas",
     sangre: "O+",
     alergias: "Ninguna",
-    usuario: "laura.admin",
-    contraseña: "admin1234"
+    usuario: "luisa.admin",
+    contrasena: "Admin123*",
   });
 
-  //  manejar cambios
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const guardarPerfil = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    alert("Perfil guardado exitosamente");
-
-    navigate("/inicio");
+    console.log("Datos guardados:", formData);
   };
 
   return (
-    <div className="formulario-perfil">
-      <h2 className="titulo-form">Perfil del Usuario</h2>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#f4f6fb",
+        padding: "40px",
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "1300px",
+          background: "#fff",
+          borderRadius: "20px",
+          boxShadow: "0 25px 60px rgba(0,0,0,0.08)",
+          display: "flex",
+          overflow: "hidden",
+        }}
+      >
+    
+        <div
+          style={{
+            width: "340px",
+            background: "linear-gradient(135deg, #4a6cf7, #6c63ff)",
+            padding: "40px 25px",
+            color: "white",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <img
+            src="https://i.pravatar.cc/300?img=12"
+            alt="perfil"
+            style={{
+              width: "150px",
+              height: "150px",
+              borderRadius: "50%",
+              objectFit: "cover",
+              border: "5px solid rgba(255,255,255,0.3)",
+              marginBottom: "20px",
+            }}
+          />
 
-      <form className="form-grid" onSubmit={guardarPerfil}>
+          <h2 style={{ margin: 0, textAlign: "center" }}>
+            {formData.nombres} {formData.apellidos}
+          </h2>
 
+          <p style={{ marginTop: "8px", opacity: 0.9 }}>
+            {formData.correo}
+          </p>
+        </div>
 
-        <div className="form-seccion">
-          <h3>Datos Personales</h3>
+     
+        <div
+          style={{
+            flex: 1,
+            padding: "50px",
+            overflowY: "auto",
+            maxHeight: "90vh",
+          }}
+        >
+          <form onSubmit={handleSubmit}>
+           
+            <div className="form-seccion">
+              <h3>Información General</h3>
 
-          <div className="grid">
-            <div className="campo">
-              <label>Nombres</label>
-              <input
-                name="nombres"
-                value={formData.nombres}
-                onChange={handleChange}
-                type="text"
-              />
+              <div className="grid">
+                <div className="campo">
+                  <label>Nombres</label>
+                  <input name="nombres" value={formData.nombres} onChange={handleChange} />
+                </div>
+
+                <div className="campo">
+                  <label>Apellidos</label>
+                  <input name="apellidos" value={formData.apellidos} onChange={handleChange} />
+                </div>
+
+                <div className="campo">
+                  <label>Correo</label>
+                  <input name="correo" value={formData.correo} onChange={handleChange} type="email" />
+                </div>
+
+                <div className="campo">
+                  <label>Teléfono</label>
+                  <input name="telefono" value={formData.telefono} onChange={handleChange} />
+                </div>
+
+                <div className="campo">
+                  <label>Rol</label>
+                  <input name="rol" value={formData.rol} onChange={handleChange} />
+                </div>
+
+                <div className="campo">
+                  <label>Estado</label>
+                  <input name="estado" value={formData.estado} onChange={handleChange} />
+                </div>
+
+                <div className="campo">
+                  <label>Ciudad</label>
+                  <input name="ciudad" value={formData.ciudad} onChange={handleChange} />
+                </div>
+
+                <div className="campo">
+                  <label>Dirección</label>
+                  <input name="direccion" value={formData.direccion} onChange={handleChange} />
+                </div>
+              </div>
             </div>
 
-            <div className="campo">
-              <label>Apellidos</label>
-              <input
-                name="apellidos"
-                value={formData.apellidos}
-                onChange={handleChange}
-                type="text"
-              />
+            
+            <div className="form-seccion">
+              <h3>Información Médica</h3>
+
+              <div className="grid">
+                <div className="campo">
+                  <label>EPS</label>
+                  <input name="eps" value={formData.eps} onChange={handleChange} />
+                </div>
+
+                <div className="campo">
+                  <label>Tipo de Sangre</label>
+                  <select name="sangre" value={formData.sangre} onChange={handleChange}>
+                    <option value="">Seleccione</option>
+                    <option>O+</option>
+                    <option>O-</option>
+                    <option>A+</option>
+                    <option>A-</option>
+                    <option>B+</option>
+                    <option>B-</option>
+                    <option>AB+</option>
+                    <option>AB-</option>
+                  </select>
+                </div>
+
+                <div className="campo">
+                  <label>Alergias</label>
+                  <input name="alergias" value={formData.alergias} onChange={handleChange} />
+                </div>
+              </div>
             </div>
 
-            <div className="campo">
-              <label>Tipo de Documento</label>
-              <select
-                name="tipoDocumento"
-                value={formData.tipoDocumento}
-                onChange={handleChange}
+           
+            <div className="form-seccion">
+              <h3>Cuenta del Usuario</h3>
+
+              <div className="grid">
+                <div className="campo">
+                  <label>Usuario</label>
+                  <input
+                    name="usuario"
+                    value={formData.usuario}
+                    onChange={handleChange}
+                    autoComplete="username"
+                  />
+                </div>
+
+                <div className="campo">
+                  <label>Contraseña</label>
+                  <input
+                    name="contrasena"
+                    value={formData.contrasena}
+                    onChange={handleChange}
+                    type="password"
+                    autoComplete="current-password"
+                  />
+                </div>
+              </div>
+            </div>
+
+        
+            <div
+              style={{
+                marginTop: "40px",
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: "15px",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => navigate("/inicio")}
+                style={{
+                  padding: "10px 20px",
+                  borderRadius: "8px",
+                  border: "none",
+                  background: "#f1f3f9",
+                  cursor: "pointer",
+                }}
               >
-                <option>Seleccione</option>
-                <option>Cédula</option>
-                <option>Tarjeta de Identidad</option>
-                <option>Pasaporte</option>
-              </select>
-            </div>
+                Cancelar
+              </button>
 
-            <div className="campo">
-              <label>Número Documento</label>
-              <input
-                name="documento"
-                value={formData.documento}
-                onChange={handleChange}
-                type="text"
-              />
-            </div>
-
-            <div className="campo">
-              <label>Fecha de Nacimiento</label>
-              <input
-                name="nacimiento"
-                value={formData.nacimiento}
-                onChange={handleChange}
-                type="date"
-              />
-            </div>
-
-            <div className="campo">
-              <label>Género</label>
-              <select
-                name="genero"
-                value={formData.genero}
-                onChange={handleChange}
+              <button
+                type="submit"
+                style={{
+                  padding: "10px 25px",
+                  borderRadius: "8px",
+                  border: "none",
+                  background: "#4a6cf7",
+                  color: "white",
+                  cursor: "pointer",
+                  fontWeight: "500",
+                }}
               >
-                <option>Seleccione</option>
-                <option>Masculino</option>
-                <option>Femenino</option>
-                <option>Otro</option>
-              </select>
+                Guardar
+              </button>
             </div>
-          </div>
+          </form>
         </div>
-
-
-        <div className="form-seccion">
-          <h3>Contacto</h3>
-
-          <div className="grid">
-            <div className="campo">
-              <label>Correo</label>
-              <input
-                name="correo"
-                value={formData.correo}
-                onChange={handleChange}
-                type="email"
-              />
-            </div>
-
-            <div className="campo">
-              <label>Teléfono</label>
-              <input
-                name="telefono"
-                value={formData.telefono}
-                onChange={handleChange}
-                type="text"
-              />
-            </div>
-
-            <div className="campo">
-              <label>Ciudad</label>
-              <input
-                name="ciudad"
-                value={formData.ciudad}
-                onChange={handleChange}
-                type="text"
-              />
-            </div>
-
-            <div className="campo">
-              <label>Dirección</label>
-              <input
-                name="direccion"
-                value={formData.direccion}
-                onChange={handleChange}
-                type="text"
-              />
-            </div>
-          </div>
-        </div>
-
-
-        <div className="form-seccion">
-          <h3>Información Médica</h3>
-
-          <div className="grid">
-            <div className="campo">
-              <label>EPS</label>
-              <input
-                name="eps"
-                value={formData.eps}
-                onChange={handleChange}
-                type="text"
-              />
-            </div>
-
-            <div className="campo">
-              <label>Tipo de Sangre</label>
-              <select
-                name="sangre"
-                value={formData.sangre}
-                onChange={handleChange}
-              >
-                <option>Seleccione</option>
-                <option>O+</option>
-                <option>O-</option>
-                <option>A+</option>
-                <option>A-</option>
-                <option>B+</option>
-                <option>B-</option>
-                <option>AB+</option>
-                <option>AB-</option>
-              </select>
-            </div>
-
-            <div className="campo">
-              <label>Alergias</label>
-              <input
-                name="alergias"
-                value={formData.alergias}
-                onChange={handleChange}
-                type="text"
-              />
-            </div>
-          </div>
-        </div>
-
-
-        <div className="form-seccion">
-          <h3>Cuenta del Usuario</h3>
-
-          <div className="grid">
-            <div className="campo">
-              <label>Usuario</label>
-              <input
-                name="usuario"
-                value={formData.usuario}
-                onChange={handleChange}
-                type="text"
-              />
-            </div>
-
-            <div className="campo">
-              <label>Contraseña</label>
-              <input
-                name="contraseña"
-                value={formData.contraseña}
-                onChange={handleChange}
-                type="password"
-              />
-            </div>
-          </div>
-        </div>
-
-
-        <div className="botones">
-          <button
-            type="button"
-            className="btn-cancelar"
-            onClick={() => navigate("/inicio")}
-          >
-            Cancelar
-          </button>
-
-          <button type="submit" className="btn-crear">
-            Guardar
-          </button>
-        </div>
-
-      </form>
+      </div>
     </div>
   );
 }

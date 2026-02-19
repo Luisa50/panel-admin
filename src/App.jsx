@@ -13,6 +13,9 @@ import InformeUsuarios from "./paginas/InformeUsuarios";
 import InformePsicologos from "./paginas/InformePsicologos";
 import InformeGeneral from "./paginas/InformeGeneral";
 
+
+import Notificaciones from "./paginas/Notificaciones";
+
 export default function App() {
   return (
     <Routes>
@@ -28,11 +31,13 @@ export default function App() {
         <Route path="/informes/psicologos" element={<InformePsicologos />} />
         <Route path="/informes/general" element={<InformeGeneral />} />
 
-
         <Route path="/reportes" element={<Reportes />} />
         <Route path="/configuracion" element={<Configuracion />} />
         <Route path="/fichas" element={<Fichas />} />
         <Route path="/perfil" element={<PerfilAdministrador />} />
+
+      
+        <Route path="/notificaciones" element={<Notificaciones />} />
       </Route>
     </Routes>
   );

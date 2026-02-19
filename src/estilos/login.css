@@ -1,49 +1,98 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+}
 
+/* Fondo */
 .login-container {
   height: 100vh;
+  background: linear-gradient(135deg, #ffffff,);
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: 580px;
-
 }
 
-.login-box {
-  width: 320px;
+/* Card */
+.login-card {
+  width: 380px;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
   background: white;
-  padding: 25px 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
 }
 
-.login-box h2 {
+/* Imagen superior */
+.login-image {
+  height: 230px;
+}
+
+.login-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Formulario */
+.login-form {
+  background: #ced5f1;
+  padding: 40px 30px;
   text-align: center;
-  color: #0d6efd;
-  margin-bottom: 10px;
+  color: #ffffff; /* texto general negro */
 }
 
-
-.login-box input,
-.login-box select {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+.login-form h2 {
+  color: #ffffff; /* título negro */
+  letter-spacing: 2px;
+  margin-bottom: 30px;
+  font-weight: 500;
 }
 
-.login-box button {
-  margin-top: 10px;
-  padding: 10px;
+/* Inputs y select minimalistas */
+.login-input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 18px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.2); /* borde negro suave */
+  background: rgba(255, 255, 255, 0.8); /* fondo claro para contraste con negro */
+  color: #000; /* texto negro */
+  font-size: 14px;
+  outline: none;
+  transition: 0.3s;
+}
+
+.login-input::placeholder {
+  color: rgba(0, 0, 0, 0.5); /* placeholder negro semi-transparente */
+}
+
+.login-input:focus {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #000; /* borde más visible al enfocar */
+}
+
+/* Opciones */
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #000; /* texto negro */
+  margin-bottom: 25px;
+}
+
+/* Botón */
+.login-button {
+  width: 140px;
+  padding: 12px;
   border: none;
-  background: #0d6efd;
-  color: white;
+  border-radius: 25px;
+  background: #d7dcf7;
+  color: #000; /* texto negro */
+  font-weight: bold;
   cursor: pointer;
-  border-radius: 6px;
-  font-size: 15px;
+  transition: 0.3s;
 }
 
-.login-box button:hover {
-  background: #0b56d1;
+.login-button:hover {
+  background: white;
 }

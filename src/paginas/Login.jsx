@@ -1,56 +1,69 @@
-import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import "../estilos/login.css";
 
-
 export default function Login() {
-  const [role, setRole] = useState("");
-  const [user, setUser] = useState("");
-  const [password, setPassword] = useState("");
-
   const navigate = useNavigate();
+  const [role, setRole] = useState("admin");
+  const [usuario, setUsuario] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleLogin = (e) => {
     e.preventDefault();
-
-    if (role === "Admin" && user && password) {
-      localStorage.setItem("logged", "true");
-      localStorage.setItem("role", role);
-      localStorage.setItem("user", user);
-
-      navigate("/inicio");
-    } else {
-      alert("Completa todos los campos.");
-    }
+    console.log("Rol seleccionado:", role);
+    navigate("/inicio");
   };
 
   return (
     <div className="login-container">
-      <form className="login-box" onSubmit={handleLogin}>
-        <h2>Inicio Admin</h2>
+      <div className="login-card">
+        <div className="login-image">
+          <img src="/opcion1.png" alt="Login" />
+        </div>
 
-        <label>Rol *</label>
-        <select value={role} onChange={(e) => setRole(e.target.value)}>
-          <option value="">Seleccione</option>
-          <option value="Admin">Administrador</option>
-        </select>
+        <div className="login-form">
+          <h2>ADMIN LOGIN</h2>
 
-        <label>Usuario *</label>
-        <input
-          type="text"
-          value={user}
-          onChange={(e) => setUser(e.target.value)}
-        />
+          <form onSubmit={handleLogin} autoComplete="off">
+            <input type="text" style={{ display: "none" }} />
+            <input type="password" style={{ display: "none" }} />
 
-        <label>Contraseña *</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+            <select
+              className="login-input"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <option value="admin">Admin</option>
+            </select>
 
-        <button type="submit">Entrar</button>
-      </form>
+            <input
+              type="text"
+              name="fake-user"
+              autoComplete="off"
+              placeholder="Username"
+              className="login-input"
+              value={usuario}
+              onChange={(e) => setUsuario(e.target.value)}
+              required
+            />
+
+            <input
+              type="password"
+              name="fake-password"
+              autoComplete="new-password"
+              placeholder="Password"
+              className="login-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+
+            <button type="submit" className="login-button">
+              Ingresar
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

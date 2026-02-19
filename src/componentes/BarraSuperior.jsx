@@ -1,29 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, User, LogOut } from "lucide-react";
+import { Bell } from "lucide-react";
+import { AppContext } from "../context/AppContext";
 
 export default function BarraSuperior() {
   const navigate = useNavigate();
+  const { notificaciones, marcarComoLeida } = useContext(AppContext);
+
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [notifAbiertas, setNotifAbiertas] = useState(false);
+
+  const notifRef = useRef(null);
 
   const cerrarSesion = () => {
     localStorage.removeItem("logged");
     navigate("/");
   };
 
-  const notificaciones = [
-    { id: 1, texto: "Nuevo usuario registrado", fecha: "Hoy, 10:00 AM" },
-    { id: 2, texto: "Reporte semanal generado", fecha: "Hoy, 09:30 AM" },
-    { id: 3, texto: "Alerta de sistema: actualización pendiente", fecha: "Ayer, 05:15 PM" },
-  ];
+  const noLeidas = notificaciones.filter(n => !n.leida).length;
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (notifRef.current && !notifRef.current.contains(e.target)) {
+        setNotifAbiertas(false);
+      }
+    }
+    document.addEventListener("", handleClickOutside);
+    return () =>
+      document.removeEventListener("", handleClickOutside);
+  }, []);
 
   return (
-    <div className="barra-superior" style={{ position: "relative", display: "flex", alignItems: "center", gap: "1rem", padding: "0.5rem 1rem", backgroundColor: "#fff", borderBottom: "1px solid #ccc" }}>
+    <div
+      style={{
+        position: "relative",
+        display: "flex",
+        justifyContent: "flex-end",
+        alignItems: "center",
+        gap: "1rem",
+        padding: "0.5rem 1.5rem",
+        backgroundColor: "#fff",
+        borderBottom: "1px solid #f0f0f0",
+      }}
+    >
 
-      {/* Icono de notificaciones */}
-      <div 
-        className="notificaciones-icono"
+      <div
+        ref={notifRef}
         style={{ position: "relative", cursor: "pointer" }}
         onClick={() => {
           setNotifAbiertas(!notifAbiertas);
@@ -31,107 +53,185 @@ export default function BarraSuperior() {
         }}
       >
         <Bell size={20} />
-        <span className="burbuja" style={{
-          position: "absolute",
-          top: "-5px",
-          right: "-5px",
-          backgroundColor: "red",
-          color: "white",
-          borderRadius: "50%",
-          padding: "2px 6px",
-          fontSize: "10px"
-        }}>
-          {notificaciones.length}
-        </span>
-      </div>
 
-      {/* Icono de usuario */}
-      <div
-        className="avatar-contenedor"
-        style={{ cursor: "pointer" }}
-        onClick={() => {
-          setMenuAbierto(!menuAbierto);
-          setNotifAbiertas(false);
-        }}
-      >
-        <div className="avatar-icono" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <User size={20} />
-          <span className="nombre">Admin</span>
-        </div>
-      </div>
-
-      {/* Modal de notificaciones */}
-      {notifAbiertas && (
-        <div className="modal-notificaciones" style={{
-          position: "absolute",
-          top: "40px",
-          right: "50px",
-          width: "300px",
-          backgroundColor: "#fff",
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
-          zIndex: 1000,
-          overflow: "hidden"
-        }}>
-          {/* Icono de cierre */}
-          <div 
+        {noLeidas > 0 && (
+          <span
             style={{
               position: "absolute",
-              top: "5px",
-              right: "10px",
-              cursor: "pointer",
+              top: "-6px",
+              right: "-6px",
+              backgroundColor: "#ff4d4f",
+              color: "white",
+              borderRadius: "50%",
+              padding: "2px 6px",
+              fontSize: "10px",
               fontWeight: "bold",
-              fontSize: "16px",
-              color: "#555"
             }}
-            onClick={() => setNotifAbiertas(false)}
           >
-            ✖
-          </div>
+            {noLeidas}
+          </span>
+        )}
 
-          <div style={{ padding: "10px 15px", borderBottom: "1px solid #eee", fontWeight: "bold" }}>
-            Notificaciones
-          </div>
+        {notifAbiertas && (
+          <div
+            style={{
+              position: "absolute",
+              top: "35px",
+              right: "0",
+              width: "320px",
+              background: "#fff",
+              borderRadius: "14px",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
+              padding: "15px",
+              zIndex: 1000,
+              cursor: "default",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h4 style={{ marginBottom: "12px" }}>Notificaciones</h4>
 
-          <div style={{ maxHeight: "250px", overflowY: "auto" }}>
-            {notificaciones.map(n => (
-              <div key={n.id} style={{ padding: "10px 15px", borderBottom: "1px solid #f1f1f1" }}>
-                <div>{n.texto}</div>
-                <div style={{ fontSize: "12px", color: "#777" }}>{n.fecha}</div>
-              </div>
-            ))}
             {notificaciones.length === 0 && (
-              <div style={{ padding: "10px 15px", color: "#777" }}>No hay notificaciones</div>
+              <p style={{ fontSize: "14px", color: "#777" }}>
+                No tienes notificaciones
+              </p>
             )}
-          </div>
-        </div>
-      )}
 
-      {menuAbierto && (
-        <div className="menu-usuario" style={{
-          position: "absolute",
-          top: "40px",
-          right: "10px",
-          width: "200px",
-          backgroundColor: "#fff",
-          border: "1px solid #ccc",
-          borderRadius: "8px",
-          boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
-          zIndex: 1000
-        }}>
-          <div className="menu-user-info" style={{ padding: "10px 15px", borderBottom: "1px solid #eee" }}>
-            <span className="nombre">Administrador</span><br/>
-            <span className="correo" style={{ fontSize: "12px", color: "#777" }}>admin@sistema.com</span>
+            <div style={{ maxHeight: "260px", overflowY: "auto" }}>
+              {notificaciones.slice(0, 5).map((n) => (
+                <div
+                  key={n.id}
+                  onClick={() => marcarComoLeida(n.id)}
+                  style={{
+                    padding: "10px",
+                    borderRadius: "10px",
+                    marginBottom: "8px",
+                    background: n.leida ? "#fff" : "#eef2ff",
+                    transition: "0.2s",
+                    cursor: "pointer",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: n.leida ? "normal" : "600",
+                    }}
+                  >
+                    {n.texto}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "12px",
+                      color: "#888",
+                      marginTop: "4px",
+                    }}
+                  >
+                    {n.fecha}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div
+              style={{
+                marginTop: "10px",
+                borderTop: "1px solid #eee",
+                paddingTop: "10px",
+                textAlign: "center",
+              }}
+            >
+              <button
+                onClick={() => {
+                  setNotifAbiertas(false);
+                  navigate("/notificaciones");
+                }}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "#4a6cf7",
+                  cursor: "pointer",
+                  fontWeight: "500",
+                }}
+              >
+                Ver todas
+              </button>
+            </div>
           </div>
-          <div className="item-menu-usuario" style={{ padding: "10px 15px", cursor: "pointer" }} onClick={() => { setMenuAbierto(false); navigate("/perfil"); }}>
-            Perfil
+        )}
+      </div>
+
+      <div style={{ position: "relative" }}>
+        <img
+          src="https://i.pravatar.cc/150?img=12"
+          alt="Usuario"
+          onClick={() => {
+            setMenuAbierto(!menuAbierto);
+            setNotifAbiertas(false);
+          }}
+          style={{
+            width: "36px",
+            height: "36px",
+            borderRadius: "50%",
+            objectFit: "cover",
+            cursor: "pointer",
+          }}
+        />
+
+        {menuAbierto && (
+          <div
+            style={{
+              position: "absolute",
+              top: "50px",
+              right: "0",
+              width: "220px",
+              background: "#fff",
+              borderRadius: "12px",
+              boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
+              padding: "8px 0",
+              zIndex: 1000,
+            }}
+          >
+            <div
+              style={{
+                padding: "12px 16px",
+                borderBottom: "1px solid #f3f3f3",
+              }}
+            >
+              <div style={{ fontWeight: "600", fontSize: "14px" }}>
+                Administrador
+              </div>
+              <div style={{ fontSize: "12px", color: "#888" }}>
+                admin@sistema.com
+              </div>
+            </div>
+
+            <div
+              style={{
+                padding: "10px 16px",
+                cursor: "pointer",
+                fontSize: "14px",
+              }}
+              onClick={() => {
+                setMenuAbierto(false);
+                navigate("/perfil");
+              }}
+            >
+              Perfil
+            </div>
+
+            <div
+              style={{
+                padding: "10px 16px",
+                cursor: "pointer",
+                fontSize: "14px",
+                color: "#e53935",
+              }}
+              onClick={cerrarSesion}
+            >
+              Cerrar sesión
+            </div>
           </div>
-          <div className="item-menu-usuario item-salir" style={{ padding: "10px 15px", cursor: "pointer", borderTop: "1px solid #eee" }} onClick={cerrarSesion}>
-            Cerrar sesión
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
