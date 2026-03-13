@@ -3,8 +3,7 @@ import {
   PieChart,
   Pie,
   Cell,
-  Tooltip,
-  ResponsiveContainer
+  Tooltip
 } from "recharts";
 import "../estilos/informes.css";
 
@@ -48,8 +47,6 @@ export default function InformeGeneral() {
     return <p style={{ padding: "40px" }}>Generando informe general...</p>;
   }
 
-
-
   const pieCitas = estadosCitas.map(item => ({
     name: item.estadoCita,
     value: item.total
@@ -72,22 +69,23 @@ export default function InformeGeneral() {
     <div className="pagina-informe">
       <div className="hoja-a4">
 
+        
         <header className="encabezado">
           <h2>INFORME GENERAL DEL SISTEMA</h2>
           <p>HealthyMind · Fecha: {fechaActual}</p>
         </header>
 
+      
         <section className="bloque">
           <h4>Resumen Ejecutivo</h4>
           <p>
-            El sistema HealthyMind cuenta con{" "}
-            <strong>{totalUsuarios}</strong> usuarios registrados y{" "}
+            El sistema cuenta con <strong>{totalUsuarios}</strong> usuarios registrados y{" "}
             <strong>{psicologosActivos}</strong> psicólogos activos.
-            El sistema presenta un comportamiento estable en la gestión
-            de citas psicológicas.
+            Se evidencia un comportamiento estable en la gestión de citas.
           </p>
         </section>
 
+       
         <section className="kpis">
           <div className="kpi">
             <h3>{totalUsuarios}</h3>
@@ -103,42 +101,40 @@ export default function InformeGeneral() {
           </div>
         </section>
 
+      
         <section className="bloque">
-          <h4>Estado General de las Citas</h4>
+          <h4>Distribución de Citas</h4>
 
           {totalCitas === 0 ? (
             <p style={{ textAlign: "center", marginTop: 30 }}>
-              No hay datos de citas disponibles
+              No hay datos disponibles
             </p>
           ) : (
-            <div style={{ width: "100%", height: 300 }}>
-              <ResponsiveContainer>
-                <PieChart>
-                  <Pie
-                    data={pieCitas}
-                    dataKey="value"
-                    nameKey="name"
-                    outerRadius={100}
-                    label
-                  >
-                    {pieCitas.map((_, i) => (
-                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <PieChart width={400} height={300}>
+                <Pie
+                  data={pieCitas}
+                  dataKey="value"
+                  nameKey="name"
+                  outerRadius={100}
+                  label
+                >
+                  {pieCitas.map((_, i) => (
+                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
             </div>
           )}
         </section>
 
+   
         <section className="bloque">
-          <h4>Conclusión General</h4>
+          <h4>Conclusión</h4>
           <p>
-            HealthyMind se encuentra en un estado operativo adecuado.
-            Los datos reflejan una correcta distribución de las citas,
-            permitiendo identificar oportunidades de mejora en el
-            seguimiento y asistencia.
+            El sistema presenta estabilidad operativa. La distribución de citas
+            permite identificar oportunidades de mejora en la atención y seguimiento.
           </p>
         </section>
 
@@ -146,9 +142,14 @@ export default function InformeGeneral() {
           <p>Documento generado automáticamente por HealthyMind</p>
         </footer>
 
+        
         <div className="acciones no-print">
-          <button onClick={() => window.print()}><i class="bi bi-arrow-bar-down"></i></button>
-          <button onClick={() => window.history.back()}><i class="bi bi-caret-left"></i></button>
+          <button onClick={() => window.print()}>
+            <i className="bi bi-printer"></i>
+          </button>
+          <button onClick={() => window.history.back()}>
+            <i className="bi bi-arrow-left"></i>
+          </button>
         </div>
 
       </div>

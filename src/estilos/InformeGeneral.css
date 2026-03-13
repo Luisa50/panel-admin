@@ -1,0 +1,83 @@
+.informe-container {
+  padding: 30px;
+  background: #f5f7fa;
+}
+
+
+.informe-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.informe-header h2 {
+  font-weight: 600;
+}
+
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.card-kpi {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card-kpi h3 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.card-kpi p {
+  margin: 0;
+  color: #777;
+}
+
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card h4 {
+  margin-bottom: 10px;
+}
+
+
+.grafica {
+  width: 100%;
+  height: 300px;
+}
+
+
+.empty {
+  text-align: center;
+  color: #999;
+}
+
+
+.informe-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.acciones button {
+  margin-left: 10px;
+}
+
+
+.loading {
+  padding: 40px;
+  text-align: center;
+}
