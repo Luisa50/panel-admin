@@ -12,6 +12,13 @@ import Informes from "./paginas/Informes";
 import InformeUsuarios from "./paginas/InformeUsuarios";
 import InformePsicologos from "./paginas/InformePsicologos";
 import InformeGeneral from "./paginas/InformeGeneral";
+import Regionales from "./paginas/Regionales";
+import Area from "./paginas/Area";
+import CentrosNodos from "./paginas/CentrosNodos";
+import Ciudades from "./paginas/Ciudades";
+import NivelFormacion from "./paginas/NivelFormacion";
+import ProgramaFormacion from "./paginas/ProgramaFormacion";
+
 
 
 import Notificaciones from "./paginas/Notificaciones";
@@ -36,9 +43,17 @@ export default function App() {
         <Route path="/configuracion" element={<Configuracion />} />
         <Route path="/fichas" element={<Fichas />} />
         <Route path="/perfil" element={<PerfilAdministrador />} />
+        <Route path="/regionales" element={<Regionales />} />
+        <Route path="/area" element={<Area />} />
+        <Route path="/centros" element={<CentrosNodos />} />
+        <Route path="/ciudades" element={<Ciudades />} />
+        <Route path="/niveles" element={<NivelFormacion />} />
+        <Route path="/programas" element={<ProgramaFormacion />} />  
+        
 
       
         <Route path="/notificaciones" element={<Notificaciones />} />
+       
       </Route>
 
       <Route path="*" element={<NotFound />} />

@@ -1,0 +1,63 @@
+.gestion-container {
+  padding: 30px;
+}
+
+.gestion-titulo {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.gestion-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.gestion-tabla th,
+.gestion-tabla td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+.gestion-tabla th {
+  background: #f4f6f8;
+}
+
+
+.tag {
+  background: #e3f2fd;
+  color: #1976d2;
+  padding: 5px 10px;
+  margin: 2px;
+  border-radius: 8px;
+  display: inline-block;
+  font-size: 12px;
+}
+
+
+.alerta {
+  color: red;
+  font-weight: bold;
+}
+
+
+.btn-activo {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-inactivo {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
