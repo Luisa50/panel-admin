@@ -102,3 +102,36 @@
 .layout-overlay-boton:hover {
   background: #3d5ce0;
 }
+.layout-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 9999;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 🔥 IMPORTANTE: solo bloquear cuando realmente se use */
+.layout-overlay.hidden {
+  display: none;
+}
+.layout-contenedor {
+  display: flex;
+}
+
+/* 🔥 CONTENIDO PRINCIPAL */
+.layout-derecha {
+  margin-left: 230px; /* 🔥 MISMO ANCHO SIDEBAR */
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar.colapsada ~ .layout-derecha {
+  margin-left: 70px;
+}

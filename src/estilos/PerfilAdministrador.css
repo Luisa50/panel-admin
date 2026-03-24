@@ -1,32 +1,28 @@
 .perfil-container {
-  background: #f4f6fb;
+  background: #f5f6f8;
   min-height: 100vh;
   padding: 40px;
   display: flex;
   justify-content: center;
-  align-items: center;
 }
 
 .perfil-card {
   width: 100%;
-  max-width: 1050px;
+  max-width: 1200px;
   display: flex;
+  background: white;
+  border-radius: 16px;
   overflow: hidden;
-  background: transparent;
-  box-shadow: none;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
 }
 
-
+/* LADO IZQUIERDO */
 .perfil-left {
   width: 260px;
-  background: linear-gradient(135deg, #4a6cf7, #6c63ff);
+  background: #1f2937;
   color: white;
   padding: 30px 20px;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
 .perfil-img {
@@ -34,45 +30,66 @@
   height: 110px;
   border-radius: 50%;
   object-fit: cover;
-  margin-bottom: 18px;
-  border: 4px solid rgba(255,255,255,0.3);
+  margin-bottom: 15px;
+  border: 3px solid #374151;
 }
 
 .perfil-left h2 {
-  margin-bottom: 6px;
-  font-weight: 600;
   font-size: 16px;
+  margin-bottom: 5px;
 }
 
 .perfil-left p {
-  opacity: 0.85;
   font-size: 13px;
+  opacity: 0.8;
 }
 
+.perfil-badges {
+  margin-top: 10px;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+}
+
+.badge.activo {
+  background: #10b981;
+  color: white;
+}
+
+.perfil-info-extra {
+  margin-top: 20px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+/* LADO DERECHO */
 .perfil-right {
   flex: 1;
-  padding: 30px;
-  max-height: 85vh;
-  overflow-y: auto;
+  padding: 35px;
 }
 
+/* SECCIONES */
 .form-seccion {
   margin-bottom: 30px;
 }
 
 .form-seccion h3 {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 18px;
-  color: #333;
+  font-size: 14px;
+  margin-bottom: 15px;
+  color: #111827;
 }
 
+/* GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 18px;
+  gap: 15px;
 }
 
+/* CAMPOS */
 .campo {
   display: flex;
   flex-direction: column;
@@ -80,53 +97,50 @@
 
 .campo label {
   font-size: 12px;
-  margin-bottom: 6px;
-  color: #555;
+  margin-bottom: 5px;
+  color: #6b7280;
 }
 
 .campo input,
 .campo select {
-  padding: 9px 11px;
+  padding: 9px;
   border-radius: 8px;
-  border: 1px solid #e1e5ee;
+  border: 1px solid #e5e7eb;
   font-size: 13px;
-  transition: 0.2s ease;
+  background: #f9fafb;
 }
 
 .campo input:focus,
 .campo select:focus {
   outline: none;
-  border-color: #4a6cf7;
-  box-shadow: 0 0 0 2px rgba(74,108,247,0.12);
+  border-color: #9ca3af;
 }
 
+/* BOTONES */
 .botones {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 25px;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 .btn-cancelar {
-  background: #eef1f7;
+  background: #e5e7eb;
   border: none;
   padding: 8px 18px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
 }
 
 .btn-guardar {
-  background: #4a6cf7;
+  background: #111827;
   color: white;
   border: none;
-  padding: 8px 22px;
+  padding: 8px 20px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
-  transition: 0.2s;
 }
 
 .btn-guardar:hover {
-  background: #3b59e0;
+  background: #000;
 }

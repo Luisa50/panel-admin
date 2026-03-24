@@ -6,11 +6,17 @@
   flex-direction: column;
   gap: 20px;
   transition: width 0.3s ease;
-  overflow-y: auto;
+
+  overflow-y: auto; /* 🔥 scroll activo */
   overflow-x: hidden;
+
   scroll-behavior: smooth;
   scrollbar-width: none;
+
   box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+
+  position: relative; /* 🔥 evita bloqueos */
+  z-index: 100; /* 🔥 evita que otros div tapen */
 }
 
 .sidebar::-webkit-scrollbar {
@@ -117,6 +123,8 @@
 .menu-seccion {
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 1; /* 🔥 evita capas encima */
 }
 
 .menu-titulo {
@@ -142,18 +150,16 @@
   color: white;
 }
 
+/* 🔥🔥🔥 FIX REAL AQUÍ 🔥🔥🔥 */
 .submenu {
   padding-left: 28px;
-  display: flex;
+  display: none; /* 🔥 NO EXISTE cuando está cerrado */
   flex-direction: column;
   gap: 5px;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
 }
 
 .submenu.abierto {
-  max-height: 1000px;
+  display: flex; /* 🔥 SOLO aparece cuando está abierto */
 }
 
 .flecha {
@@ -176,4 +182,12 @@
   color: #9ca3af;
   margin: 10px 0 5px 10px;
   letter-spacing: 1px;
+}
+.sidebar {
+  position: fixed;  
+  top: 0;
+  left: 0;
+  height: 100vh;
+
+  z-index: 9999;    
 }

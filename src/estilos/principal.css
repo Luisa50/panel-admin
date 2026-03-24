@@ -998,3 +998,180 @@ body, html {
 .bloque-dashboard {
   margin-bottom: 30px;
 }
+
+/* Barra superior: logo + navegación + acciones */
+.barra-superior-completa {
+  justify-content: space-between;
+  gap: 12px;
+}
+.barra-logo {
+  font-weight: 600;
+  font-size: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+  color: #1e293b;
+}
+.barra-nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: center;
+  font-size: 14px;
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+  color: #334155;
+}
+.barra-nav-item {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.barra-acciones {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.barra-superior-completa .avatar-contenedor {
+  position: relative;
+}
+.menu-header {
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #eaeaea;
+}
+.menu-header small {
+  color: #64748b;
+  font-size: 12px;
+}
+.menu-usuario .menu-item.salir {
+  color: #d93025;
+}
+.avatar-img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.25s ease;
+}
+.avatar-img:hover {
+  transform: scale(1.05);
+  border: 2px solid #2563eb;
+}
+
+/* Modo oscuro (ThemeContext / body.dark-mode) */
+.dark-mode {
+  background: #111827 !important;
+  color: white;
+}
+.dark-mode body,
+.dark-mode html,
+.dark-mode .layout,
+.dark-mode .layout-contenedor,
+.dark-mode .layout-derecha,
+.dark-mode .layout-contenido,
+.dark-mode .contenido {
+  background: #111827 !important;
+  color: white;
+}
+.dark-mode .tarjeta-resumen,
+.dark-mode .card,
+.dark-mode .solicitud-item,
+.dark-mode .formulario-perfil {
+  background: #1f2937 !important;
+  color: white;
+}
+.dark-mode .barra-superior {
+  background: #020617 !important;
+  color: white !important;
+  border-bottom: 1px solid #374151;
+}
+.dark-mode .barra-logo,
+.dark-mode .barra-nav-item {
+  color: #fff !important;
+}
+.dark-mode .menu-usuario,
+.dark-mode .menu-notificaciones {
+  background: #1f2937 !important;
+  color: white;
+}
+.dark-mode input,
+.dark-mode select,
+.dark-mode .form-control,
+.dark-mode .form-select {
+  background: #374151 !important;
+  color: white !important;
+  border: 1px solid #555;
+}
+.dark-mode table {
+  background: #020617 !important;
+  color: #fff !important;
+}
+.dark-mode th {
+  background: #111827 !important;
+  color: #fff !important;
+}
+.dark-mode td {
+  background: #020617 !important;
+  color: #e5e7eb !important;
+}
+.dark-mode tr:hover td {
+  background: #1f2937 !important;
+  color: #fff !important;
+}
+.dark-mode .icono-notif {
+  color: white !important;
+}
+.dark-mode .tarjeta-resumen .titulo-tarjeta {
+  color: #e5e7eb !important;
+}
+.dark-mode .tarjeta-resumen .valor-tarjeta,
+.dark-mode .tarjeta-resumen p {
+  color: #60a5fa !important;
+}
+.dark-mode .dataTables_wrapper {
+  color: white !important;
+}
+.dark-mode .dataTables_wrapper input,
+.dark-mode .dataTables_wrapper select {
+  background: #1f2937 !important;
+  color: white !important;
+  border: 1px solid #374151;
+}
+.dark-mode .paginado button {
+  background: #2563eb;
+}
+.dark-mode .paginado span {
+  color: white;
+}
+body.dark-mode {
+  background: #020617 !important;
+  color: #fff !important;
+}
+body.dark-mode .layout,
+body.dark-mode .layout-contenedor,
+body.dark-mode .layout-derecha,
+body.dark-mode .layout-contenido,
+body.dark-mode .contenido {
+  background: #020617 !important;
+}
+body.dark-mode .barra-superior {
+  background: #020617 !important;
+  color: white !important;
+  border-bottom: 1px solid #1f2937 !important;
+}
+body.dark-mode .barra-superior * {
+  color: #fff !important;
+}
+body.dark-mode .tarjeta-resumen {
+  background: #111827 !important;
+}
+body.dark-mode .table {
+  --bs-table-bg: #020617;
+  --bs-table-color: #fff;
+}
+body.dark-mode .avatar-img:hover {
+  border: 2px solid #60a5fa;
+}

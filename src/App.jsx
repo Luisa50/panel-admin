@@ -1,4 +1,6 @@
 import { Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+
 import Login from "./paginas/Login";
 import Inicio from "./paginas/Inicio";
 import Usuarios from "./paginas/Usuarios";
@@ -18,13 +20,20 @@ import CentrosNodos from "./paginas/CentrosNodos";
 import Ciudades from "./paginas/Ciudades";
 import NivelFormacion from "./paginas/NivelFormacion";
 import ProgramaFormacion from "./paginas/ProgramaFormacion";
-
-
-
 import Notificaciones from "./paginas/Notificaciones";
 import NotFound from "./paginas/NotFound";
 
 export default function App() {
+
+ 
+  useEffect(() => {
+    const tema = localStorage.getItem("tema");
+
+    if (tema === "oscuro") {
+      document.body.classList.add("dark-mode");
+    }
+  }, []);
+
   return (
     <Routes>
       <Route path="/" element={<Login />} />
@@ -49,11 +58,8 @@ export default function App() {
         <Route path="/ciudades" element={<Ciudades />} />
         <Route path="/niveles" element={<NivelFormacion />} />
         <Route path="/programas" element={<ProgramaFormacion />} />  
-        
 
-      
         <Route path="/notificaciones" element={<Notificaciones />} />
-       
       </Route>
 
       <Route path="*" element={<NotFound />} />

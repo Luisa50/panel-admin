@@ -4,6 +4,8 @@ import { Modal, Button, Form, Badge } from "react-bootstrap";
 import { useApp } from "../context/AppContext";
 import "../estilos/reportes.css";
 
+const API = "https://healthymind10.runasp.net/api/Reporte";
+
 export default function Reportes() {
   const { reportes = [], setReportes } = useApp();
 
@@ -18,14 +20,46 @@ export default function Reportes() {
   const [nuevoEstado, setNuevoEstado] = useState("");
   const [notaInterna, setNotaInterna] = useState("");
 
-  const abrirDetalle = (reporte) => {
-    setReporteSeleccionado({
-      ...reporte,
-      historial: reporte.historial || []
-    });
-    setNuevoEstado(reporte.estado);
-    setNotaInterna("");
-    setMostrarModal(true);
+
+  useEffect(() => {
+    const obtenerReportes = async () => {
+      try {
+        setLoading(true);
+
+        const res = await fetch(API);
+        const data = await res.json();
+
+        setReportes(Array.isArray(data) ? data : []);
+
+      } catch (error) {
+        console.error("Error al obtener reportes:", error);
+        setReportes([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    obtenerReportes();
+  }, []);
+
+  
+  const abrirDetalle = async (reporte) => {
+    try {
+      const res = await fetch(`${API}/${reporte.id}`);
+      const data = await res.json();
+
+      setReporteSeleccionado({
+        ...data,
+        historial: data.historial || []
+      });
+
+      setNuevoEstado(data.estado);
+      setNotaInterna("");
+      setMostrarModal(true);
+
+    } catch (error) {
+      console.error("Error al obtener detalle:", error);
+    }
   };
 
   const cerrarModal = () => {
@@ -33,36 +67,29 @@ export default function Reportes() {
     setReporteSeleccionado(null);
   };
 
-  const guardarCambios = () => {
+   const guardarCambios = async () => {
     if (!reporteSeleccionado) return;
 
-    const fechaHora = new Date().toLocaleString();
+    try {
+      await fetch(`${API}/${reporteSeleccionado.id}/estado`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          estado: nuevoEstado
+        }),
+      });
 
-    const nuevaEntradaHistorial = [
-      `Estado cambiado a ${nuevoEstado} (${fechaHora})`
-    ];
+      const res = await fetch(API);
+      const data = await res.json();
+      setReportes(Array.isArray(data) ? data : []);
 
-    if (notaInterna.trim()) {
-      nuevaEntradaHistorial.push(
-        `Nota interna: ${notaInterna} (${fechaHora})`
-      );
+      cerrarModal();
+
+    } catch (error) {
+      console.error("Error al cambiar estado:", error);
     }
-
-    const actualizados = reportes.map((rep) =>
-      rep.id === reporteSeleccionado.id
-        ? {
-            ...rep,
-            estado: nuevoEstado,
-            historial: [
-              ...(rep.historial || []),
-              ...nuevaEntradaHistorial
-            ],
-          }
-        : rep
-    );
-
-    setReportes(actualizados);
-    cerrarModal();
   };
 
   const colorEstadoBadge = (estado) => {
@@ -196,6 +223,7 @@ export default function Reportes() {
         )}
       </motion.div>
 
+      
       <div className="paginacion-container">
         <div className="btn-group">
           <button
@@ -203,7 +231,7 @@ export default function Reportes() {
             disabled={!informacion.paginaAnterior}
             onClick={() => loadData(informacion.paginaAnterior)}
           >
-            <i className="bi bi-chevron-compact-left"></i>
+            <i className="bi bi-chevron-left"></i>
           </button>
 
           <button className="btn btn-primary">
@@ -215,7 +243,7 @@ export default function Reportes() {
             disabled={!informacion.paginaSiguiente}
             onClick={() => loadData(informacion.paginaSiguiente)}
           >
-            <i className="bi bi-chevron-compact-right"></i>
+            <i className="bi bi-chevron-right"></i>
           </button>
         </div>
       </div>

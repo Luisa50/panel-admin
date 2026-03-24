@@ -1,0 +1,36 @@
+/* 🌙 MODO OSCURO GLOBAL */
+.dark-mode {
+  background-color: #0f172a;
+  color: #e5e7eb;
+}
+
+/* tarjetas */
+.dark-mode .card {
+  background-color: #1e293b;
+  color: white;
+}
+
+/* inputs */
+.dark-mode .form-control,
+.dark-mode .form-select {
+  background-color: #111827;
+  color: white;
+  border: 1px solid #374151;
+}
+
+/* sidebar */
+.dark-mode .sidebar {
+  background: #020617;
+}
+
+/* textos */
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3,
+.dark-mode h4,
+.dark-mode h5,
+.dark-mode h6,
+.dark-mode label,
+.dark-mode span {
+  color: #e5e7eb;
+}
