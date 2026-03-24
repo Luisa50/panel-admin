@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchWithAuth } from "../services/auth";
+import "../estilos/centrosnodos.css"; 
 
 const NivelFormacion = () => {
 
@@ -13,19 +14,13 @@ const NivelFormacion = () => {
 
   const obtenerNiveles = async () => {
     try {
-
       setLoading(true);
 
       const response = await fetchWithAuth(
         "http://healthymind10.runasp.net/api/NivelFormacion"
       );
 
-      if (!response) return;
-
       const data = await response.json();
-
-      console.log("Niveles:", data);
-
       setNiveles(data);
 
     } catch (err) {
@@ -36,43 +31,40 @@ const NivelFormacion = () => {
     }
   };
 
-  if (loading) {
-    return <div className="contenedor">Cargando niveles de formación...</div>;
-  }
-
-  if (error) {
-    return <div className="contenedor">{error}</div>;
-  }
-
   return (
-    <div className="contenedor">
+    <div className="centro-container">
 
-      <h2>Niveles de Formación</h2>
+      <div className="centro-header">
+        <h2>Niveles de Formación</h2>
+      </div>
 
-      <table className="tabla">
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Nombre</th>
-            <th>Descripción</th>
-          </tr>
-        </thead>
+      {loading ? (
+        <p>Cargando niveles de formación...</p>
+      ) : error ? (
+        <p>{error}</p>
+      ) : (
+        <table className="centro-table">
 
-        <tbody>
-          {niveles.map((nivel) => (
-            <tr key={nivel.nivForCodigo}>
-
-              <td>{nivel.nivForCodigo}</td>
-
-              <td>{nivel.nivForNombre}</td>
-
-              <td>{nivel.nivForDescripcion}</td>
-
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
             </tr>
-          ))}
-        </tbody>
+          </thead>
 
-      </table>
+          <tbody>
+            {niveles.map((nivel) => (
+              <tr key={nivel.nivForCodigo}>
+                <td>{nivel.nivForCodigo}</td>
+                <td>{nivel.nivForNombre}</td>
+                <td>{nivel.nivForDescripcion || "-"}</td>
+              </tr>
+            ))}
+          </tbody>
+
+        </table>
+      )}
 
     </div>
   );

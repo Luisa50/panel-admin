@@ -1,128 +1,69 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { fetchWithAuth } from "../services/auth";
-
-import $ from "jquery";
-import "datatables.net";
-import "datatables.net-dt/css/dataTables.dataTables.css";
-
-import "../estilos/regionales.css";
+import "../estilos/centrosnodos.css";
 
 export default function Regionales() {
 
   const [regionales, setRegionales] = useState([]);
-  const tableRef = useRef(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-
     const obtenerRegionales = async () => {
-
       try {
+        setLoading(true);
 
         const response = await fetchWithAuth(
           "http://healthymind10.runasp.net/api/Regional"
         );
 
         const data = await response.json();
-
         setRegionales(data);
 
-        setTimeout(() => {
-
-          if (!$.fn.DataTable.isDataTable("#tablaRegionales")) {
-
-            $("#tablaRegionales").DataTable({
-              pageLength: 5,
-              lengthMenu: [5,10,25],
-              language: {
-                search: "Buscar",
-                lengthMenu: "Mostrar _MENU_",
-                info: "Mostrando _START_ a _END_ de _TOTAL_",
-                paginate: {
-                  previous: "‹",
-                  next: "›"
-                }
-              }
-            });
-
-          }
-
-        }, 100);
-
       } catch (error) {
-
         console.error(error);
-
+        setError("No se pudieron cargar las regionales");
+      } finally {
+        setLoading(false);
       }
-
     };
 
     obtenerRegionales();
-
   }, []);
 
   return (
+    <div className="centro-container">
 
-    <div className="dataTables_wrapper">
+      <div className="centro-header">
+        <h2>Regionales</h2>
+      </div>
 
-      <h2>Listado de regionales</h2>
+      {loading ? (
+        <p>Cargando regionales...</p>
+      ) : error ? (
+        <p>{error}</p>
+      ) : (
+        <table className="centro-table">
 
-      <table
-        id="tablaRegionales"
-        ref={tableRef}
-        className="display dataTable"
-        style={{width:"100%"}}
-      >
-
-        <thead>
-
-          <tr>
-            <th>Código</th>
-            <th>Nombre</th>
-            <th>Acciones</th>
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-          {regionales.map((reg) => (
-
-            <tr key={reg.regCodigo}>
-
-              <td>{reg.regCodigo}</td>
-
-              <td>{reg.regNombre}</td>
-
-              <td>
-
-                <button className="btn-actions">👁</button>
-
-                <button
-                  className="btn-actions"
-                  style={{marginLeft:"5px"}}
-                >
-                  ✏
-                </button>
-
-                <button
-                  className="btn-actions"
-                  style={{marginLeft:"5px",background:"#dc3545"}}
-                >
-                  🗑
-                </button>
-
-              </td>
-
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Nombre</th>
             </tr>
+          </thead>
 
-          ))}
+          <tbody>
+            {regionales.map((reg) => (
+              <tr key={reg.regCodigo}>
+                <td>{reg.regCodigo}</td>
+                <td>{reg.regNombre}</td>
+              </tr>
+            ))}
+          </tbody>
 
-        </tbody>
-
-      </table>
+        </table>
+      )}
 
     </div>
-
   );
-
 }
