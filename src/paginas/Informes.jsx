@@ -54,7 +54,7 @@ export default function Informesss() {
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => navigate(inf.ruta)}   // 🔥 AQUÍ ESTÁ LA MAGIA
+              onClick={() => navigate(inf.ruta)}
               style={{
                 cursor: "pointer",
                 padding: "20px",
@@ -73,9 +73,7 @@ export default function Informesss() {
                 {inf.titulo}
               </h5>
 
-              <small style={{ color: "#666" }}>
-                {inf.descripcion}
-              </small>
+              <small style={{ color: "#666" }}>{inf.descripcion}</small>
 
               <div
                 style={{

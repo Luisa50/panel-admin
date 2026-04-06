@@ -4,19 +4,103 @@
   padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 0;
   transition: width 0.3s ease;
 
-  overflow-y: auto; /* 🔥 scroll activo */
-  overflow-x: hidden;
+  overflow: hidden;
 
   scroll-behavior: smooth;
   scrollbar-width: none;
 
   box-shadow: 4px 0 15px rgba(0,0,0,0.3);
 
-  position: relative; /* 🔥 evita bloqueos */
-  z-index: 100; /* 🔥 evita que otros div tapen */
+  position: relative;
+  z-index: 100;
+}
+
+.sidebar-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 8px;
+}
+
+.sidebar-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.sidebar-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.sidebar-perfil-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 12px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  color: #e2e8f0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+}
+
+.sidebar-perfil-btn:hover {
+  background: rgba(59, 130, 246, 0.28);
+  color: #fff;
+}
+
+.sidebar-perfil-btn:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.sidebar-perfil-btn svg {
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.sidebar.colapsada .sidebar-perfil-btn {
+  justify-content: center;
+  padding: 11px 8px;
+}
+
+.sidebar.colapsada .sidebar-perfil-btn span {
+  display: none;
+}
+
+.sidebar.colapsada .sidebar-perfil-btn:hover::after {
+  content: attr(data-label);
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: #1f2937;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-size: 12px;
+  z-index: 10001;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -44,6 +128,14 @@
 
 .sidebar.expandida .sidebar-top {
   justify-content: flex-start;
+}
+
+.sidebar-hamburguesa {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
 }
 
 .hamburguesa {

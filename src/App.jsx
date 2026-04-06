@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useEffect } from "react";
 
 import Login from "./paginas/Login";
@@ -22,6 +22,8 @@ import NivelFormacion from "./paginas/NivelFormacion";
 import ProgramaFormacion from "./paginas/ProgramaFormacion";
 import Notificaciones from "./paginas/Notificaciones";
 import NotFound from "./paginas/NotFound";
+import GestionAccesos from "./paginas/GestionAccesos";
+import GestionAdministrativa from "./paginas/GestionAdministrativa";
 
 export default function App() {
 
@@ -42,11 +44,18 @@ export default function App() {
         <Route path="/inicio" element={<Inicio />} />
         <Route path="/usuarios" element={<Usuarios />} />
         <Route path="/psicologos" element={<Psicologos />} />
+        <Route path="/gestion" element={<GestionAdministrativa />} />
+        <Route path="/accesos" element={<GestionAccesos />} />
+        <Route
+          path="/gestion-accesos"
+          element={<Navigate to="/accesos" replace />}
+        />
 
         <Route path="/informes" element={<Informes />} />
         <Route path="/informes/usuarios" element={<InformeUsuarios />} />
         <Route path="/informes/psicologos" element={<InformePsicologos />} />
         <Route path="/informes/general" element={<InformeGeneral />} />
+        <Route path="/informes/reportes" element={<Reportes />} />
 
         <Route path="/reportes" element={<Reportes />} />
         <Route path="/configuracion" element={<Configuracion />} />

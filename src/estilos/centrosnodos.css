@@ -17,64 +17,12 @@
   font-weight: 600;
 }
 
-/* TABLA */
-.centro-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-}
+/* Tablas .centro-table: ver tablas-unificadas.css */
 
-/* HEAD */
-.centro-table thead {
-  background: #f3f4f6;
-}
-
-.centro-table th {
-  text-align: left;
-  padding: 12px;
-  font-size: 14px;
-  color: #374151;
-}
-
-/* BODY */
-.centro-table td {
-  padding: 12px;
-  font-size: 14px;
-  border-top: 1px solid #eee;
-}
-
-/* HOVER */
-.centro-table tbody tr {
-  transition: 0.2s;
-}
-
-.centro-table tbody tr:hover {
-  background: #f1f5f9;
-}
-
-/* DARK MODE */
 body.dark-mode .centro-container {
   background: #020617;
 }
 
-body.dark-mode .centro-table {
-  background: #020617;
-  color: white;
-}
-
-body.dark-mode .centro-table thead {
-  background: #111827;
-}
-
-body.dark-mode .centro-table td {
-  border-top: 1px solid #1f2937;
-}
-
-body.dark-mode .centro-table tbody tr:hover {
-  background: #1f2937;
-}
 .fila-nodo {
   background-color: #f4f6f8;
 }

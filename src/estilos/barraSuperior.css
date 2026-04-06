@@ -1,0 +1,105 @@
+/* Barra superior: ícono centrado en vertical dentro de la franja (sin salirse de la barra) */
+
+.layout-topbar {
+  position: relative;
+  height: 40px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.055);
+  box-shadow: none;
+  background: transparent;
+  line-height: 0;
+  overflow: visible;
+}
+
+/*
+ * Contenedor del ícono: absolute a la derecha, altura = barra.
+ * El centrado top: 50% + translateY(-50%) va en el BOTÓN (no aquí): si el root
+ * tuviera transform, el panel position:fixed de notificaciones se desalinearía.
+ */
+.layout-topbar .sidebar-notif-root--header {
+  position: absolute;
+  top: 0;
+  right: 16px;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.layout-topbar .notificaciones-icono {
+  margin: 0;
+  padding: 0;
+}
+
+.layout-topbar button.sidebar-notif-trigger.sidebar-notif-trigger--header {
+  box-sizing: border-box;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0;
+  padding: 6px;
+  display: block;
+  line-height: 0;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 8px;
+  box-shadow: none !important;
+  transition: all 0.2s ease;
+}
+
+.layout-topbar
+  button.sidebar-notif-trigger.sidebar-notif-trigger--header:hover {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.layout-topbar
+  button.sidebar-notif-trigger.sidebar-notif-trigger--header:active {
+  background-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+.layout-topbar .sidebar-notif-trigger--header svg {
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  display: block;
+  stroke-width: 2px;
+}
+
+.layout-topbar .sidebar-notif-badge {
+  top: 4px;
+  right: 4px;
+  transform: none;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 4px;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 15px;
+}
+
+body.dark-mode .layout-topbar {
+  border-bottom-color: rgba(148, 163, 184, 0.14);
+}
+
+body.dark-mode
+  .layout-topbar
+  button.sidebar-notif-trigger.sidebar-notif-trigger--header:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode
+  .layout-topbar
+  button.sidebar-notif-trigger.sidebar-notif-trigger--header:active {
+  background-color: rgba(255, 255, 255, 0.14) !important;
+}

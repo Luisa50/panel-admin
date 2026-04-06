@@ -1,0 +1,365 @@
+/**
+ * Estilos unificados para todas las tablas de la aplicación
+ * (DataTables, centro-table, area-table, gestion-tabla, informes en .tabla-usuarios)
+ */
+
+:root {
+  --tabla-app-font: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --tabla-app-radius: 12px;
+  --tabla-app-border: 1px solid #e2e8f0;
+  --tabla-app-header-bg: #f1f5f9;
+  --tabla-app-header-color: #0f172a;
+  --tabla-app-cell: #334155;
+  --tabla-app-row-bg: #ffffff;
+  --tabla-app-row-hover: #f1f5f9;
+  --tabla-app-row-border: #f1f5f9;
+  --tabla-app-padding: 12px 14px;
+  --tabla-app-accent: #2563eb;
+}
+
+/* ——— DataTables ——— */
+.dataTables_wrapper {
+  font-family: var(--tabla-app-font);
+  padding: 0.75rem 0;
+  color: var(--tabla-app-cell);
+}
+
+.dataTables_wrapper .dataTables_filter label,
+.dataTables_wrapper .dataTables_length label {
+  font-size: 0.875rem;
+  color: #475569;
+}
+
+table.dataTable {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  font-size: 0.875rem;
+  border: var(--tabla-app-border);
+  border-radius: var(--tabla-app-radius);
+  overflow: hidden;
+  background: var(--tabla-app-row-bg);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+table.dataTable thead th {
+  background: var(--tabla-app-header-bg) !important;
+  color: var(--tabla-app-header-color) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em;
+  padding: var(--tabla-app-padding) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  vertical-align: middle;
+  text-align: left;
+}
+
+table.dataTable tbody td {
+  padding: var(--tabla-app-padding) !important;
+  border: none !important;
+  border-bottom: 1px solid var(--tabla-app-row-border) !important;
+  vertical-align: middle;
+  color: var(--tabla-app-cell);
+}
+
+table.dataTable tbody tr {
+  background: var(--tabla-app-row-bg) !important;
+  transition: background 0.18s ease;
+}
+
+table.dataTable tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+table.dataTable tbody tr:hover {
+  background: var(--tabla-app-row-hover) !important;
+}
+
+table.dataTable.no-footer {
+  border-bottom: var(--tabla-app-border);
+}
+
+.dataTables_paginate .paginate_button {
+  padding: 6px 12px !important;
+  margin: 2px !important;
+  border-radius: 8px !important;
+  border: 1px solid #e2e8f0 !important;
+  background: #fff !important;
+  color: #334155 !important;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.dataTables_paginate .paginate_button:hover {
+  background: #eff6ff !important;
+  border-color: var(--tabla-app-accent) !important;
+  color: var(--tabla-app-accent) !important;
+}
+
+.dataTables_paginate .paginate_button.current {
+  background: var(--tabla-app-accent) !important;
+  border-color: var(--tabla-app-accent) !important;
+  color: #fff !important;
+}
+
+.dataTables_filter input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-left: 8px;
+  outline: none;
+  font-size: 0.875rem;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.dataTables_filter input:focus {
+  border-color: var(--tabla-app-accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.dataTables_length select {
+  border-radius: 8px;
+  padding: 6px 10px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.875rem;
+}
+
+/* ——— Tablas HTML (.centro-table, .area-table, .gestion-tabla) ——— */
+.centro-table,
+.area-table,
+.gestion-tabla {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--tabla-app-row-bg);
+  border: var(--tabla-app-border);
+  border-radius: var(--tabla-app-radius);
+  overflow: hidden;
+  font-family: var(--tabla-app-font);
+  font-size: 0.875rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+.centro-table thead,
+.area-table thead,
+.gestion-tabla thead {
+  background: var(--tabla-app-header-bg);
+}
+
+.centro-table th,
+.area-table th,
+.gestion-tabla th {
+  text-align: left;
+  padding: var(--tabla-app-padding);
+  font-weight: 600;
+  color: var(--tabla-app-header-color);
+  border-bottom: 1px solid #e2e8f0;
+  letter-spacing: 0.02em;
+}
+
+.gestion-tabla th,
+.gestion-tabla td {
+  text-align: center;
+}
+
+.centro-table td,
+.area-table td,
+.gestion-tabla td {
+  padding: var(--tabla-app-padding);
+  color: var(--tabla-app-cell);
+  border-bottom: 1px solid var(--tabla-app-row-border);
+  vertical-align: middle;
+}
+
+.centro-table tbody tr:last-child td,
+.area-table tbody tr:last-child td,
+.gestion-tabla tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.centro-table tbody tr,
+.area-table tbody tr,
+.gestion-tabla tbody tr {
+  transition: background 0.18s ease;
+}
+
+.centro-table tbody tr:hover,
+.area-table tbody tr:hover,
+.gestion-tabla tbody tr:hover {
+  background: var(--tabla-app-row-hover);
+}
+
+/* ——— Informes (impresión / vista hoja) ——— */
+.tabla-usuarios {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tabla-usuarios table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: var(--tabla-app-font);
+  font-size: 0.875rem;
+  border: var(--tabla-app-border);
+  border-radius: var(--tabla-app-radius);
+  overflow: hidden;
+  background: var(--tabla-app-row-bg);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+.tabla-usuarios th,
+.tabla-usuarios td {
+  padding: var(--tabla-app-padding);
+  text-align: left;
+  border-bottom: 1px solid var(--tabla-app-row-border);
+  color: var(--tabla-app-cell);
+  vertical-align: middle;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.tabla-usuarios th {
+  background: var(--tabla-app-header-bg);
+  color: var(--tabla-app-header-color);
+  font-weight: 600;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tabla-usuarios tbody tr {
+  transition: background 0.18s ease;
+}
+
+.tabla-usuarios tbody tr:hover {
+  background: var(--tabla-app-row-hover);
+}
+
+.tabla-usuarios tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.btn-actions {
+  background: var(--tabla-app-accent);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  transition: background 0.15s ease;
+}
+
+.btn-actions:hover {
+  background: #1d4ed8;
+}
+
+/* ——— Modo oscuro ——— */
+body.dark-mode table.dataTable {
+  background: #0f172a;
+  border-color: #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode table.dataTable thead th {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-bottom-color: #334155 !important;
+}
+
+body.dark-mode table.dataTable tbody td {
+  color: #e2e8f0 !important;
+  border-bottom-color: #334155 !important;
+}
+
+body.dark-mode table.dataTable tbody tr {
+  background: #0f172a !important;
+}
+
+body.dark-mode table.dataTable tbody tr:hover {
+  background: #1e293b !important;
+}
+
+body.dark-mode .dataTables_paginate .paginate_button {
+  background: #1e293b !important;
+  border-color: #475569 !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .dataTables_paginate .paginate_button:hover {
+  background: #334155 !important;
+  border-color: #60a5fa !important;
+  color: #93c5fd !important;
+}
+
+body.dark-mode .dataTables_paginate .paginate_button.current {
+  background: var(--tabla-app-accent) !important;
+  border-color: var(--tabla-app-accent) !important;
+  color: #fff !important;
+}
+
+body.dark-mode .dataTables_filter input,
+body.dark-mode .dataTables_length select {
+  background: #111827;
+  color: #e2e8f0;
+  border-color: #475569;
+}
+
+body.dark-mode .centro-table,
+body.dark-mode .area-table,
+body.dark-mode .gestion-tabla {
+  background: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+body.dark-mode .centro-table thead,
+body.dark-mode .area-table thead,
+body.dark-mode .gestion-tabla thead {
+  background: #1e293b;
+}
+
+body.dark-mode .centro-table th,
+body.dark-mode .area-table th,
+body.dark-mode .gestion-tabla th {
+  color: #f1f5f9;
+  border-bottom-color: #334155;
+}
+
+body.dark-mode .centro-table td,
+body.dark-mode .area-table td,
+body.dark-mode .gestion-tabla td {
+  color: #e2e8f0;
+  border-bottom-color: #334155;
+}
+
+body.dark-mode .centro-table tbody tr:hover,
+body.dark-mode .area-table tbody tr:hover,
+body.dark-mode .gestion-tabla tbody tr:hover {
+  background: #1e293b;
+}
+
+body.dark-mode .tabla-usuarios table {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+body.dark-mode .tabla-usuarios th {
+  background: #1e293b;
+  color: #f1f5f9;
+  border-bottom-color: #334155;
+}
+
+body.dark-mode .tabla-usuarios td {
+  color: #e2e8f0;
+  border-bottom-color: #334155;
+}
+
+body.dark-mode .tabla-usuarios tbody tr:hover {
+  background: #1e293b;
+}

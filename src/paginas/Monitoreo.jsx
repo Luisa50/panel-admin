@@ -2,6 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../estilos/principal.css";
 
 import {
+  ResponsiveContainer,
   LineChart,
   Line,
   XAxis,
@@ -12,6 +13,10 @@ import {
   PieChart,
   Pie,
   Cell,
+  BarChart,
+  Bar,
+  AreaChart,
+  Area,
 } from "recharts";
 import { useEffect, useState } from "react";
 import { fetchWithAuth } from "../services/auth";
@@ -130,6 +135,26 @@ export default function Monitoreo() {
     { name: "No asistidas", value: estadosCitas["no asistió"] ?? 0 },
   ];
 
+  const resumenCitasOperativas = [
+    {
+      nombre: "Exitosas",
+      cantidad: Number(totalActividadesExitosas?.exitosas) || 0,
+    },
+    {
+      nombre: "En proceso",
+      cantidad: Number(totalActividadesProceso?.citasEnProceso) || 0,
+    },
+    {
+      nombre: "Incidencias",
+      cantidad: Number(totalIncidencias?.citasEnIncidencias) || 0,
+    },
+  ];
+
+  let acumuladoParcial = 0;
+  const usuariosAcumuladosPorMes = usuariosPorMes.map((row) => {
+    acumuladoParcial += row.cantidad || 0;
+    return { mes: row.mes, acumulado: acumuladoParcial };
+  });
 
   const colors = [
     "#003366",
@@ -140,96 +165,103 @@ export default function Monitoreo() {
     "#006644",
   ];
 
-  return (
-    <div className="container-fluid p-0 mb-0">
-      <div className="row g-4 mb-4 pt-4">
-        
-        <div className="col-md-3">
-          <div className="card stat-card dark-card" id="carta-monitoreo">
-            <div className="card-body">
-              <p className="text-secondary m-0">Usuarios registrados por mes</p>
-              <h3 className="fw-bold">{datosPorMes?.porcentajeCrecimiento ?? "—"}%</h3>
-              <small className="text-success">{datosPorMes?.promedioMensual ?? "—"} promedio</small>
-            </div>
+  const filaTarjetasKpi = (
+    <div className="row g-4 mb-4 pt-0">
+      <div className="col-12 col-sm-6 col-lg-3">
+        <div className="card stat-card dark-card" id="carta-monitoreo">
+          <div className="card-body">
+            <p className="text-secondary m-0">Usuarios registrados por mes</p>
+            <h3 className="fw-bold">{datosPorMes?.porcentajeCrecimiento ?? "—"}%</h3>
+            <small className="text-success">{datosPorMes?.promedioMensual ?? "—"} promedio</small>
           </div>
         </div>
-
-        <div className="col-md-3">
-          <div className="card stat-card" id="carta-monitoreo">
-            <div className="card-body">
-              <p className="text-secondary m-0">Actividad Exitosa</p>
-              <h4 className="fw-bold">{totalActividadesExitosas?.porcentaje ?? "—"}%</h4>
-              <small className="text-danger">{totalActividadesExitosas?.exitosas ?? "—"} citas</small>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-3">
-          <div className="card stat-card" id="carta-monitoreo">
-            <div className="card-body">
-              <p className="text-secondary m-0">Actividades en Proceso</p>
-              <h4 className="fw-bold">{totalActividadesProceso?.porcentajeEnProceso ?? "—"}%</h4>
-              <small className="text-success">{totalActividadesProceso?.citasEnProceso ?? "—"} citas</small>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-3">
-          <div className="card stat-card" id="carta-monitoreo">
-            <div className="card-body">
-              <p className="text-secondary m-0">Incidencias</p>
-              <h4 className="fw-bold">{totalIncidencias?.porcentajeEnProceso ?? "—"}%</h4>
-              <small className="text-danger">{totalIncidencias?.citasEnIncidencias ?? "—"} citas</small>
-            </div>
-          </div>
-        </div>
-
       </div>
 
+      <div className="col-12 col-sm-6 col-lg-3">
+        <div className="card stat-card" id="carta-monitoreo">
+          <div className="card-body">
+            <p className="text-secondary m-0">Actividad Exitosa</p>
+            <h4 className="fw-bold">{totalActividadesExitosas?.porcentaje ?? "—"}%</h4>
+            <small className="text-danger">{totalActividadesExitosas?.exitosas ?? "—"} citas</small>
+          </div>
+        </div>
+      </div>
+
+      <div className="col-12 col-sm-6 col-lg-3">
+        <div className="card stat-card" id="carta-monitoreo">
+          <div className="card-body">
+            <p className="text-secondary m-0">Actividades en Proceso</p>
+            <h4 className="fw-bold">{totalActividadesProceso?.porcentajeEnProceso ?? "—"}%</h4>
+            <small className="text-success">{totalActividadesProceso?.citasEnProceso ?? "—"} citas</small>
+          </div>
+        </div>
+      </div>
+
+      <div className="col-12 col-sm-6 col-lg-3">
+        <div className="card stat-card" id="carta-monitoreo">
+          <div className="card-body">
+            <p className="text-secondary m-0">Incidencias</p>
+            <h4 className="fw-bold">{totalIncidencias?.porcentajeEnProceso ?? "—"}%</h4>
+            <small className="text-danger">{totalIncidencias?.citasEnIncidencias ?? "—"} citas</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="container-fluid p-0 mb-0 dashboard-monitoreo-root">
+      {filaTarjetasKpi}
 
       <div className="row g-4">
-
-        {/* Line Chart */}
-        <div className="col-lg-8 col-md-8">
-          <div className="card graph-card p-5 h-100" >
-            <h5 className="fw-semibold mb-3">Usuarios Registrados los Ultimos Meses</h5>
-            
-            <LineChart width={650} height={300} data={usuariosPorMes}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="mes" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="cantidad"
-                stroke="#003366"
-                strokeWidth={3}
-              />
-            </LineChart>
+        <div className="col-12 col-xl-8">
+          <div className="card graph-card p-3 p-md-4 p-lg-5 h-100">
+            <h5 className="fw-semibold mb-3">Usuarios registrados los últimos meses</h5>
+            <div style={{ width: "100%", height: 320, minWidth: 0 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={usuariosPorMes}
+                  margin={{ top: 8, right: 16, left: 0, bottom: 8 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="mes" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="cantidad"
+                    stroke="#003366"
+                    strokeWidth={3}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
 
-
-        <div className="col-lg-4 col-md-4">
-          <div className="card graph-card p-3">
-            <h5 className="fw-semibold mb-0">Estados de Citas</h5>
-
-            <PieChart width={330} height={330}>
-              <Pie
-                data={citas}
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                dataKey="value"
-                label={({ value }) => value}
-              >
-                {citas.map((entry, index) => (
-                  <Cell key={index} fill={colors[index % colors.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
+        <div className="col-12 col-xl-4">
+          <div className="card graph-card p-3 h-100">
+            <h5 className="fw-semibold mb-3">Estados de citas</h5>
+            <div style={{ width: "100%", height: 320, minWidth: 0 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={citas}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    dataKey="value"
+                    label={({ value }) => value}
+                  >
+                    {citas.map((entry, index) => (
+                      <Cell key={index} fill={colors[index % colors.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
 
 
             <div className="mt-3 d-flex flex-wrap justify-content-center gap-3">
@@ -253,6 +285,62 @@ export default function Monitoreo() {
           </div>
         </div>
 
+      </div>
+
+      <div className="row g-4 mt-4">
+        <div className="col-12 col-xl-8">
+          <div className="card graph-card p-3 p-md-4 p-lg-5 h-100">
+            <h5 className="fw-semibold mb-3">Acumulado de usuarios registrados</h5>
+            <div style={{ width: "100%", height: 320, minWidth: 0 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={usuariosAcumuladosPorMes}
+                  margin={{ top: 8, right: 16, left: 0, bottom: 8 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="mes" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Area
+                    type="monotone"
+                    dataKey="acumulado"
+                    name="Total acumulado"
+                    stroke="#003366"
+                    strokeWidth={2}
+                    fill="#003366"
+                    fillOpacity={0.18}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        <div className="col-12 col-xl-4">
+          <div className="card graph-card p-3 h-100">
+            <h5 className="fw-semibold mb-3">Citas por situación operativa</h5>
+            <div style={{ width: "100%", height: 320, minWidth: 0 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={resumenCitasOperativas}
+                  margin={{ top: 8, right: 16, left: 0, bottom: 8 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="nombre" tick={{ fontSize: 12 }} interval={0} />
+                  <YAxis allowDecimals={false} />
+                  <Tooltip />
+                  <Bar
+                    dataKey="cantidad"
+                    name="Citas"
+                    fill="#1A73E8"
+                    radius={[6, 6, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
       </div>
       
     </div>

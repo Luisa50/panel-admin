@@ -7,25 +7,7 @@
   margin-bottom: 20px;
 }
 
-.gestion-tabla {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.gestion-tabla th,
-.gestion-tabla td {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
-  text-align: center;
-}
-
-.gestion-tabla th {
-  background: #f4f6f8;
-}
-
+/* .gestion-tabla: ver tablas-unificadas.css */
 
 .tag {
   background: #e3f2fd;

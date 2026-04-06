@@ -1,0 +1,316 @@
+/* Panel de notificaciones en la barra lateral (no afecta otros componentes) */
+
+.sidebar-notif-root {
+  margin-left: auto;
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* Variante barra superior: misma zona que .notificaciones-icono en principal.css */
+.sidebar-notif-root--header {
+  margin-left: 0;
+  flex-shrink: 0;
+}
+
+.sidebar-notif-trigger--header {
+  background: transparent !important;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1d4ed8;
+  width: auto;
+  height: auto;
+  min-width: 20px;
+  min-height: 20px;
+}
+
+.sidebar-notif-trigger--header:hover {
+  background: rgba(37, 99, 235, 0.1) !important;
+  color: #1e3a8a;
+}
+
+.sidebar-notif-trigger--header svg {
+  width: 17px;
+  height: 17px;
+  color: inherit;
+  stroke-width: 2.25px;
+}
+
+/* Sobre .icono-notif (#444 en principal.css): campana más visible en el header */
+.sidebar-notif-trigger--header .icono-notif {
+  color: #1d4ed8;
+}
+
+.sidebar-notif-trigger--header:hover .icono-notif {
+  color: #1e3a8a;
+}
+
+.sidebar-notif-trigger {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-notif-trigger:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.sidebar-notif-trigger:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.sidebar-notif-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  color: #fff;
+  background: #ef4444;
+  border-radius: 999px;
+  box-sizing: border-box;
+}
+
+.sidebar-notif-panel {
+  position: fixed;
+  z-index: 10020;
+  width: min(320px, calc(100vw - 24px));
+  max-height: min(420px, 70vh);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.18);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+.sidebar-notif-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.sidebar-notif-panel-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.sidebar-notif-panel-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: #3b82f6;
+  white-space: nowrap;
+}
+
+.sidebar-notif-panel-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sidebar-notif-empty {
+  margin: 0;
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.sidebar-notif-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+}
+
+.sidebar-notif-list li {
+  margin: 0;
+}
+
+.sidebar-notif-item {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-notif-item:hover {
+  background: #f8fafc;
+}
+
+.sidebar-notif-item--nueva {
+  background: #eff6ff;
+  border-left-color: #2563eb;
+}
+
+.sidebar-notif-item--nueva:hover {
+  background: #dbeafe;
+}
+
+.sidebar-notif-item--leida {
+  opacity: 0.92;
+}
+
+.sidebar-notif-item-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.sidebar-notif-dot {
+  width: 8px;
+  height: 8px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: #2563eb;
+  flex-shrink: 0;
+}
+
+.sidebar-notif-dot--placeholder {
+  visibility: hidden;
+}
+
+.sidebar-notif-item-texto {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #1e293b;
+}
+
+.sidebar-notif-item--nueva .sidebar-notif-item-texto {
+  font-weight: 600;
+}
+
+.sidebar-notif-item-fecha {
+  padding-left: 18px;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.sidebar-notif-item--leida .sidebar-notif-item-fecha {
+  padding-left: 18px;
+}
+
+.sidebar-notif-panel-footer {
+  flex-shrink: 0;
+  padding: 10px 12px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.sidebar-notif-ver-todas {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sidebar-notif-ver-todas:hover {
+  background: #1d4ed8;
+}
+
+body.dark-mode .sidebar-notif-trigger--header {
+  color: #60a5fa;
+}
+
+body.dark-mode .sidebar-notif-trigger--header:hover {
+  background: rgba(96, 165, 250, 0.12) !important;
+  color: #93c5fd;
+}
+
+body.dark-mode .sidebar-notif-trigger--header .icono-notif {
+  color: #60a5fa !important;
+}
+
+body.dark-mode .sidebar-notif-trigger--header:hover .icono-notif {
+  color: #93c5fd !important;
+}
+
+body.dark-mode .sidebar-notif-panel {
+  background: #1e293b;
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+body.dark-mode .sidebar-notif-panel-header {
+  border-bottom-color: #334155;
+}
+
+body.dark-mode .sidebar-notif-panel-title {
+  color: #f1f5f9;
+}
+
+body.dark-mode .sidebar-notif-panel-count {
+  color: #93c5fd;
+}
+
+body.dark-mode .sidebar-notif-empty {
+  color: #94a3b8;
+}
+
+body.dark-mode .sidebar-notif-item:hover {
+  background: #334155;
+}
+
+body.dark-mode .sidebar-notif-item--nueva {
+  background: rgba(37, 99, 235, 0.2);
+}
+
+body.dark-mode .sidebar-notif-item--nueva:hover {
+  background: rgba(37, 99, 235, 0.28);
+}
+
+body.dark-mode .sidebar-notif-item-texto {
+  color: #e2e8f0;
+}
+
+body.dark-mode .sidebar-notif-item-fecha {
+  color: #94a3b8;
+}
+
+body.dark-mode .sidebar-notif-panel-footer {
+  border-top-color: #334155;
+  background: #0f172a;
+}
