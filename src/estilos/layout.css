@@ -25,6 +25,12 @@
   box-sizing: border-box;
   transition: margin-left 0.3s ease, width 0.3s ease, max-width 0.3s ease;
   min-height: 100vh;
+  /* Misma base que el contenido: la barra superior no “flota” como franja blanca */
+  background: #f5f6fa;
+}
+
+body.dark-mode .layout-derecha {
+  background: #0f172a;
 }
 
 .sidebar.colapsada ~ .layout-derecha {
@@ -137,5 +143,48 @@
 }
 .layout-contenedor {
   display: flex;
+}
+
+/* Impresión: sin recorte a una pantalla (overflow del layout rompía PDF/paginación) */
+@media print {
+  html,
+  body,
+  #root {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  .layout-contenedor {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  .sidebar,
+  .layout-topbar {
+    display: none !important;
+  }
+
+  .layout-derecha {
+    margin-left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  .layout-contenido {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  .footer-sena {
+    display: none !important;
+  }
 }
 

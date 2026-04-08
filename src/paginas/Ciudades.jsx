@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 
 import { fetchWithAuth } from "../services/auth";
+import { API_URL } from "../config";
 
 export default function Ciudades() {
 
@@ -33,9 +34,8 @@ export default function Ciudades() {
 
       try {
 
-        const response = await fetchWithAuth(
-          "http://healthymind10.runasp.net/api/Ciudad"
-        );
+        const response = await fetchWithAuth(`${API_URL}/Ciudad`);
+        if (!response) return;
 
         if (!response.ok) {
           throw new Error("Error al obtener ciudades");

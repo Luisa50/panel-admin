@@ -10,7 +10,7 @@ import "datatables.net-select-dt";
 import "datatables.net-responsive-dt";
 import AccionesAprendiz from "../componentes/AccionesAprendiz";
 import { fetchWithAuth } from "../services/auth";
-
+import { API_URL } from "../config";
 
 export default function Usuarios() {
   DataTable.use(DT);
@@ -60,7 +60,7 @@ export default function Usuarios() {
     buscarTimeout.current = setTimeout(async () => {
       try {
         const res = await fetchWithAuth(
-          `http://healthymind10.runasp.net/api/Ciudad/buscar?texto=${encodeURIComponent(texto)}`
+          `${API_URL}/Ciudad/buscar?texto=${encodeURIComponent(texto)}`
         );
         const data = await res.json();
         setListaMunicipios(Array.isArray(data) ? data : []);
@@ -174,7 +174,7 @@ const loadData = async (pag = 1, lengthPag = 5) => {
   setLoading(true);
   try {
     const res = await fetchWithAuth(
-      `http://healthymind10.runasp.net/api/Aprendiz/listar?Pagina=${pag}&TamanoPagina=${lengthPag}`
+      `${API_URL}/Aprendiz/listar?Pagina=${pag}&TamanoPagina=${lengthPag}`
     );
     const json = await res.json();
     setUsuarios(json?.resultado ?? []);
@@ -189,7 +189,7 @@ const cambiarEstado = async (id) => {
   const cuerpoPost = { RazonEliminacion: "prueba" };
   try {
     await fetchWithAuth(
-      `http://healthymind10.runasp.net/api/Aprendiz/cambiar-estado/${id}`,
+      `${API_URL}/Aprendiz/cambiar-estado/${id}`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -207,7 +207,7 @@ const cambiarEstado = async (id) => {
 const handleVer = async (id) => {
   try {
     const res = await fetchWithAuth(
-      `http://healthymind10.runasp.net/api/aprendiz/${id}`
+      `${API_URL}/aprendiz/${id}`
     );
     const json = await res.json();
     setDataVer(Array.isArray(json) ? json[0] ?? {} : json ?? {});
@@ -219,7 +219,7 @@ const handleVer = async (id) => {
 const handleEditar = async (id) => {
   try {
     const res = await fetchWithAuth(
-      `http://healthymind10.runasp.net/api/aprendiz/${id}`
+      `${API_URL}/aprendiz/${id}`
     );
     const json = await res.json();
     const item = Array.isArray(json) ? json[0] : json;
@@ -262,7 +262,7 @@ useEffect(() => {
   const cargarEstadosAprendiz = async () => {
     try {
       const res = await fetchWithAuth(
-        "http://healthymind10.runasp.net/api/EstadoAprendiz"
+        `${API_URL}/EstadoAprendiz`
       );
       const json = await res.json();
       setEstadoApr(Array.isArray(json) ? json : []);
@@ -277,7 +277,7 @@ const handleEliminar = async (id) => {
   if (!window.confirm("¿Seguro que deseas eliminar este aprendiz?")) return;
   try {
     await fetchWithAuth(
-      `http://healthymind10.runasp.net/api/Aprendiz/eliminar/${id}`,
+      `${API_URL}/Aprendiz/eliminar/${id}`,
       { method: "DELETE" }
     );
     alert("Eliminado");
@@ -340,9 +340,9 @@ const handleEliminar = async (id) => {
       aprAcudApellido: formData.acudienteApellido
     }
 
-    const url = modo === "crear" 
-              ? "http://healthymind10.runasp.net/api/Aprendiz"
-              : `http://healthymind10.runasp.net/api/Aprendiz/editar/${idEditar}`
+    const url = modo === "crear"
+              ? `${API_URL}/Aprendiz`
+              : `${API_URL}/Aprendiz/editar/${idEditar}`
 
     const method = modo === "crear" ? "POST" : "PUT";
 
@@ -380,7 +380,7 @@ const handleEliminar = async (id) => {
     if (text.length < 3) return loadData();
     try {
       const res = await fetchWithAuth(
-        `http://healthymind10.runasp.net/api/aprendiz/busqueda-dinamica?texto=${encodeURIComponent(text)}`
+        `${API_URL}/aprendiz/busqueda-dinamica?texto=${encodeURIComponent(text)}`
       );
       const json = await res.json();
       setUsuarios(Array.isArray(json) ? json : []);

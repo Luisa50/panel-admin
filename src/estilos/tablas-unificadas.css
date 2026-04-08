@@ -244,6 +244,111 @@ table.dataTable.no-footer {
   border-bottom: none;
 }
 
+/* Impresión / PDF: ancho completo, columnas proporcionadas, varias páginas */
+@media print {
+  .tabla-usuarios {
+    overflow: visible !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .tabla-usuarios table {
+    table-layout: fixed !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: 9pt !important;
+    line-height: 1.35 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    page-break-inside: auto;
+  }
+
+  .tabla-usuarios thead {
+    display: table-header-group !important;
+  }
+
+  .tabla-usuarios tbody tr {
+    page-break-inside: avoid;
+  }
+
+  .tabla-usuarios th,
+  .tabla-usuarios td {
+    padding: 5px 7px !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+    white-space: normal !important;
+    vertical-align: top !important;
+  }
+
+  /* Informe usuarios: 5 columnas */
+  .informe-tabla-cols-5 th:nth-child(1),
+  .informe-tabla-cols-5 td:nth-child(1) {
+    width: 5%;
+  }
+
+  .informe-tabla-cols-5 th:nth-child(2),
+  .informe-tabla-cols-5 td:nth-child(2) {
+    width: 14%;
+  }
+
+  .informe-tabla-cols-5 th:nth-child(3),
+  .informe-tabla-cols-5 td:nth-child(3) {
+    width: 28%;
+  }
+
+  .informe-tabla-cols-5 th:nth-child(4),
+  .informe-tabla-cols-5 td:nth-child(4) {
+    width: 35%;
+  }
+
+  .informe-tabla-cols-5 th:nth-child(5),
+  .informe-tabla-cols-5 td:nth-child(5) {
+    width: 18%;
+  }
+
+  /* Informe psicólogos: 8 columnas */
+  .informe-tabla-cols-8 th:nth-child(1),
+  .informe-tabla-cols-8 td:nth-child(1) {
+    width: 4%;
+  }
+
+  .informe-tabla-cols-8 th:nth-child(2),
+  .informe-tabla-cols-8 td:nth-child(2) {
+    width: 10%;
+  }
+
+  .informe-tabla-cols-8 th:nth-child(3),
+  .informe-tabla-cols-8 td:nth-child(3) {
+    width: 16%;
+  }
+
+  .informe-tabla-cols-8 th:nth-child(4),
+  .informe-tabla-cols-8 td:nth-child(4) {
+    width: 12%;
+  }
+
+  .informe-tabla-cols-8 th:nth-child(5),
+  .informe-tabla-cols-8 td:nth-child(5) {
+    width: 10%;
+  }
+
+  .informe-tabla-cols-8 th:nth-child(6),
+  .informe-tabla-cols-8 td:nth-child(6) {
+    width: 22%;
+  }
+
+  .informe-tabla-cols-8 th:nth-child(7),
+  .informe-tabla-cols-8 td:nth-child(7) {
+    width: 10%;
+  }
+
+  .informe-tabla-cols-8 th:nth-child(8),
+  .informe-tabla-cols-8 td:nth-child(8) {
+    width: 6%;
+  }
+}
+
 .btn-actions {
   background: var(--tabla-app-accent);
   color: white;

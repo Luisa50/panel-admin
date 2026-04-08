@@ -24,6 +24,7 @@ import Notificaciones from "./paginas/Notificaciones";
 import NotFound from "./paginas/NotFound";
 import GestionAccesos from "./paginas/GestionAccesos";
 import GestionAdministrativa from "./paginas/GestionAdministrativa";
+import InformeEstadistico from "./paginas/InformeEstadistico";
 
 export default function App() {
 
@@ -55,7 +56,11 @@ export default function App() {
         <Route path="/informes/usuarios" element={<InformeUsuarios />} />
         <Route path="/informes/psicologos" element={<InformePsicologos />} />
         <Route path="/informes/general" element={<InformeGeneral />} />
-        <Route path="/informes/reportes" element={<Reportes />} />
+        <Route path="/informes/estadistico" element={<InformeEstadistico />} />
+        <Route
+          path="/informes/reportes"
+          element={<Navigate to="/reportes" replace />}
+        />
 
         <Route path="/reportes" element={<Reportes />} />
         <Route path="/configuracion" element={<Configuracion />} />

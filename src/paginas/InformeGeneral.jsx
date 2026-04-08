@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
+import { fetchWithAuth } from "../services/auth";
+import { API_URL } from "../config";
 import "../estilos/informes.css";
 
 function etiquetaEstadoCita(raw) {
@@ -28,15 +30,18 @@ export default function InformeGeneral() {
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const resUsuarios = await fetch(
-          "http://healthymind10.runasp.net/api/Aprendiz/estadistica/total-registrados"
+        const resUsuarios = await fetchWithAuth(
+          `${API_URL}/Aprendiz/estadistica/total-registrados`
         );
-        const resPsicologos = await fetch(
-          "http://healthymind10.runasp.net/api/psicologo/estadistica/total-activos"
+        if (!resUsuarios) return;
+        const resPsicologos = await fetchWithAuth(
+          `${API_URL}/psicologo/estadistica/total-activos`
         );
-        const resCitas = await fetch(
-          "http://healthymind10.runasp.net/api/Citas/estadistica/por-estado"
+        if (!resPsicologos) return;
+        const resCitas = await fetchWithAuth(
+          `${API_URL}/Citas/estadistica/por-estado`
         );
+        if (!resCitas) return;
 
         const usuariosJson = await resUsuarios.json();
         const psicologosJson = await resPsicologos.json();

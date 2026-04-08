@@ -11,6 +11,7 @@ import AccionesAprendiz from "../componentes/AccionesAprendiz";
 import ModalFicha from "../componentes/modalsPost/ModalFicha.jsx";
 import Modalver from "../componentes/modalsPost/ModalVer.jsx";
 import { fetchWithAuth } from "../services/auth";
+import { API_URL } from "../config";
 
 export default function Fichas() {
   DataTable.use(DT);
@@ -34,7 +35,7 @@ export default function Fichas() {
 
   const loadData = async (pag = 1, tamanoPagina = 10) => {
     try {
-      let url = `http://healthymind10.runasp.net/api/Ficha/listar?Pagina=${pag}&TamanoPagina=${tamanoPagina}`;
+      let url = `${API_URL}/Ficha/listar?Pagina=${pag}&TamanoPagina=${tamanoPagina}`;
       let res = await fetchWithAuth(url);
       let json;
 
@@ -42,7 +43,7 @@ export default function Fichas() {
         json = await res.json();
       } else {
         // Si no existe listar, usar GET /api/Ficha (lista completa, una sola página)
-        res = await fetchWithAuth("http://healthymind10.runasp.net/api/Ficha");
+        res = await fetchWithAuth(`${API_URL}/Ficha`);
         if (!res.ok) return;
         json = await res.json();
         const arr = Array.isArray(json) ? json : (json?.datos ?? json?.resultado ?? json?.resultados ?? []);
@@ -90,7 +91,7 @@ export default function Fichas() {
     buscarProgramaTimeout.current = setTimeout(async () => {
       try {
         const res = await fetchWithAuth(
-          `http://healthymind10.runasp.net/api/ProgramaFormacion/buscar?ProgramaNombre=${encodeURIComponent(texto)}`
+          `${API_URL}/ProgramaFormacion/buscar?ProgramaNombre=${encodeURIComponent(texto)}`
         );
         const data = await res.json();
         setListaProgramas(Array.isArray(data) ? data : []);
@@ -116,7 +117,7 @@ export default function Fichas() {
 
   const handleVer = async (id) => {
     try {
-      const res = await fetchWithAuth(`http://healthymind10.runasp.net/api/Ficha/${id}`);
+      const res = await fetchWithAuth(`${API_URL}/Ficha/${id}`);
       const json = await res.json();
       setDataVer(Array.isArray(json) ? json[0] ?? {} : json ?? {});
     } catch (err) {
@@ -126,7 +127,7 @@ export default function Fichas() {
 
   const handleEditar = async (id) => {
     try {
-      const res = await fetchWithAuth(`http://healthymind10.runasp.net/api/Ficha/${id}`);
+      const res = await fetchWithAuth(`${API_URL}/Ficha/${id}`);
       const json = await res.json();
       const data = Array.isArray(json) ? json[0] : json;
       if (!data) return;
@@ -156,7 +157,7 @@ export default function Fichas() {
   const handleEliminar = async (id) => {
     if (!window.confirm("¿Seguro que deseas eliminar esta ficha?")) return;
     try {
-      await fetchWithAuth(`http://healthymind10.runasp.net/api/Ficha/Eliminar/${id}`, {
+      await fetchWithAuth(`${API_URL}/Ficha/Eliminar/${id}`, {
         method: "DELETE",
       });
       alert("Ficha eliminada");
@@ -176,8 +177,8 @@ export default function Fichas() {
     const cuerpoPost = { ...formData };
     const url =
       modo === "crear"
-        ? "http://healthymind10.runasp.net/api/Ficha"
-        : `http://healthymind10.runasp.net/api/Ficha/Editar/${idEditar}`;
+        ? `${API_URL}/Ficha`
+        : `${API_URL}/Ficha/Editar/${idEditar}`;
     const method = modo === "crear" ? "POST" : "PUT";
 
     try {
@@ -220,7 +221,7 @@ export default function Fichas() {
     if (text.length < 3) return loadData(informacion?.paginaActual ?? 1);
     try {
       const res = await fetchWithAuth(
-        `http://healthymind10.runasp.net/api/Ficha/busqueda-dinamica?texto=${encodeURIComponent(text)}`
+        `${API_URL}/Ficha/busqueda-dinamica?texto=${encodeURIComponent(text)}`
       );
       const json = await res.json();
       setFichas(Array.isArray(json) ? json : []);

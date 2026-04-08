@@ -42,6 +42,9 @@
   margin-top: auto;
   padding-top: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .sidebar-perfil-btn {

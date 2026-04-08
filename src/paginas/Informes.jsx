@@ -32,12 +32,12 @@ export default function Informesss() {
       ruta: "/informes/psicologos",
     },
     {
-      tipo: "reportes",
-      titulo: "Informe de Reportes",
-      descripcion: "Seguimiento y resolución",
-      color: "#eb5757",
-      icono: "bi bi-clipboard-data",
-      ruta: "/informes/reportes",
+      tipo: "estadistico",
+      titulo: "Informes Estratégicos",
+      descripcion: "Rankings por centro, regional, programa y más",
+      color: "#219ebc",
+      icono: "bi bi-graph-up-arrow",
+      ruta: "/informes/estadistico",
     },
   ];
 

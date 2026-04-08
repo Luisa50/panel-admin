@@ -18,91 +18,169 @@ import {
   AreaChart,
   Area,
 } from "recharts";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { fetchWithAuth } from "../services/auth";
+import { API_URL } from "../config";
+
+function formatoHoraActualizacion(fecha) {
+  return fecha.toLocaleTimeString("es-CO", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+}
+
+/** Evita SyntaxError si la API devuelve 404/HTML/cuerpo vacío (no es JSON). */
+async function jsonSiRespuestaOk(res) {
+  if (!res || !res.ok) return null;
+  const text = await res.text();
+  if (!text || !String(text).trim()) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
+function añosSelectorFallback() {
+  const y = new Date().getFullYear();
+  return Array.from({ length: 8 }, (_, i) => y - i);
+}
+
+/**
+ * Interpreta la respuesta de GET /Aprendiz/estadistica/por-mes.
+ *
+ * API nueva → { anioAplicado: number, datos: [{Mes,Total}] }
+ * API vieja → [{Mes,Total}]  (sin filtro por año)
+ *
+ * Devuelve { filtrado: boolean, anioAplicado: number|null, datos: array }
+ */
+function interpretarRespuestaPorMes(json, anioSolicitado) {
+  if (!json) return { filtrado: false, anioAplicado: null, datos: [] };
+
+  if (json.anioAplicado != null && Array.isArray(json.datos)) {
+    return {
+      filtrado: true,
+      anioAplicado: json.anioAplicado,
+      datos: json.datos,
+    };
+  }
+
+  if (Array.isArray(json)) {
+    return { filtrado: false, anioAplicado: null, datos: json };
+  }
+
+  return { filtrado: false, anioAplicado: null, datos: [] };
+}
 
 export default function Monitoreo() {
+  const [anioGraficaUsuarios, setAnioGraficaUsuarios] = useState(() =>
+    new Date().getFullYear()
+  );
+  const [aniosDisponibles, setAniosDisponibles] = useState(() => [
+    new Date().getFullYear(),
+  ]);
   const [cantidadAprendices, setCantidadAprendices] = useState([]);
+  const [apiFiltraAnio, setApiFiltraAnio] = useState(true);
   const [datosPorMes, setdatosPorMes] = useState({});
   const [totalActividadesProceso, setTotalActividadesProceso] = useState({});
   const [totalActividadesExitosas, setTotalActividadesExitosas] = useState({});
   const [totalIncidencias, setTotalIncidencias] = useState({});
   const [totalPorEstado, setTotalPorEstado] = useState([]);
+  const [ultimaActualizacion, setUltimaActualizacion] = useState(null);
+  const [cargando, setCargando] = useState(false);
 
   useEffect(() => {
-    const loadData = () => {
-      fetchWithAuth("http://healthymind10.runasp.net/api/Aprendiz/estadistica/por-mes")
-        .then((res) => res.json())
-        .then((json) => setCantidadAprendices(Array.isArray(json) ? json : []))
-        .catch((err) => console.log("Error cargando API:", err));
+    const cargarAnios = async () => {
+      try {
+        const res = await fetchWithAuth(
+          `${API_URL}/Aprendiz/estadistica/anios-registro-aprendices`
+        );
+        const data = await jsonSiRespuestaOk(res);
+        const raw = data && Array.isArray(data.anios) ? data.anios : [];
+        const lista = [...raw].sort((a, b) => b - a);
+        const finalLista = lista.length ? lista : añosSelectorFallback();
+        setAniosDisponibles(finalLista);
+        setAnioGraficaUsuarios((prev) =>
+          finalLista.includes(prev) ? prev : finalLista[0]
+        );
+      } catch (e) {
+        console.error("Error cargando años disponibles:", e);
+        setAniosDisponibles(añosSelectorFallback());
+      }
     };
-    loadData();
-    const intervalo = setInterval(loadData, 5000);
-    return () => clearInterval(intervalo);
+    cargarAnios();
   }, []);
 
-  useEffect(() => {
-    const loadData = () => {
-      fetchWithAuth("http://healthymind10.runasp.net/api/Aprendiz/estadistica/crecimiento-mensual")
-        .then((res) => res.json())
-        .then((json) => setdatosPorMes(json ?? {}))
-        .catch((err) => console.log("Error cargando API:", err));
-    };
-    loadData();
-    const intervalo = setInterval(loadData, 5000);
-    return () => clearInterval(intervalo);
-  }, []);
+  const cargarDashboard = useCallback(async () => {
+    setCargando(true);
+    try {
+      const [
+        resMes,
+        resCrecimiento,
+        resProceso,
+        resExitosa,
+        resIncidencias,
+        resPorEstado,
+      ] = await Promise.all([
+        fetchWithAuth(
+          `${API_URL}/Aprendiz/estadistica/por-mes?anio=${anioGraficaUsuarios}`
+        ),
+        fetchWithAuth(`${API_URL}/Aprendiz/estadistica/crecimiento-mensual`),
+        fetchWithAuth(`${API_URL}/Citas/citas/estado-proceso`),
+        fetchWithAuth(`${API_URL}/Citas/estadistica/actividad-exitosa`),
+        fetchWithAuth(`${API_URL}/Citas/citas/estado-incidencias`),
+        fetchWithAuth(`${API_URL}/Citas/estadistica/por-estado`),
+      ]);
+
+      if (!resMes || !resCrecimiento || !resProceso || !resExitosa || !resIncidencias || !resPorEstado) {
+        return;
+      }
+
+      const [jsonMes, jsonCrecimiento, jsonProceso, jsonExitosa, jsonIncidencias, jsonPorEstado] =
+        await Promise.all([
+          jsonSiRespuestaOk(resMes),
+          jsonSiRespuestaOk(resCrecimiento),
+          jsonSiRespuestaOk(resProceso),
+          jsonSiRespuestaOk(resExitosa),
+          jsonSiRespuestaOk(resIncidencias),
+          jsonSiRespuestaOk(resPorEstado),
+        ]);
+
+      const resultado = interpretarRespuestaPorMes(jsonMes, anioGraficaUsuarios);
+      setCantidadAprendices(resultado.datos);
+      setApiFiltraAnio(resultado.filtrado);
+
+      if (!resultado.filtrado) {
+        console.warn(
+          "⚠ La API no devolvió 'anioAplicado': la versión desplegada no filtra por año.",
+          "Datos sin filtrar → se muestra aviso al usuario."
+        );
+      }
+
+      setdatosPorMes(jsonCrecimiento && typeof jsonCrecimiento === "object" ? jsonCrecimiento : {});
+      setTotalActividadesProceso(jsonProceso && typeof jsonProceso === "object" ? jsonProceso : {});
+      setTotalActividadesExitosas(jsonExitosa && typeof jsonExitosa === "object" ? jsonExitosa : {});
+      setTotalIncidencias(jsonIncidencias && typeof jsonIncidencias === "object" ? jsonIncidencias : {});
+      setTotalPorEstado(Array.isArray(jsonPorEstado) ? jsonPorEstado : []);
+
+      setUltimaActualizacion(new Date());
+    } catch (err) {
+      console.error("Error cargando dashboard:", err);
+    } finally {
+      setCargando(false);
+    }
+  }, [anioGraficaUsuarios]);
 
   useEffect(() => {
-    const loadData = () => {
-      fetchWithAuth("http://healthymind10.runasp.net/api/Citas/citas/estado-proceso")
-        .then((res) => res.json())
-        .then((json) => setTotalActividadesProceso(json ?? {}))
-        .catch((err) => console.log("Error cargando API:", err));
-    };
-    loadData();
-    const intervalo = setInterval(loadData, 5000);
-    return () => clearInterval(intervalo);
-  }, []);
+    cargarDashboard();
+  }, [cargarDashboard]);
 
-  useEffect(() => {
-    const loadData = () => {
-      fetchWithAuth("http://healthymind10.runasp.net/api/Citas/estadistica/actividad-exitosa")
-        .then((res) => res.json())
-        .then((json) => setTotalActividadesExitosas(json ?? {}))
-        .catch((err) => console.log("Error cargando API:", err));
-    };
-    loadData();
-    const intervalo = setInterval(loadData, 5000);
-    return () => clearInterval(intervalo);
-  }, []);
-
-  useEffect(() => {
-    const loadData = () => {
-      fetchWithAuth("http://healthymind10.runasp.net/api/Citas/citas/estado-incidencias")
-        .then((res) => res.json())
-        .then((json) => setTotalIncidencias(json ?? {}))
-        .catch((err) => console.log("Error cargando API:", err));
-    };
-    loadData();
-    const intervalo = setInterval(loadData, 5000);
-    return () => clearInterval(intervalo);
-  }, []);
-
-  useEffect(() => {
-    const loadData = () => {
-      fetchWithAuth("http://healthymind10.runasp.net/api/Citas/estadistica/por-estado")
-        .then((res) => res.json())
-        .then((json) => setTotalPorEstado(Array.isArray(json) ? json : []))
-        .catch((err) => console.log("Error cargando API:", err));
-    };
-    loadData();
-    const intervalo = setInterval(loadData, 5000);
-    return () => clearInterval(intervalo);
-  }, []);
-  
   const datosAPI = cantidadAprendices.reduce((acc, item) => {
-    acc[item.mes] = item.total;
+    const mes = item.mes ?? item.Mes;
+    const total = item.total ?? item.Total;
+    if (mes != null) acc[mes] = total;
     return acc;
   }, {});
 
@@ -170,7 +248,12 @@ export default function Monitoreo() {
       <div className="col-12 col-sm-6 col-lg-3">
         <div className="card stat-card dark-card" id="carta-monitoreo">
           <div className="card-body">
-            <p className="text-secondary m-0">Usuarios registrados por mes</p>
+            <p
+              className="text-secondary m-0"
+              title="Crecimiento y promedio mensual de aprendices registrados, según la API de estadísticas."
+            >
+              Usuarios registrados por mes
+            </p>
             <h3 className="fw-bold">{datosPorMes?.porcentajeCrecimiento ?? "—"}%</h3>
             <small className="text-success">{datosPorMes?.promedioMensual ?? "—"} promedio</small>
           </div>
@@ -180,7 +263,12 @@ export default function Monitoreo() {
       <div className="col-12 col-sm-6 col-lg-3">
         <div className="card stat-card" id="carta-monitoreo">
           <div className="card-body">
-            <p className="text-secondary m-0">Actividad Exitosa</p>
+            <p
+              className="text-secondary m-0"
+              title="Citas contabilizadas como actividad exitosa según los criterios definidos en el backend (por ejemplo, citas completadas o atendidas)."
+            >
+              Actividad exitosa
+            </p>
             <h4 className="fw-bold">{totalActividadesExitosas?.porcentaje ?? "—"}%</h4>
             <small className="text-danger">{totalActividadesExitosas?.exitosas ?? "—"} citas</small>
           </div>
@@ -190,7 +278,12 @@ export default function Monitoreo() {
       <div className="col-12 col-sm-6 col-lg-3">
         <div className="card stat-card" id="carta-monitoreo">
           <div className="card-body">
-            <p className="text-secondary m-0">Actividades en Proceso</p>
+            <p
+              className="text-secondary m-0"
+              title="Citas que siguen en curso o en estados intermedios antes de cerrarse (pendientes de resolución operativa)."
+            >
+              Actividades en proceso
+            </p>
             <h4 className="fw-bold">{totalActividadesProceso?.porcentajeEnProceso ?? "—"}%</h4>
             <small className="text-success">{totalActividadesProceso?.citasEnProceso ?? "—"} citas</small>
           </div>
@@ -200,7 +293,12 @@ export default function Monitoreo() {
       <div className="col-12 col-sm-6 col-lg-3">
         <div className="card stat-card" id="carta-monitoreo">
           <div className="card-body">
-            <p className="text-secondary m-0">Incidencias</p>
+            <p
+              className="text-secondary m-0"
+              title="Citas con incidencias o situaciones que requieren seguimiento o intervención administrativa."
+            >
+              Incidencias
+            </p>
             <h4 className="fw-bold">{totalIncidencias?.porcentajeEnProceso ?? "—"}%</h4>
             <small className="text-danger">{totalIncidencias?.citasEnIncidencias ?? "—"} citas</small>
           </div>
@@ -211,14 +309,96 @@ export default function Monitoreo() {
 
   return (
     <div className="container-fluid p-0 mb-0 dashboard-monitoreo-root">
+      <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 px-1 monitoreo-toolbar">
+        <p className="text-muted small mb-0">
+          {ultimaActualizacion ? (
+            <>
+              Última actualización:{" "}
+              <strong>{formatoHoraActualizacion(ultimaActualizacion)}</strong>
+            </>
+          ) : cargando ? (
+            "Cargando datos del tablero…"
+          ) : (
+            "Aún no hay datos cargados. Pulse Actualizar."
+          )}
+        </p>
+        <button
+          type="button"
+          className="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1"
+          onClick={() => cargarDashboard()}
+          disabled={cargando}
+          title="Vuelve a solicitar todas las métricas al servidor"
+        >
+          {cargando ? (
+            <>
+              <span
+                className="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+              />
+              Actualizando…
+            </>
+          ) : (
+            <>
+              <i className="bi bi-arrow-clockwise" aria-hidden="true" />
+              Actualizar
+            </>
+          )}
+        </button>
+      </div>
+
       {filaTarjetasKpi}
 
       <div className="row g-4">
         <div className="col-12 col-xl-8">
           <div className="card graph-card p-3 p-md-4 p-lg-5 h-100">
-            <h5 className="fw-semibold mb-3">Usuarios registrados los últimos meses</h5>
-            <div style={{ width: "100%", height: 320, minWidth: 0 }}>
-              <ResponsiveContainer width="100%" height="100%">
+            <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+              <h5 className="fw-semibold mb-0">
+                Usuarios registrados por mes
+                {apiFiltraAnio
+                  ? ` (${anioGraficaUsuarios})`
+                  : " (todos los años — API sin actualizar)"}
+              </h5>
+              <label className="d-flex align-items-center gap-2 small text-muted mb-0">
+                <span>Año</span>
+                <select
+                  className="form-select form-select-sm"
+                  style={{ width: "auto", minWidth: 96 }}
+                  value={anioGraficaUsuarios}
+                  disabled={!apiFiltraAnio}
+                  onChange={(e) =>
+                    setAnioGraficaUsuarios(Number(e.target.value))
+                  }
+                  aria-label="Año para la gráfica de usuarios por mes"
+                >
+                  {aniosDisponibles.map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            {!apiFiltraAnio && (
+              <div
+                className="alert alert-warning py-2 px-3 small mb-2"
+                role="alert"
+              >
+                <i className="bi bi-exclamation-triangle-fill me-1" />
+                <strong>La API desplegada no soporta filtro por año.</strong>{" "}
+                Los datos que se muestran son el total acumulado de todos los
+                años. Para activar el filtro, despliega la versión actualizada
+                de la API (el endpoint <code>estadistica/por-mes</code> debe
+                devolver <code>anioAplicado</code>).
+              </div>
+            )}
+            <div style={{ width: "100%", minWidth: 0 }}>
+              <ResponsiveContainer
+                width="100%"
+                height={320}
+                debounce={50}
+                key={`linea-usuarios-${anioGraficaUsuarios}`}
+              >
                 <LineChart
                   data={usuariosPorMes}
                   margin={{ top: 8, right: 16, left: 0, bottom: 8 }}
@@ -243,8 +423,8 @@ export default function Monitoreo() {
         <div className="col-12 col-xl-4">
           <div className="card graph-card p-3 h-100">
             <h5 className="fw-semibold mb-3">Estados de citas</h5>
-            <div style={{ width: "100%", height: 320, minWidth: 0 }}>
-              <ResponsiveContainer width="100%" height="100%">
+            <div style={{ width: "100%", minWidth: 0 }}>
+              <ResponsiveContainer width="100%" height={320} debounce={50}>
                 <PieChart>
                   <Pie
                     data={citas}
@@ -290,9 +470,25 @@ export default function Monitoreo() {
       <div className="row g-4 mt-4">
         <div className="col-12 col-xl-8">
           <div className="card graph-card p-3 p-md-4 p-lg-5 h-100">
-            <h5 className="fw-semibold mb-3">Acumulado de usuarios registrados</h5>
-            <div style={{ width: "100%", height: 320, minWidth: 0 }}>
-              <ResponsiveContainer width="100%" height="100%">
+            <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+              <h5 className="fw-semibold mb-0">
+                {apiFiltraAnio
+                  ? `Acumulado en el año ${anioGraficaUsuarios}`
+                  : "Acumulado (todos los años)"}
+              </h5>
+              <span className="small text-muted">
+                {apiFiltraAnio
+                  ? "Mismo año que la gráfica superior"
+                  : "Pendiente de actualizar la API"}
+              </span>
+            </div>
+            <div style={{ width: "100%", minWidth: 0 }}>
+              <ResponsiveContainer
+                width="100%"
+                height={320}
+                debounce={50}
+                key={`area-acum-${anioGraficaUsuarios}`}
+              >
                 <AreaChart
                   data={usuariosAcumuladosPorMes}
                   margin={{ top: 8, right: 16, left: 0, bottom: 8 }}
@@ -320,8 +516,8 @@ export default function Monitoreo() {
         <div className="col-12 col-xl-4">
           <div className="card graph-card p-3 h-100">
             <h5 className="fw-semibold mb-3">Citas por situación operativa</h5>
-            <div style={{ width: "100%", height: 320, minWidth: 0 }}>
-              <ResponsiveContainer width="100%" height="100%">
+            <div style={{ width: "100%", minWidth: 0 }}>
+              <ResponsiveContainer width="100%" height={320} debounce={50}>
                 <BarChart
                   data={resumenCitasOperativas}
                   margin={{ top: 8, right: 16, left: 0, bottom: 8 }}

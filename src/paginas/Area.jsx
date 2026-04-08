@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchWithAuth } from "../services/auth";
+import { API_URL } from "../config";
 import "../estilos/area.css";
 
 export default function Area() {
@@ -9,9 +10,8 @@ export default function Area() {
   useEffect(() => {
     const obtenerAreas = async () => {
       try {
-        const res = await fetchWithAuth(
-          "http://healthymind10.runasp.net/api/Area"
-        );
+        const res = await fetchWithAuth(`${API_URL}/Area`);
+        if (!res) return;
         const data = await res.json();
         setAreas(data);
       } catch (error) {

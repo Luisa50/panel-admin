@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { fetchWithAuth } from "../services/auth";
+import { API_URL } from "../config";
 import "../estilos/informes.css";
 
 function etiquetaEstadoPsicologo(valor) {
@@ -16,9 +18,10 @@ const InformePsicologos = () => {
   useEffect(() => {
     const cargarPsicologos = async () => {
       try {
-        const res = await fetch(
-          "http://healthymind10.runasp.net/api/psicologo/listar?Pagina=1&TamanoPagina=1000"
+        const res = await fetchWithAuth(
+          `${API_URL}/psicologo/listar?Pagina=1&TamanoPagina=1000`
         );
+        if (!res) return;
         const json = await res.json();
 
         setPsicologos(json.resultados || []);
@@ -131,7 +134,7 @@ const InformePsicologos = () => {
           </p>
         </div>
 
-        <section className="tabla-usuarios">
+        <section className="tabla-usuarios informe-tabla-cols-8">
           <table>
             <thead>
               <tr>

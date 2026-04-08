@@ -10,9 +10,11 @@ import {
   ChevronDown,
   Settings,
   UserCircle,
+  LogOut,
 } from "lucide-react";
 
 import ModalPerfilCliente from "./ModalPerfilCliente";
+import { logout } from "../services/auth.js";
 import "../estilos/barraLateral.css";
 
 const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
@@ -234,14 +236,6 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
                 >
                   General
                 </div>
-                <div
-                  className={`menu-item ${
-                    esActivo("/informes/reportes") ? "activo" : ""
-                  }`}
-                  onClick={() => navigate("/informes/reportes")}
-                >
-                  Reportes
-                </div>
               </div>
             </div>
 
@@ -276,6 +270,19 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
         >
           <UserCircle size={22} strokeWidth={1.75} />
           {expandida && <span>Mi perfil</span>}
+        </button>
+        <button
+          type="button"
+          className="sidebar-perfil-btn"
+          data-label="Cerrar sesión"
+          onClick={() => {
+            logout();
+            navigate("/");
+          }}
+          aria-label="Cerrar sesión"
+        >
+          <LogOut size={22} strokeWidth={1.75} />
+          {expandida && <span>Cerrar sesión</span>}
         </button>
       </div>
 

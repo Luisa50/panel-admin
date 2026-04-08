@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchWithAuth } from "../services/auth";
+import { API_URL } from "../config";
 import "../estilos/centrosnodos.css"; 
 
 const ProgramaFormacion = () => {
@@ -16,9 +17,8 @@ const ProgramaFormacion = () => {
     try {
       setLoading(true);
 
-      const response = await fetchWithAuth(
-        "http://healthymind10.runasp.net/api/ProgramaFormacion"
-      );
+      const response = await fetchWithAuth(`${API_URL}/ProgramaFormacion`);
+      if (!response) return;
 
       const data = await response.json();
       setProgramas(data);

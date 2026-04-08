@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchWithAuth } from "../services/auth";
+import { API_URL } from "../config";
 import "../estilos/centrosnodos.css"; 
 
 const NivelFormacion = () => {
@@ -16,9 +17,8 @@ const NivelFormacion = () => {
     try {
       setLoading(true);
 
-      const response = await fetchWithAuth(
-        "http://healthymind10.runasp.net/api/NivelFormacion"
-      );
+      const response = await fetchWithAuth(`${API_URL}/NivelFormacion`);
+      if (!response) return;
 
       const data = await response.json();
       setNiveles(data);

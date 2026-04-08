@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { fetchWithAuth } from "../services/auth";
+import { API_URL } from "../config";
 import "../estilos/centrosnodos.css";
 
-const API = "http://healthymind10.runasp.net/api/Centro";
+const CENTRO_API = `${API_URL}/Centro`;
 
 export default function CentrosNodos() {
 
@@ -27,7 +28,8 @@ export default function CentrosNodos() {
 
   const cargarCentros = async () => {
     try {
-      const res = await fetchWithAuth(API);
+      const res = await fetchWithAuth(CENTRO_API);
+      if (!res) return;
       const data = await res.json();
       setCentros(Array.isArray(data) ? data : []);
     } catch (error) {

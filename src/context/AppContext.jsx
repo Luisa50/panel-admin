@@ -2,23 +2,27 @@ import { createContext, useContext, useState } from "react";
 
 export const AppContext = createContext();
 
+const reportesMockDesarrollo = [
+  {
+    id: 1,
+    titulo: "Error al cargar dashboard",
+    descripcion: "La página queda en blanco al iniciar sesión.",
+    estado: "Pendiente",
+    fecha: "2025-01-05",
+  },
+  {
+    id: 2,
+    titulo: "Demora en asignación de psicóloga",
+    descripcion: "La plataforma tarda demasiado en asignar profesional.",
+    estado: "Pendiente",
+    fecha: "2025-01-06",
+  },
+];
+
 export const AppProvider = ({ children }) => {
-  const [reportes, setReportes] = useState([
-    {
-      id: 1,
-      titulo: "Error al cargar dashboard",
-      descripcion: "La página queda en blanco al iniciar sesión.",
-      estado: "Pendiente",
-      fecha: "2025-01-05",
-    },
-    {
-      id: 2,
-      titulo: "Demora en asignación de psicóloga",
-      descripcion: "La plataforma tarda demasiado en asignar profesional.",
-      estado: "Pendiente",
-      fecha: "2025-01-06",
-    },
-  ]);
+  const [reportes, setReportes] = useState(() =>
+    import.meta.env.DEV ? reportesMockDesarrollo : []
+  );
 
   const [notificaciones, setNotificaciones] = useState([]);
 

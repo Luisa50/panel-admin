@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchWithAuth } from "../services/auth";
+import { API_URL } from "../config";
 import "../estilos/centrosnodos.css";
 
 export default function Regionales() {
@@ -13,9 +14,8 @@ export default function Regionales() {
       try {
         setLoading(true);
 
-        const response = await fetchWithAuth(
-          "http://healthymind10.runasp.net/api/Regional"
-        );
+        const response = await fetchWithAuth(`${API_URL}/Regional`);
+        if (!response) return;
 
         const data = await response.json();
         setRegionales(data);

@@ -1,10 +1,11 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { Modal, Button, Form, Badge } from "react-bootstrap";
 import { useApp } from "../context/AppContext";
-import "../estilos/informes.css";
+import { fetchWithAuth } from "../services/auth";
+import { API_URL } from "../config";
 import "../estilos/reportes.css";
 
-const API = "https://healthymind10.runasp.net/api/Reporte";
+const REPORTE_API = `${API_URL}/Reporte`;
 
 function etiquetaEstadoReporte(estado) {
   switch (estado) {
@@ -28,7 +29,7 @@ export default function Reportes() {
   const [estadoFiltro, setEstadoFiltro] = useState("todas");
   const [busqueda, setBusqueda] = useState("");
   const [page, setPage] = useState(1);
-  const porPagina = 4;
+  const porPagina = 8;
 
   const [mostrarModal, setMostrarModal] = useState(false);
   const [reporteSeleccionado, setReporteSeleccionado] = useState(null);
@@ -40,7 +41,8 @@ export default function Reportes() {
       try {
         setLoading(true);
 
-        const res = await fetch(API);
+        const res = await fetchWithAuth(REPORTE_API);
+        if (!res) return;
         const data = await res.json();
 
         setReportes(Array.isArray(data) ? data : []);
@@ -57,7 +59,8 @@ export default function Reportes() {
 
   const abrirDetalle = async (reporte) => {
     try {
-      const res = await fetch(`${API}/${reporte.id}`);
+      const res = await fetchWithAuth(`${REPORTE_API}/${reporte.id}`);
+      if (!res) return;
       const data = await res.json();
 
       setReporteSeleccionado({
@@ -82,17 +85,22 @@ export default function Reportes() {
     if (!reporteSeleccionado) return;
 
     try {
-      await fetch(`${API}/${reporteSeleccionado.id}/estado`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          estado: nuevoEstado,
-        }),
-      });
+      const patchRes = await fetchWithAuth(
+        `${REPORTE_API}/${reporteSeleccionado.id}/estado`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            estado: nuevoEstado,
+          }),
+        }
+      );
+      if (!patchRes) return;
 
-      const res = await fetch(API);
+      const res = await fetchWithAuth(REPORTE_API);
+      if (!res) return;
       const data = await res.json();
       setReportes(Array.isArray(data) ? data : []);
 
@@ -174,214 +182,230 @@ export default function Reportes() {
 
   const etiquetaFiltro =
     estadoFiltro === "todas"
-      ? "todos los estados"
-      : `estado «${etiquetaEstadoReporte(estadoFiltro)}»`;
+      ? "Todos los estados"
+      : etiquetaEstadoReporte(estadoFiltro);
 
   const hayBusqueda = Boolean(busqueda.trim());
 
   const textoConclusion =
     resumenReportes.total === 0
-      ? "No se hallaron reportes en el sistema en el momento de la consulta; el seguimiento deberá reevaluarse cuando exista carga de incidencias."
-      : `En conjunto, el ${resumenReportes.pctCerrados}% de los reportes se encuentran cerrados o cancelados, mientras que ${resumenReportes.pendiente} permanecen pendientes y ${resumenReportes.proceso} en curso. La lectura de estos balances debe integrarse con los procedimientos de escalamiento y comunicación institucional vigentes.`;
+      ? "Aún no hay reportes registrados. Cuando existan incidencias, aquí podrás filtrarlas, abrir el detalle y actualizar el estado."
+      : `Resumen: ${resumenReportes.pctCerrados}% cerrados o cancelados; ${resumenReportes.pendiente} pendientes y ${resumenReportes.proceso} en curso.`;
+
+  const filtros = [
+    { id: "todas", label: "Todas", variant: "primary", outline: "outline-primary" },
+    { id: "pendiente", label: "Pendientes", variant: "danger", outline: "outline-danger" },
+    { id: "proceso", label: "En proceso", variant: "warning", outline: "outline-warning" },
+    { id: "resuelto", label: "Resueltos", variant: "success", outline: "outline-success" },
+  ];
 
   return (
-    <div className="reportes-container">
-      <h2 className="reportes-title">
-        Informe operativo sobre reportes e incidencias
-      </h2>
-      <p className="reportes-subtitulo">
-        Documento de trabajo basado en los datos devueltos por el servicio de
-        reportes. Las herramientas inferiores permiten filtrar y localizar
-        casos; la interacción con cada fila conserva el flujo de gestión del
-        módulo.
-      </p>
-
-      <section className="reportes-informe-bloque">
-        <h3>1. Introducción</h3>
-        <p className="informe-parrafo">
-          Este informe describe la situación de los reportes o incidencias
-          registrados en HealthyMind, según la última sincronización obtenida
-          mediante el listado general del API. Su propósito es ofrecer una
-          lectura administrativa coherente —introducción, desarrollo,
-          observaciones y conclusiones— sin sustituir los formatos oficiales de
-          escalamiento que la entidad aplique.
-        </p>
-      </section>
-
-      <section className="reportes-informe-bloque">
-        <h3>2. Desarrollo y análisis de los datos</h3>
-        <p className="informe-parrafo">
-          El sistema registra actualmente <strong>{resumenReportes.total}</strong>{" "}
-          reporte(s) en total. De ellos, <strong>{resumenReportes.pendiente}</strong>{" "}
-          se clasifican como pendientes, <strong>{resumenReportes.proceso}</strong>{" "}
-          en proceso, <strong>{resumenReportes.resuelto}</strong> resueltos y{" "}
-          <strong>{resumenReportes.cancelado}</strong> cancelados. La proporción
-          de casos cerrados o cancelados sobre el universo total es del{" "}
-          <strong>{resumenReportes.pctCerrados}%</strong>.
-        </p>
-        <p className="informe-parrafo">
-          Para la visualización inmediata del listado se aplica un criterio de{" "}
-          <strong>{etiquetaFiltro}</strong>
-          {hayBusqueda && (
-            <>
-              , complementado con un texto de búsqueda que reduce el conjunto a{" "}
-              <strong>{filtrados.length}</strong> registro(s) coincidente(s).
-            </>
-          )}
-          {!hayBusqueda && (
-            <>
-              , mostrándose en esta vista <strong>{filtrados.length}</strong>{" "}
-              registro(s) acorde a dicho criterio.
-            </>
-          )}
-        </p>
-      </section>
-
-      <section className="reportes-informe-bloque">
-        <h3>3. Observaciones</h3>
-        <p className="informe-parrafo">
-          Los conteos se calculan sobre el arreglo de reportes mantenido en la
-          aplicación tras la respuesta del endpoint; cualquier actualización
-          concurrente en otros clientes podría diferir levemente hasta la
-          siguiente recarga. La tabla siguiente permite abrir el detalle de cada
-          caso para revisar descripción, historial y estado.
-        </p>
-      </section>
-
-      <p className="informe-parrafo" style={{ fontSize: 13, color: "#555" }}>
-        <strong>Herramientas de consulta:</strong> filtro por estado y búsqueda
-        por título, descripción o fecha.
-      </p>
-
-      <div className="buscador-container">
-        <input
-          className="form-control buscador-input"
-          placeholder="Buscar por título, descripción o fecha…"
-          onChange={(e) => busquedaDinamica(e.target.value)}
-        />
-        <button type="button" className="btn btn-success">
-          <i className="bi bi-search"></i>
-        </button>
-      </div>
-
-      <div className="filtros-container">
-        <button
-          type="button"
-          className={`btn btn-sm ${estadoFiltro === "todas" ? "btn-primary" : "btn-outline-primary"}`}
-          onClick={() => {
-            setEstadoFiltro("todas");
-            setPage(1);
-          }}
-        >
-          Todas
-        </button>
-
-        <button
-          type="button"
-          className={`btn btn-sm ${estadoFiltro === "pendiente" ? "btn-danger" : "btn-outline-danger"}`}
-          onClick={() => {
-            setEstadoFiltro("pendiente");
-            setPage(1);
-          }}
-        >
-          Pendientes
-        </button>
-
-        <button
-          type="button"
-          className={`btn btn-sm ${estadoFiltro === "proceso" ? "btn-warning" : "btn-outline-warning"}`}
-          onClick={() => {
-            setEstadoFiltro("proceso");
-            setPage(1);
-          }}
-        >
-          En proceso
-        </button>
-
-        <button
-          type="button"
-          className={`btn btn-sm ${estadoFiltro === "resuelto" ? "btn-success" : "btn-outline-success"}`}
-          onClick={() => {
-            setEstadoFiltro("resuelto");
-            setPage(1);
-          }}
-        >
-          Resueltos
-        </button>
-      </div>
-
-      <section className="reportes-informe-bloque">
-        <h3>4. Listado para gestión operativa</h3>
-        <p className="informe-parrafo" style={{ marginBottom: 8 }}>
-          Seleccione una fila para abrir el detalle, actualizar el estado o
-          revisar el historial. Página {informacion.paginaActual} de{" "}
-          {Math.max(1, totalPaginas)}.
-        </p>
-        {loading ? (
-          <p>Cargando...</p>
-        ) : mostrar.length > 0 ? (
-          <table className="reportes-tabla-informe">
-            <thead>
-              <tr>
-                <th>N.º</th>
-                <th>Título</th>
-                <th>Fecha de registro</th>
-                <th>Estado</th>
-                <th>Descripción</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mostrar.map((rep, idx) => (
-                <tr
-                  key={rep.id}
-                  className="reportes-fila-detalle"
-                  onClick={() => abrirDetalle(rep)}
-                >
-                  <td>{(page - 1) * porPagina + idx + 1}</td>
-                  <td>{rep.titulo}</td>
-                  <td>{rep.fecha}</td>
-                  <td>{etiquetaEstadoReporte(rep.estado)}</td>
-                  <td>{rep.descripcion}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p style={{ color: "#666" }}>
-            No hay reportes que coincidan con los criterios actuales.
-          </p>
-        )}
-      </section>
-
-      <section className="reportes-informe-bloque">
-        <h3>5. Conclusiones</h3>
-        <p className="informe-parrafo">{textoConclusion}</p>
-      </section>
-
-      <div className="paginacion-container">
-        <div className="btn-group">
-          <button
-            type="button"
-            className="btn btn-outline-primary"
-            disabled={!informacion.paginaAnterior}
-            onClick={() => loadData(informacion.paginaAnterior)}
-          >
-            <i className="bi bi-chevron-left"></i>
-          </button>
-
-          <button type="button" className="btn btn-primary">
-            {informacion.paginaActual}
-          </button>
-
-          <button
-            type="button"
-            className="btn btn-outline-primary"
-            disabled={!informacion.paginaSiguiente}
-            onClick={() => loadData(informacion.paginaSiguiente)}
-          >
-            <i className="bi bi-chevron-right"></i>
-          </button>
+    <div className="reportes-pagina">
+      <header className="reportes-hero">
+        <div className="reportes-hero-icon" aria-hidden>
+          <i className="bi bi-mailbox-flag" />
         </div>
+        <div className="reportes-hero-texto">
+          <h1 className="reportes-hero-titulo">Reportes e incidencias</h1>
+          <p className="reportes-hero-sub">
+            Consulta, filtra y gestiona los reportes registrados en la
+            plataforma. Pulsa una fila para ver detalle, historial y cambiar
+            estado.
+          </p>
+        </div>
+      </header>
+
+      <section className="reportes-kpis" aria-label="Resumen numérico">
+        <article className="reportes-kpi reportes-kpi--total">
+          <span className="reportes-kpi-label">Total</span>
+          <strong className="reportes-kpi-valor">{resumenReportes.total}</strong>
+          <span className="reportes-kpi-hint">
+            {resumenReportes.cancelado} cancelados
+          </span>
+        </article>
+        <article className="reportes-kpi reportes-kpi--pendiente">
+          <span className="reportes-kpi-label">Pendientes</span>
+          <strong className="reportes-kpi-valor">
+            {resumenReportes.pendiente}
+          </strong>
+        </article>
+        <article className="reportes-kpi reportes-kpi--proceso">
+          <span className="reportes-kpi-label">En proceso</span>
+          <strong className="reportes-kpi-valor">
+            {resumenReportes.proceso}
+          </strong>
+        </article>
+        <article className="reportes-kpi reportes-kpi--resuelto">
+          <span className="reportes-kpi-label">Resueltos</span>
+          <strong className="reportes-kpi-valor">
+            {resumenReportes.resuelto}
+          </strong>
+          <span className="reportes-kpi-hint">
+            {resumenReportes.pctCerrados}% cerrados / cancel. del total
+          </span>
+        </article>
+      </section>
+
+      <div className="card reportes-panel shadow-sm border-0">
+        <div className="card-body reportes-panel-body">
+          <div className="reportes-toolbar">
+            <div
+              className="btn-group flex-wrap reportes-filtros"
+              role="group"
+              aria-label="Filtrar por estado"
+            >
+              {filtros.map((f) => (
+                <button
+                  key={f.id}
+                  type="button"
+                  className={`btn btn-sm ${
+                    estadoFiltro === f.id
+                      ? `btn-${f.variant}`
+                      : `btn-${f.outline}`
+                  }`}
+                  onClick={() => {
+                    setEstadoFiltro(f.id);
+                    setPage(1);
+                  }}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="input-group reportes-buscador">
+              <span className="input-group-text bg-white border-end-0">
+                <i className="bi bi-search text-muted" aria-hidden />
+              </span>
+              <input
+                type="search"
+                className="form-control border-start-0"
+                placeholder="Buscar por título, descripción o fecha…"
+                value={busqueda}
+                onChange={(e) => busquedaDinamica(e.target.value)}
+                aria-label="Buscar reportes"
+              />
+            </div>
+          </div>
+
+          <p className="reportes-meta text-muted small mb-3">
+            <strong>{etiquetaFiltro}</strong>
+            {hayBusqueda && (
+              <>
+                {" "}
+                · {filtrados.length} resultado(s) con la búsqueda actual
+              </>
+            )}
+            {!hayBusqueda && filtrados.length !== resumenReportes.total && (
+              <>
+                {" "}
+                · {filtrados.length} visible(s) con este filtro
+              </>
+            )}
+            {!hayBusqueda && estadoFiltro === "todas" && (
+              <> · {filtrados.length} registro(s) en total</>
+            )}
+          </p>
+
+          <div className="table-responsive reportes-tabla-wrap">
+            {loading ? (
+              <div className="reportes-cargando text-center py-5 text-muted">
+                <div
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                />
+                Cargando reportes…
+              </div>
+            ) : mostrar.length > 0 ? (
+              <table className="table table-hover align-middle mb-0 reportes-tabla">
+                <thead className="table-light">
+                  <tr>
+                    <th scope="col" className="text-muted small">
+                      #
+                    </th>
+                    <th scope="col">Título</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Descripción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {mostrar.map((rep, idx) => (
+                    <tr
+                      key={rep.id}
+                      className="reportes-fila-detalle"
+                      onClick={() => abrirDetalle(rep)}
+                    >
+                      <td className="text-muted small">
+                        {(page - 1) * porPagina + idx + 1}
+                      </td>
+                      <td className="fw-medium">{rep.titulo}</td>
+                      <td className="text-nowrap small">{rep.fecha}</td>
+                      <td>
+                        <span
+                          className={`badge bg-${colorEstadoBadge(rep.estado)}`}
+                        >
+                          {etiquetaEstadoReporte(rep.estado)}
+                        </span>
+                      </td>
+                      <td className="reportes-col-desc small text-muted">
+                        {rep.descripcion}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div className="reportes-vacio text-center py-5">
+                <div className="reportes-vacio-icon mb-3" aria-hidden>
+                  <i className="bi bi-inbox" />
+                </div>
+                <p className="mb-1 fw-medium text-secondary">
+                  No hay reportes con estos criterios
+                </p>
+                <p className="small text-muted mb-0">
+                  Prueba otro estado o borra el texto de búsqueda.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {filtrados.length > porPagina && (
+            <nav
+              className="reportes-paginacion d-flex justify-content-center justify-content-md-end mt-3"
+              aria-label="Paginación"
+            >
+              <div className="btn-group">
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary btn-sm"
+                  disabled={!informacion.paginaAnterior}
+                  onClick={() => loadData(informacion.paginaAnterior)}
+                  aria-label="Página anterior"
+                >
+                  <i className="bi bi-chevron-left" />
+                </button>
+                <span className="btn btn-sm btn-light disabled text-dark">
+                  {informacion.paginaActual} / {Math.max(1, totalPaginas)}
+                </span>
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary btn-sm"
+                  disabled={!informacion.paginaSiguiente}
+                  onClick={() => loadData(informacion.paginaSiguiente)}
+                  aria-label="Página siguiente"
+                >
+                  <i className="bi bi-chevron-right" />
+                </button>
+              </div>
+            </nav>
+          )}
+        </div>
+      </div>
+
+      <div className="alert alert-light border reportes-conclusion mt-3 mb-0">
+        <i className="bi bi-info-circle me-2 text-primary" aria-hidden />
+        <span className="small">{textoConclusion}</span>
       </div>
 
       <Modal show={mostrarModal} onHide={cerrarModal} centered>

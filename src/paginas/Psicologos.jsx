@@ -10,6 +10,7 @@ import AccionesAprendiz from "../componentes/AccionesAprendiz";
 import ModalPsicologo from "../componentes/modalsPost/ModalPsicologo.jsx";
 import Modalver from "../componentes/modalsPost/ModalVer.jsx";
 import { fetchWithAuth } from "../services/auth";
+import { API_URL } from "../config";
 
 export default function Psicologos() {
   DataTable.use(DT);
@@ -37,7 +38,7 @@ export default function Psicologos() {
     setLoading(true);
     try {
       const res = await fetchWithAuth(
-        `http://healthymind10.runasp.net/api/psicologo/listar?Pagina=${pag}&TamanoPagina=${lengthPag}`
+        `${API_URL}/psicologo/listar?Pagina=${pag}&TamanoPagina=${lengthPag}`
       );
       const json = await res.json();
       setUsuarios(json?.resultados ?? json?.resultado ?? []);
@@ -147,7 +148,7 @@ export default function Psicologos() {
     if (!window.confirm("¿Seguro que deseas cambiar este estado?")) return;
     try {
       await fetchWithAuth(
-        `http://healthymind10.runasp.net/api/psicologo/cambiar-estado/${id}`,
+        `${API_URL}/psicologo/cambiar-estado/${id}`,
         { method: "PUT", headers: { "Content-Type": "application/json" } }
       );
       alert("Se ha cambiado el estado correctamente");
@@ -161,7 +162,7 @@ export default function Psicologos() {
   const handleVer = async (id) => {
     try {
       const res = await fetchWithAuth(
-        `http://healthymind10.runasp.net/api/psicologo/${id}`
+        `${API_URL}/psicologo/${id}`
       );
       const json = await res.json();
       setDataVer(Array.isArray(json) ? json[0] ?? {} : json ?? {});
@@ -173,7 +174,7 @@ export default function Psicologos() {
   const handleEditar = async (id) => {
     try {
       const res = await fetchWithAuth(
-        `http://healthymind10.runasp.net/api/psicologo/${id}`
+        `${API_URL}/psicologo/${id}`
       );
       const json = await res.json();
       const item = Array.isArray(json) ? json[0] : json;
@@ -201,7 +202,7 @@ export default function Psicologos() {
     if (!window.confirm("¿Seguro que deseas eliminar este registro?")) return;
     try {
       await fetchWithAuth(
-        `http://healthymind10.runasp.net/api/psicologo/eliminar/${id}`,
+        `${API_URL}/psicologo/eliminar/${id}`,
         { method: "DELETE" }
       );
       alert("Eliminado");
@@ -247,8 +248,8 @@ export default function Psicologos() {
 
     const url =
       modo === "crear"
-        ? "http://healthymind10.runasp.net/api/Psicologo"
-        : `http://healthymind10.runasp.net/api/Psicologo/editar/${idEditar}`;
+        ? `${API_URL}/Psicologo`
+        : `${API_URL}/Psicologo/editar/${idEditar}`;
     const method = modo === "crear" ? "POST" : "PUT";
 
     try {
@@ -285,7 +286,7 @@ export default function Psicologos() {
     if (text.length < 3) return loadData();
     try {
       const res = await fetchWithAuth(
-        `http://healthymind10.runasp.net/api/psicologo/busqueda-dinamica?texto=${encodeURIComponent(text)}`
+        `${API_URL}/psicologo/busqueda-dinamica?texto=${encodeURIComponent(text)}`
       );
       const json = await res.json();
       setUsuarios(Array.isArray(json) ? json : []);

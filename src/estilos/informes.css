@@ -148,34 +148,6 @@
 }
 
 
-@media print {
-  body * {
-    visibility: hidden;
-  }
-
-  .hoja-a4,
-  .hoja-a4 * {
-    visibility: visible;
-  }
-
-  .hoja-a4 {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    min-height: 100%;
-    box-shadow: none;
-  }
-
-  .acciones {
-    display: none;
-  }
-
-  .overlay-informe {
-    background: none;
-  }
-}
-
 .pagina-informe {
   display: flex;
   justify-content: center;   
@@ -198,23 +170,42 @@
   }
 
   .pagina-informe {
-    padding: 0;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    background: white !important;
   }
 
   .hoja-a4 {
-    box-shadow: none;
-    width: 215.9mm;
-    min-height: 279.4mm;
-    padding: 20mm;
+    box-shadow: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    position: static !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+
+  .acciones {
+    display: none !important;
+  }
+
+  .overlay-informe {
+    background: none !important;
   }
 
   .no-print {
-    display: none;
+    display: none !important;
   }
 
   @page {
     size: letter;
-    margin: 0;
+    margin: 10mm 12mm;
   }
 }
 .bloque {
@@ -280,4 +271,79 @@
 .kpi span {
   font-size: 13px;
   color: #666;
+}
+
+/* Tablas con scroll solo en pantalla; al imprimir se ve todo el ancho */
+.tabla-ranking-scroll {
+  overflow-x: auto;
+}
+
+@media print {
+  .tabla-ranking-scroll {
+    overflow: visible !important;
+    max-width: 100% !important;
+  }
+
+  .tabla-ranking-scroll .tabla-desglose-citas {
+    min-width: 0 !important;
+    font-size: 10px !important;
+  }
+
+  .tabla-ranking-scroll .tabla-desglose-citas th,
+  .tabla-ranking-scroll .tabla-desglose-citas td {
+    padding: 5px 6px !important;
+    word-break: break-word !important;
+  }
+
+  .tabla-ranking-scroll .tabla-desglose-citas thead {
+    display: table-header-group !important;
+  }
+
+  /* Informes estratégicos: evitar 1 sola página — page-break-inside:avoid en
+     secciones grandes hace que Chrome recorte todo el documento */
+  .informe-estadistico-pagina .hoja-a4 {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .informe-estadistico-completo {
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  .informe-seccion-estadistica,
+  .informe-estadistico-completo .bloque {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  .informe-estadistico-completo .kpis {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Recharts: sin height:auto en el contenedor (rompe barras/SVG al imprimir) */
+  .informe-recharts-host {
+    min-height: 220px !important;
+    width: 100% !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+    overflow: visible !important;
+  }
+
+  .informe-recharts-host .recharts-responsive-container {
+    min-height: 220px !important;
+  }
+
+  .informe-recharts-host .recharts-surface,
+  .informe-recharts-host svg {
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
 }

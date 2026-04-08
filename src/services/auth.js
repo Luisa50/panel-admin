@@ -1,9 +1,9 @@
-const API_BASE = "http://healthymind10.runasp.net/api";
+import { API_URL } from "../config.js";
 const STORAGE_KEY = "healthymind_admin_auth";
 
 // LOGIN
 export async function login({ correoPersonal, password }) {
-  const res = await fetch(`${API_BASE}/Autenticacion/ValidarAdmin`, {
+  const res = await fetch(`${API_URL}/Autenticacion/ValidarAdmin`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ correoPersonal, password }),

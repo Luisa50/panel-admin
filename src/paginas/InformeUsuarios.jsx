@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { fetchWithAuth } from "../services/auth";
+import { API_URL } from "../config";
 import "../estilos/informes.css";
 
 function nombreUsuario(u) {
@@ -25,9 +27,10 @@ const InformeUsuarios = () => {
   useEffect(() => {
     const cargarUsuarios = async () => {
       try {
-        const res = await fetch(
-          "http://healthymind10.runasp.net/api/Aprendiz/listar?Pagina=1&TamanoPagina=1000"
+        const res = await fetchWithAuth(
+          `${API_URL}/Aprendiz/listar?Pagina=1&TamanoPagina=1000`
         );
+        if (!res) return;
         const json = await res.json();
         setUsuarios(json.resultado || []);
       } catch (error) {
@@ -127,7 +130,7 @@ const InformeUsuarios = () => {
           </p>
         </div>
 
-        <section className="tabla-usuarios">
+        <section className="tabla-usuarios informe-tabla-cols-5">
           <table>
             <thead>
               <tr>
