@@ -104,7 +104,7 @@ export default function SidebarNotificaciones({ variant = "sidebar" }) {
         }}
       >
         <Bell
-          size={20}
+          size={10}
           strokeWidth={2}
           className={esHeader ? "icono-notif" : undefined}
           aria-hidden
