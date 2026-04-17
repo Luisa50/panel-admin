@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { login } from "../services/auth";
+import { useLanguage } from "../context/LanguageContext";
 import "../estilos/login.css";
 
 export default function Login() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [correoPersonal, setCorreoPersonal] = useState("");
   const [password, setPassword] = useState("");
@@ -19,7 +21,7 @@ export default function Login() {
       await login({ correoPersonal, password });
       navigate("/inicio");
     } catch (err) {
-      setError(err.message || "Error al iniciar sesión");
+      setError(err.message || t("login.errorDefault"));
     } finally {
       setLoading(false);
     }
@@ -43,7 +45,7 @@ export default function Login() {
               type="email"
               name="correoPersonal"
               autoComplete="off"
-              placeholder="Correo personal"
+              placeholder={t("login.emailPlaceholder")}
               className="login-input"
               value={correoPersonal}
               onChange={(e) => setCorreoPersonal(e.target.value)}
@@ -72,7 +74,7 @@ export default function Login() {
               className="login-button"
               disabled={loading}
             >
-              {loading ? "Ingresando…" : "Ingresar"}
+              {loading ? t("login.submitting") : t("login.submit")}
             </button>
           </form>
         </div>

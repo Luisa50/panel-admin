@@ -19,6 +19,11 @@ import {
   Cell,
   LineChart,
   Line,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
 } from "recharts";
 import { fetchWithAuth } from "../services/auth";
 import { API_URL } from "../config";
@@ -223,7 +228,7 @@ function MiniPie({ data, nameKey, valueKey, height = 280 }) {
 function ReportesLineChart({ data }) {
   const [hostRef, w] = useChartHostWidth();
   const height = 300;
-  const chartW = w > 0 ? w : 0;
+  const chartW = w > 0 ? Math.min(w, 560) : 0;
 
   return (
     <div
@@ -274,6 +279,46 @@ function ReportesLineChart({ data }) {
             isAnimationActive={false}
           />
         </LineChart>
+      ) : (
+        <div style={{ height, width: "100%" }} aria-hidden />
+      )}
+    </div>
+  );
+}
+
+function MiniRadar({ data, nameKey, valueKey, color = "#2f80ff", height = 300 }) {
+  const [hostRef, w] = useChartHostWidth();
+
+  if (!data.length)
+    return <p className="text-muted small">No hay datos para graficar.</p>;
+
+  const chartW = w > 0 ? w : 0;
+
+  return (
+    <div
+      ref={hostRef}
+      className="informe-recharts-host informe-recharts-host--radar"
+      style={{ minHeight: height, width: "100%" }}
+    >
+      {chartW > 0 ? (
+        <RadarChart
+          width={chartW}
+          height={height}
+          data={data}
+          margin={{ top: 16, right: 24, bottom: 12, left: 24 }}
+        >
+          <PolarGrid />
+          <PolarAngleAxis dataKey={nameKey} tick={{ fontSize: 11 }} />
+          <PolarRadiusAxis allowDecimals={false} tick={{ fontSize: 10 }} />
+          <Tooltip />
+          <Radar
+            dataKey={valueKey}
+            stroke={color}
+            fill={color}
+            fillOpacity={0.35}
+            isAnimationActive={false}
+          />
+        </RadarChart>
       ) : (
         <div style={{ height, width: "100%" }} aria-hidden />
       )}
@@ -668,7 +713,7 @@ export default function InformeEstadistico() {
     >
       <div
         className="hoja-a4"
-        style={{ width: "100%", maxWidth: 1100, minHeight: "auto", padding: "30px 36px" }}
+        style={{ minHeight: "auto", padding: "30px 36px" }}
       >
         <header className="encabezado" style={{ textAlign: "left", marginBottom: 20 }}>
           <div className="d-flex flex-wrap align-items-center justify-content-between gap-2">

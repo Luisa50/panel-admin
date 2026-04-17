@@ -3,6 +3,8 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
+import { FontSizeProvider } from "./context/FontSizeContext";
+import { LanguageProvider } from "./context/LanguageContext";
 import { ThemeProvider } from "./context/ThemeContext";
 
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -13,9 +15,13 @@ import "./index.css";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <AppProvider>
-      <ThemeProvider>
-        <App />
-      </ThemeProvider>
+      <FontSizeProvider>
+        <LanguageProvider>
+          <ThemeProvider>
+            <App />
+          </ThemeProvider>
+        </LanguageProvider>
+      </FontSizeProvider>
     </AppProvider>
   </BrowserRouter>
 );

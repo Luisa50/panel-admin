@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../estilos/usuarios.css";
 import ReactDOM from "react-dom/client";
+import { Modal } from "bootstrap";
 import TablasInfo from "../componentes/TablasInfo.jsx";
 import DataTable from "datatables.net-react";
 import DT from "datatables.net-dt";
@@ -18,23 +19,39 @@ export default function Psicologos() {
   const [informacion, setInformacion] = useState({});
   const [cantidadReg, setCantidadReg] = useState(5);
   const [loading, setLoading] = useState(false);
+  const timeoutBusquedaListado = React.useRef(null);
+  const [textoBusqueda, setTextoBusqueda] = useState("");
   const [dataVer, setDataVer] = useState({});
   const [modo, setModo] = useState("crear");
   const [idEditar, setIdEditar] = useState(null);
   const [formData, setFormData] = useState({
-              nroDocumento: "",
-              nombre: "",
-              apellido: "",
-              especialidad: "",
-              telefono: "",
-              fechaNacimiento: "",
-              direccion: "",
-              correoInstitucional: "",
-              correoPersonal: "",
-              psiPassword: ""
-          });
+    nroDocumento: "",
+    nombre: "",
+    apellido: "",
+    especialidad: "",
+    telefono: "",
+    fechaNacimiento: "",
+    direccion: "",
+    correoInstitucional: "",
+    correoPersonal: "",
+    psiPassword: "",
+  });
+
+  const abrirModalPorId = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    Modal.getOrCreateInstance(el).show();
+  };
+
+  const cumpleMinimoBusqueda = (texto) => {
+    const t = texto.trim();
+    if (!t) return false;
+    if (/^\d+$/.test(t)) return t.length >= 1;
+    return t.length >= 2;
+  };
 
   const loadData = async (pag = 1, lengthPag = 5) => {
+    setTextoBusqueda("");
     setLoading(true);
     try {
       const res = await fetchWithAuth(
@@ -49,90 +66,86 @@ export default function Psicologos() {
     setLoading(false);
   };
 
+  const abrirFormularioNuevoPsicologo = () => {
+    limpiarFormulario();
+    setModo("crear");
+    setIdEditar(null);
+    window.requestAnimationFrame(() => {
+      abrirModalPorId("exampleModal");
+    });
+  };
 
+  const ejecutarBusquedaPsicologos = async (textoRaw) => {
+    const texto = textoRaw.trim();
+    if (!texto) {
+      await loadData(1, cantidadReg);
+      return;
+    }
+    if (!cumpleMinimoBusqueda(textoRaw)) return;
+
+    try {
+      const res = await fetchWithAuth(
+        `${API_URL}/psicologo/busqueda-dinamica?texto=${encodeURIComponent(texto)}`
+      );
+      if (!res?.ok) return;
+      const json = await res.json();
+      const arr = Array.isArray(json) ? json : [];
+      setUsuarios(arr);
+      setInformacion((prev) => ({
+        ...prev,
+        paginaActual: 1,
+        totalPaginas: 1,
+        paginaAnterior: null,
+        paginaSiguiente: null,
+        totalRegistros: arr.length,
+      }));
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleChange = (e) => {
-      const { name, value } = e.target;
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-      setFormData({
-        ...formData,
-        [name]: name === "estadoAprendiz" ? Number(value) : value
-      });
-     };
-
-    const columnas = [
-    { title: "Número", 
-      data: "psiDocumento",
-    render: (f) => f ?? "—"
-    },
-  
-    {
-      title: "Nombre",
-      data: "psiNombre",
-      render: (n) => n ?? "—"
-    },
-    {
-      title: "Apellido",
-      data: "psiApellido",
-      render: (a) => a ?? "—"
-    },
-    {
-      title: "Especialidad",
-      data: "psiEspecialidad",
-      render: (f) => f ?? "—"
-    },
-    {
-      title: "Telefono",
-      data: "psiTelefono",
-      render: (c) => c ?? "—"
-    },
-    {
-      title: "Fecha de nacimiento",
-      data: "psiFechaNac",
-      render: (p) => p ?? "—"
-    },
-    {
-      title: "Localización",
-      data: "psiDireccion",
-      render: (p) => p ?? "—"
-    },
-    {
-      title: "Correo institucional",
-      data: "psiCorreoInstitucional",
-      render: (c) => c ?? "—"
-    },
+  const columnas = [
+    { title: "Número", data: "psiDocumento", render: (f) => f ?? "—" },
+    { title: "Nombre", data: "psiNombre", render: (n) => n ?? "—" },
+    { title: "Apellido", data: "psiApellido", render: (a) => a ?? "—" },
+    { title: "Especialidad", data: "psiEspecialidad", render: (f) => f ?? "—" },
+    { title: "Telefono", data: "psiTelefono", render: (c) => c ?? "—" },
+    { title: "Fecha de nacimiento", data: "psiFechaNac", render: (p) => p ?? "—" },
+    { title: "Localización", data: "psiDireccion", render: (p) => p ?? "—" },
+    { title: "Correo institucional", data: "psiCorreoInstitucional", render: (c) => c ?? "—" },
     {
       title: "Estado del registro",
       data: "psiEstadoRegistro",
       createdCell: (td, estado, row) => {
-              const color = estado === "activo" ? "green" : "red";
-              const texto = estado ?? "—";
-
-              td.innerHTML = `
-                <div style="display:flex; align-items:center; gap:6px; cursor:pointer;">
-                  <span style="
-                    display:inline-block;
-                    width:10px;
-                    height:10px;
-                    border-radius:50%;
-                    background:${color};
-                  "></span>
-                  ${texto}
-                </div>
-              `;
-
-              td.onclick = () => cambiarEstado(row.psiCodigo);
-            }
+        const color = estado === "activo" ? "green" : "red";
+        const texto = estado ?? "—";
+        td.innerHTML = `
+          <div style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+            <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${color};"></span>
+            ${texto}
+          </div>`;
+        td.onclick = () => cambiarEstado(row.psiCodigo);
+      },
     },
     {
       title: "Acciones",
-      data: "psiCodigo",
+      data: null,
+      defaultContent: "",
       orderable: false,
       searchable: false,
-      
-      createdCell: (td, id) => {
-        const root = ReactDOM.createRoot(td);
-        root.render(
+      createdCell: (td, _cellData, rowData) => {
+        const id = rowData?.psiCodigo ?? rowData?.psiDocumento;
+
+        td.innerHTML = "";
+        const container = document.createElement("div");
+        td.appendChild(container);
+
+        ReactDOM.createRoot(container).render(
           <AccionesAprendiz
             id={id}
             onVer={handleVer}
@@ -140,17 +153,17 @@ export default function Psicologos() {
             onEliminar={handleEliminar}
           />
         );
-      }
-    }
-  ]
+      },
+    },
+  ];
 
   const cambiarEstado = async (id) => {
     if (!window.confirm("¿Seguro que deseas cambiar este estado?")) return;
     try {
-      await fetchWithAuth(
-        `${API_URL}/psicologo/cambiar-estado/${id}`,
-        { method: "PUT", headers: { "Content-Type": "application/json" } }
-      );
+      await fetchWithAuth(`${API_URL}/psicologo/cambiar-estado/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+      });
       alert("Se ha cambiado el estado correctamente");
       loadData();
     } catch (err) {
@@ -161,11 +174,10 @@ export default function Psicologos() {
 
   const handleVer = async (id) => {
     try {
-      const res = await fetchWithAuth(
-        `${API_URL}/psicologo/${id}`
-      );
+      const res = await fetchWithAuth(`${API_URL}/psicologo/${id}`);
       const json = await res.json();
       setDataVer(Array.isArray(json) ? json[0] ?? {} : json ?? {});
+      abrirModalPorId("modalVer");
     } catch (err) {
       console.error(err);
     }
@@ -173,9 +185,7 @@ export default function Psicologos() {
 
   const handleEditar = async (id) => {
     try {
-      const res = await fetchWithAuth(
-        `${API_URL}/psicologo/${id}`
-      );
+      const res = await fetchWithAuth(`${API_URL}/psicologo/${id}`);
       const json = await res.json();
       const item = Array.isArray(json) ? json[0] : json;
       if (!item) return;
@@ -193,6 +203,7 @@ export default function Psicologos() {
       });
       setModo("editar");
       setIdEditar(item.psiCodigo);
+      abrirModalPorId("exampleModal");
     } catch (err) {
       console.error(err);
     }
@@ -201,10 +212,9 @@ export default function Psicologos() {
   const handleEliminar = async (id) => {
     if (!window.confirm("¿Seguro que deseas eliminar este registro?")) return;
     try {
-      await fetchWithAuth(
-        `${API_URL}/psicologo/eliminar/${id}`,
-        { method: "DELETE" }
-      );
+      await fetchWithAuth(`${API_URL}/psicologo/eliminar/${id}`, {
+        method: "DELETE",
+      });
       alert("Eliminado");
       loadData();
     } catch (err) {
@@ -214,7 +224,7 @@ export default function Psicologos() {
   };
 
   const limpiarFormulario = () => {
-  setFormData({
+    setFormData({
       nroDocumento: "",
       nombre: "",
       apellido: "",
@@ -224,10 +234,10 @@ export default function Psicologos() {
       direccion: "",
       correoInstitucional: "",
       correoPersonal: "",
-      psiPassword: ""
+      psiPassword: "",
     });
-};
-    
+  };
+
   const enviarPost = async (e) => {
     e.preventDefault();
 
@@ -267,14 +277,14 @@ export default function Psicologos() {
         );
         loadData();
         limpiarFormulario();
-        document.getElementById("btnCerrarModal").click();
+        document.getElementById("btnCerrarModal")?.click();
       } else {
         alert(
           modo === "crear"
             ? "Error al crear el psicólogo"
             : "Error al editar el psicólogo"
         );
-        document.getElementById("btnCerrarModal").click();
+        document.getElementById("btnCerrarModal")?.click();
       }
     } catch (err) {
       console.error(err);
@@ -282,137 +292,135 @@ export default function Psicologos() {
     }
   };
 
-  const busquedaDinamica = async (text) => {
-    if (text.length < 3) return loadData();
-    try {
-      const res = await fetchWithAuth(
-        `${API_URL}/psicologo/busqueda-dinamica?texto=${encodeURIComponent(text)}`
-      );
-      const json = await res.json();
-      setUsuarios(Array.isArray(json) ? json : []);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   useEffect(() => {
     loadData();
   }, []);
 
-
-  
-
-
   return (
     <>
-    <ModalPsicologo
-      formData={formData}
-      handleChange={handleChange}
-      enviarPost={enviarPost}
-      modo={modo}
-    />
-    <Modalver 
-    id="modalVer"
-    titulo="Detalles del psicólogo"
-    data={dataVer}
-    campos={[
-        { nombre: "psiDocumento", label: "Documento" },
-        { nombre: "psiNombre", label: "Nombre" },
-        { nombre: "psiApellido", label: "Apellido" },
-        { nombre: "psiEspecialidad", label: "Especialidad" },
-        { nombre: "psiTelefono", label: "Teléfono" },
-        { nombre: "psiFechaNac", label: "Fecha de nacimiento" },
-        { nombre: "psiDireccion", label: "Dirección" },
-        { nombre: "psiCorreoInstitucional", label: "Correo Institucional" },
-        { nombre: "psiCorreoPersonal", label: "Correo Personal" },
-        { nombre: "psiEstadoRegistro", label: "Estado" }
-    ]} />
-    {loading && (
+      <ModalPsicologo
+        formData={formData}
+        handleChange={handleChange}
+        enviarPost={enviarPost}
+        modo={modo}
+      />
+      <Modalver
+        id="modalVer"
+        titulo="Detalles del psicólogo"
+        data={dataVer}
+        campos={[
+          { nombre: "psiDocumento", label: "Documento" },
+          { nombre: "psiNombre", label: "Nombre" },
+          { nombre: "psiApellido", label: "Apellido" },
+          { nombre: "psiEspecialidad", label: "Especialidad" },
+          { nombre: "psiTelefono", label: "Teléfono" },
+          { nombre: "psiFechaNac", label: "Fecha de nacimiento" },
+          { nombre: "psiDireccion", label: "Dirección" },
+          { nombre: "psiCorreoInstitucional", label: "Correo Institucional" },
+          { nombre: "psiCorreoPersonal", label: "Correo Personal" },
+          { nombre: "psiEstadoRegistro", label: "Estado" },
+        ]}
+      />
+      {loading && (
         <div className="loader-overlay">
           <div className="loader"></div>
         </div>
       )}
 
-    <div className="container-fluid pb-4">
+      <div className="container-fluid pb-4">
         <h2>Listado de psicologos</h2>
-      <div className="encabezado w-100">
-        <div className="d-flex align-items-center justify-content-between gap-2 w-100">
-          <select className="seleccionCantidad" onChange={(e) => {
-            const nuevaCantidad = parseInt(e.target.value);
-            setCantidadReg(nuevaCantidad);
-            loadData(informacion?.paginaActual ?? 1, nuevaCantidad)
-          }}>
-            <option value="5" defaultChecked>5</option>
-            <option value="10">10</option>
-            <option value="15">15</option>
-          </select>
-          <div className="d-flex align-items-center gap-2">
-              <input
-                className="form-control"
-                style={{ width: "220px" }}
-                placeholder="Buscar…"
-                onChange={(e) => busquedaDinamica(e.target.value)}
-              />
-              <span className="input-group-text bg-success text-light"
-              data-bs-toggle="modal" 
-              data-bs-target="#exampleModal"
-              onClick={() => {
-                limpiarFormulario();
-                setModo("crear");
+        <div className="encabezado w-100">
+          <div className="d-flex align-items-center justify-content-between gap-2 w-100">
+            <select
+              className="seleccionCantidad"
+              onChange={(e) => {
+                const nuevaCantidad = parseInt(e.target.value);
+                setCantidadReg(nuevaCantidad);
+                loadData(informacion?.paginaActual ?? 1, nuevaCantidad);
               }}
-              id="aggreg">
+            >
+              <option value="5" defaultChecked>5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+            </select>
+            <div className="d-flex align-items-center gap-2">
+              <input
+                type="search"
+                className="form-control"
+                style={{ width: "280px" }}
+                placeholder="Buscar por nombre o N° documento…"
+                value={textoBusqueda}
+                aria-label="Buscar psicólogos por nombre o documento"
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setTextoBusqueda(v);
+                  clearTimeout(timeoutBusquedaListado.current);
+                  if (!v.trim()) {
+                    loadData(1, cantidadReg);
+                    return;
+                  }
+                  timeoutBusquedaListado.current = setTimeout(
+                    () => ejecutarBusquedaPsicologos(v),
+                    400
+                  );
+                }}
+              />
+              <button
+                type="button"
+                className="btn btn-success px-3"
+                title="Registrar nuevo psicólogo"
+                id="aggreg"
+                onClick={abrirFormularioNuevoPsicologo}
+              >
                 +
-              </span>
+              </button>
             </div>
+          </div>
+        </div>
+
+        <TablasInfo
+          columnas={columnas}
+          datos={usuarios}
+          informacion={informacion}
+        />
+        <div className="btn-group mt-3">
+          <button
+            type="button"
+            className="btn btn-outline-primary"
+            disabled={!informacion.paginaAnterior}
+            onClick={() => loadData(informacion.paginaAnterior, cantidadReg)}
+            aria-label="Página anterior"
+          >
+            <i className="bi bi-chevron-compact-left"></i>
+          </button>
+
+          {Array.from(
+            { length: informacion?.totalPaginas ?? 0 },
+            (_, i) => i + 1
+          ).map((num) => (
+            <button
+              key={num}
+              type="button"
+              className={`btn ${informacion?.paginaActual === num ? "btn-primary" : "btn-outline-primary"}`}
+              onClick={() => loadData(num, cantidadReg)}
+              aria-label={`Página ${num}`}
+              aria-current={informacion?.paginaActual === num ? "page" : undefined}
+            >
+              {num}
+            </button>
+          ))}
+
+          <button
+            type="button"
+            className="btn btn-outline-primary"
+            disabled={!informacion.paginaSiguiente}
+            onClick={() => loadData(informacion.paginaSiguiente, cantidadReg)}
+            aria-label="Página siguiente"
+          >
+            <i className="bi bi-chevron-compact-right"></i>
+          </button>
         </div>
       </div>
-
-      
-
-      <TablasInfo
-      columnas={columnas}
-      datos={usuarios}
-      informacion={informacion}
-      />
-      <div className="btn-group mt-3">
-        <button
-          type="button"
-          className="btn btn-outline-primary"
-          disabled={!informacion.paginaAnterior}
-          onClick={() => loadData(informacion.paginaAnterior, cantidadReg)}
-          aria-label="Página anterior"
-        >
-          <i className="bi bi-chevron-compact-left"></i>
-        </button>
-
-        {Array.from(
-          { length: informacion?.totalPaginas ?? 0 },
-          (_, i) => i + 1
-        ).map((num) => (
-          <button
-            key={num}
-            type="button"
-            className={`btn ${informacion?.paginaActual === num ? "btn-primary" : "btn-outline-primary"}`}
-            onClick={() => loadData(num, cantidadReg)}
-            aria-label={`Página ${num}`}
-            aria-current={informacion?.paginaActual === num ? "page" : undefined}
-          >
-            {num}
-          </button>
-        ))}
-
-        <button
-          type="button"
-          className="btn btn-outline-primary"
-          disabled={!informacion.paginaSiguiente}
-          onClick={() => loadData(informacion.paginaSiguiente, cantidadReg)}
-          aria-label="Página siguiente"
-        >
-          <i className="bi bi-chevron-compact-right"></i>
-        </button>
-      </div>
-
-    </div>
     </>
   );
 }

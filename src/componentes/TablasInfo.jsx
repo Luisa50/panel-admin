@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import DataTable from "datatables.net-react";
 import DT from "datatables.net-dt";
 import "datatables.net-select-dt";
@@ -10,9 +11,17 @@ export default function TablasInfo({
   datos = [],
   informacion = {},
 }) {
+  const keyRef = useRef(0);
+  const prevRef = useRef(datos);
+
+  if (prevRef.current !== datos) {
+    keyRef.current += 1;
+    prevRef.current = datos;
+  }
+
   return (
     <DataTable
-      key={Array.isArray(datos) ? datos.length : 0}
+      key={keyRef.current}
       columns={columnas}
       data={Array.isArray(datos) ? datos : []}
       options={{

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState, useCallback } from "rea
 import { useNavigate } from "react-router-dom";
 import { Bell } from "lucide-react";
 import { AppContext } from "../context/AppContext";
+import { useLanguage } from "../context/LanguageContext";
 import "../estilos/sidebar-notificaciones.css";
 
 /**
@@ -10,6 +11,7 @@ import "../estilos/sidebar-notificaciones.css";
  * - header: barra superior, campana a la derecha; panel bajo la campana
  */
 export default function SidebarNotificaciones({ variant = "sidebar" }) {
+  const { t } = useLanguage();
   const esHeader = variant === "header";
   const navigate = useNavigate();
   const { notificaciones, marcarComoLeida } = useContext(AppContext);
@@ -121,7 +123,7 @@ export default function SidebarNotificaciones({ variant = "sidebar" }) {
           ref={panelRef}
           className="sidebar-notif-panel"
           role="dialog"
-          aria-label="Panel de notificaciones"
+          aria-label={t("notif.panelAria")}
           style={{
             top: pos.top,
             left: pos.left,
@@ -136,7 +138,7 @@ export default function SidebarNotificaciones({ variant = "sidebar" }) {
 
           <div className="sidebar-notif-panel-body">
             {notificaciones.length === 0 ? (
-              <p className="sidebar-notif-empty">No tienes notificaciones</p>
+              <p className="sidebar-notif-empty">{t("notif.empty")}</p>
             ) : (
               <ul className="sidebar-notif-list">
                 {notificaciones.slice(0, 8).map((n) => (
@@ -175,7 +177,7 @@ export default function SidebarNotificaciones({ variant = "sidebar" }) {
                 navigate("/notificaciones");
               }}
             >
-              Ver todas
+              {t("notif.viewAll")}
             </button>
           </div>
         </div>

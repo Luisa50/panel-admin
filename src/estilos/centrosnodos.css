@@ -139,3 +139,114 @@ body.dark-mode .centro-container {
   padding: 8px 15px;
   border-radius: 6px;
 }
+
+.nodos-tags-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.nodo-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #1f2937;
+  background: #eef2ff;
+  border: 1px solid #dbe4ff;
+}
+
+.selector-centro-multi {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px;
+  background: #f8fafc;
+}
+
+.selector-centro-lista {
+  margin-top: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.selector-centro-item {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  font-size: 13px;
+  color: #1f2937;
+  cursor: pointer;
+}
+
+.selector-centro-item + .selector-centro-item {
+  border-top: 1px solid #f1f5f9;
+}
+
+.selector-centro-item:hover {
+  background: #f8fafc;
+}
+
+.selector-centro-item.activo {
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.selector-centro-empty {
+  padding: 10px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.selector-centro-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #475569;
+}
+
+.chip-item {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #ecfeff;
+  border: 1px solid #bae6fd;
+  color: #0f766e;
+}
+
+.icono-ver-centro {
+  color: #2563eb;
+  text-decoration: none;
+  line-height: 1;
+}
+
+.icono-ver-centro:hover,
+.icono-ver-centro:focus {
+  color: #1d4ed8;
+}
+
+.nodos-stack-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nodo-stack-item {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #1f2937;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}

@@ -13,6 +13,22 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  font-size: 16px;
+}
+
+html.font-size-small {
+  font-size: 14px;
+}
+
+html.font-size-normal {
+  font-size: 16px;
+}
+
+html.font-size-large {
+  font-size: 18px;
+}
+
 a {
   font-weight: 500;
   color: #646cff;

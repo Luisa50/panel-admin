@@ -261,7 +261,11 @@ table.dataTable.no-footer {
     line-height: 1.35 !important;
     box-shadow: none !important;
     border-radius: 0 !important;
+    border-collapse: collapse !important;
+    border: 1pt solid #1e293b !important;
     page-break-inside: auto;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .tabla-usuarios thead {
@@ -279,6 +283,11 @@ table.dataTable.no-footer {
     overflow-wrap: anywhere !important;
     white-space: normal !important;
     vertical-align: top !important;
+    border: 0.75pt solid #334155 !important;
+  }
+
+  .tabla-usuarios tbody tr:last-child td {
+    border-bottom: 0.75pt solid #334155 !important;
   }
 
   /* Informe usuarios: 5 columnas */

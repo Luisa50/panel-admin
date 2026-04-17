@@ -23,3 +23,17 @@
 body.dark-mode .area-container {
   background: #020617;
 }
+
+/* Botón editar por fila (solo este módulo) */
+.area-container .area-btn-editar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8125rem;
+  border-radius: 8px;
+}
+
+.area-container .area-btn-editar .area-btn-editar-text {
+  font-weight: 500;
+}

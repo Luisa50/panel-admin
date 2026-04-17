@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../estilos/usuarios.css";
 import ReactDOM from "react-dom/client";
+import { Modal } from "bootstrap";
 import ModalEjemplo from "../componentes/modalsPost/ModalEjemplo.jsx";
 import TablasInfo from "../componentes/TablasInfo.jsx";
 import Modalver from "../componentes/modalsPost/ModalVer.jsx";
@@ -15,37 +16,45 @@ import { API_URL } from "../config";
 export default function Usuarios() {
   DataTable.use(DT);
   const [usuarios, setUsuarios] = useState([]);
-  const [informacion, setInformacion] = useState([])
-  const [cantidadReg, setCantidadReg] = useState(5)
+  const [informacion, setInformacion] = useState({});
+  const [cantidadReg, setCantidadReg] = useState(5);
   const [municipioTexto, setMunicipioTexto] = useState("");
   const [listaMunicipios, setListaMunicipios] = useState([]);
-    const [dataVer, setDataVer] = useState({});
+  const [dataVer, setDataVer] = useState({});
   const buscarTimeout = React.useRef(null);
+  const timeoutBusquedaListado = React.useRef(null);
+  const [textoBusqueda, setTextoBusqueda] = useState("");
   const [loading, setLoading] = useState(false);
-  const [estadoApr, setEstadoApr] = useState([])
-  const [modo, setModo] = useState({})
-  const [idEditar, setIdEditar] = useState({})
+  const [estadoApr, setEstadoApr] = useState([]);
+  const [modo, setModo] = useState("crear");
+  const [idEditar, setIdEditar] = useState(null);
   const [formData, setFormData] = useState({
-              tipoDocumento: "",
-              nroDocumento: "",
-              fechaNacimiento: "",
-              nombre: "",
-              segundoNombre: "",
-              apellido: "",
-              segundoApellido: "",
-              correoInstitucional: "",
-              correoPersonal: "",
-              telefono: "",
-              municipio: "",
-              direccion: "",
-              eps: "",
-              patologia: "",
-              estadoAprendiz: "",
-              tipoPoblacion: "",
-              acudienteNombre: "",
-              acudienteApellido: "",
-              acudienteTelefono: "",
-          });
+    tipoDocumento: "",
+    nroDocumento: "",
+    fechaNacimiento: "",
+    nombre: "",
+    segundoNombre: "",
+    apellido: "",
+    segundoApellido: "",
+    correoInstitucional: "",
+    correoPersonal: "",
+    telefono: "",
+    municipio: "",
+    direccion: "",
+    eps: "",
+    patologia: "",
+    estadoAprendiz: "",
+    tipoPoblacion: "",
+    acudienteNombre: "",
+    acudienteApellido: "",
+    acudienteTelefono: "",
+  });
+
+  const abrirModalPorId = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    Modal.getOrCreateInstance(el).show();
+  };
 
   const handleBuscarMunicipio = (e) => {
     const texto = e.target.value;
@@ -56,7 +65,7 @@ export default function Usuarios() {
       return;
     }
 
-    clearTimeout(buscarTimeout);
+    clearTimeout(buscarTimeout.current);
     buscarTimeout.current = setTimeout(async () => {
       try {
         const res = await fetchWithAuth(
@@ -71,93 +80,81 @@ export default function Usuarios() {
   };
 
   const seleccionarMunicipio = (m) => {
-  setMunicipioTexto(`${m.ciuNombre} - ${m.regional.regNombre}`);
-  setFormData(p => ({
-    ...p,
-    municipio: m.ciuCodigo
-  }));
-  setListaMunicipios([]);
-};
+    setMunicipioTexto(`${m.ciuNombre} - ${m.regional.regNombre}`);
+    setFormData((p) => ({ ...p, municipio: m.ciuCodigo }));
+    setListaMunicipios([]);
+  };
 
   const handleChange = (e) => {
-      const { name, value } = e.target;
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: name === "estadoAprendiz" ? Number(value) : value,
+    });
+  };
 
-      setFormData({
-        ...formData,
-        [name]: name === "estadoAprendiz" ? Number(value) : value
-      });
-    };
-    
-    
-
-    const columnas = [
+  const columnas = [
     { title: "Tipo documento", data: "tipoDocumento" },
-    
     { title: "Número", data: "nroDocumento" },
-  
     {
       title: "Nombre",
       data: "nombres",
-      render: (n) => n?.primerNombre ?? "—"
+      render: (n) => n?.primerNombre ?? "—",
     },
     {
       title: "Apellido",
       data: "apellidos",
-      render: (a) => a?.primerApellido ?? "—"
+      render: (a) => a?.primerApellido ?? "—",
     },
     {
       title: "Fecha Nacimiento",
       data: "fechaNacimiento",
-      render: (f) => f ?? "—"
+      render: (f) => f ?? "—",
     },
     {
       title: "Correo personal",
       data: "contacto",
-      render: (c) => c?.correoPersonal ?? "—"
+      render: (c) => c?.correoPersonal ?? "—",
     },
-    
     {
       title: "Estado aprendiz",
       data: "estadoAprendiz",
-      render: (e) => e?.estAprNombre ?? "—"
+      render: (e) => e?.estAprNombre ?? "—",
     },
     {
       title: "Población",
       data: "tipoPoblacion",
-      render: (p) => p ?? "—"
+      render: (p) => p ?? "—",
     },
     {
       title: "Estado del registro",
       data: "estadoRegistro",
       createdCell: (td, estado, row) => {
-              const color = estado === "activo" ? "green" : "red";
-              const texto = estado ?? "—";
-
-              td.innerHTML = `
-                <div style="display:flex; align-items:center; gap:6px; cursor:pointer;">
-                  <span style="
-                    display:inline-block;
-                    width:10px;
-                    height:10px;
-                    border-radius:50%;
-                    background:${color};
-                  "></span>
-                  ${texto}
-                </div>
-              `;
-
-              td.onclick = () => cambiarEstado(row.nroDocumento);
-            }
+        const color = estado === "activo" ? "green" : "red";
+        const texto = estado ?? "—";
+        td.innerHTML = `
+          <div style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+            <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${color};"></span>
+            ${texto}
+          </div>`;
+        td.onclick = () => cambiarEstado(row.nroDocumento);
+      },
     },
     {
       title: "Acciones",
-      data: "codigo",
+      data: null,
+      defaultContent: "",
       orderable: false,
       searchable: false,
-      
-      createdCell: (td, id) => {
-        const root = ReactDOM.createRoot(td);
-        root.render(
+      createdCell: (td, _cellData, rowData) => {
+        const id =
+          rowData?.codigo ?? rowData?.aprCodigo ?? rowData?.nroDocumento;
+
+        td.innerHTML = "";
+        const container = document.createElement("div");
+        td.appendChild(container);
+
+        ReactDOM.createRoot(container).render(
           <AccionesAprendiz
             id={id}
             onVer={handleVer}
@@ -165,156 +162,193 @@ export default function Usuarios() {
             onEliminar={handleEliminar}
           />
         );
-      }
+      },
+    },
+  ];
+
+  /** Nombre: ≥2 caracteres. Solo números (documento): ≥1 carácter. */
+  const cumpleMinimoBusqueda = (texto) => {
+    const t = texto.trim();
+    if (!t) return false;
+    if (/^\d+$/.test(t)) return t.length >= 1;
+    return t.length >= 2;
+  };
+
+  const loadData = async (pag = 1, lengthPag = 5) => {
+    setTextoBusqueda("");
+    setLoading(true);
+    try {
+      const res = await fetchWithAuth(
+        `${API_URL}/Aprendiz/listar?Pagina=${pag}&TamanoPagina=${lengthPag}`
+      );
+      const json = await res.json();
+      setUsuarios(json?.resultado ?? []);
+      setInformacion(json ?? {});
+    } catch (error) {
+      console.error("Error al cargar datos:", error);
     }
-  ]
+    setLoading(false);
+  };
 
+  const abrirFormularioNuevoAprendiz = () => {
+    limpiarFormulario();
+    setModo("crear");
+    setIdEditar(null);
+    window.requestAnimationFrame(() => {
+      abrirModalPorId("exampleModal");
+    });
+  };
 
-const loadData = async (pag = 1, lengthPag = 5) => {
-  setLoading(true);
-  try {
-    const res = await fetchWithAuth(
-      `${API_URL}/Aprendiz/listar?Pagina=${pag}&TamanoPagina=${lengthPag}`
-    );
-    const json = await res.json();
-    setUsuarios(json?.resultado ?? []);
-    setInformacion(json ?? {});
-  } catch (error) {
-    console.error("Error al cargar datos:", error);
-  }
-  setLoading(false);
-};
+  const ejecutarBusquedaAprendices = async (textoRaw) => {
+    const texto = textoRaw.trim();
+    if (!texto) {
+      await loadData(1, cantidadReg);
+      return;
+    }
+    if (!cumpleMinimoBusqueda(textoRaw)) return;
 
-const cambiarEstado = async (id) => {
-  const cuerpoPost = { RazonEliminacion: "prueba" };
-  try {
-    await fetchWithAuth(
-      `${API_URL}/Aprendiz/cambiar-estado/${id}`,
-      {
+    try {
+      const res = await fetchWithAuth(
+        `${API_URL}/aprendiz/busqueda-dinamica?texto=${encodeURIComponent(texto)}`
+      );
+      if (!res?.ok) return;
+      const json = await res.json();
+      const arr = Array.isArray(json) ? json : [];
+      setUsuarios(arr);
+      setInformacion((prev) => ({
+        ...prev,
+        paginaActual: 1,
+        totalPaginas: 1,
+        paginaAnterior: null,
+        paginaSiguiente: null,
+        totalRegistros: arr.length,
+      }));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const cambiarEstado = async (id) => {
+    const cuerpoPost = { RazonEliminacion: "prueba" };
+    try {
+      await fetchWithAuth(`${API_URL}/Aprendiz/cambiar-estado/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(cuerpoPost),
-      }
-    );
-    alert("Se ha cambiado el estado correctamente");
-    loadData();
-  } catch (err) {
-    console.error(err);
-    alert("Error al cambiar el estado");
-  }
-};
-
-const handleVer = async (id) => {
-  try {
-    const res = await fetchWithAuth(
-      `${API_URL}/aprendiz/${id}`
-    );
-    const json = await res.json();
-    setDataVer(Array.isArray(json) ? json[0] ?? {} : json ?? {});
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-const handleEditar = async (id) => {
-  try {
-    const res = await fetchWithAuth(
-      `${API_URL}/aprendiz/${id}`
-    );
-    const json = await res.json();
-    const item = Array.isArray(json) ? json[0] : json;
-    if (!item) return;
-
-    setFormData({
-      tipoDocumento: item.tipoDocumento ?? "",
-      nroDocumento: item.nroDocumento ?? "",
-      fechaNacimiento: item.fechaNacimiento?.split("T")[0] ?? "",
-      nombre: item.nombres?.primerNombre ?? "",
-      segundoNombre: item.nombres?.segundoNombre ?? "",
-      apellido: item.apellidos?.primerApellido ?? "",
-      segundoApellido: item.apellidos?.segundoApellido ?? "",
-      correoInstitucional: item.contacto?.correoInstitucional ?? "",
-      correoPersonal: item.contacto?.correoPersonal ?? "",
-      telefono: item.contacto?.telefono ?? "",
-      municipio: item.ubicacion?.municipioID ?? "",
-      direccion: item.ubicacion?.direccion ?? "",
-      eps: item.eps ?? "",
-      patologia: item.patologia ?? "",
-      estadoAprendiz: item.estadoAprendiz?.estAprCodigo ?? "",
-      tipoPoblacion: item.tipoPoblacion ?? "",
-      acudienteNombre: item.contacto?.acudiente?.acudienteNombre ?? "",
-      acudienteApellido: item.contacto?.acudiente?.acudienteApellido ?? "",
-      acudienteTelefono: item.contacto?.acudiente?.acudienteTelefono ?? "",
-    });
-    setMunicipioTexto(
-      item.ubicacion
-        ? `${item.ubicacion.municipio ?? ""} - ${item.ubicacion.departamento ?? ""}`
-        : ""
-    );
-    setModo("editar");
-    setIdEditar(item.codigo);
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-useEffect(() => {
-  const cargarEstadosAprendiz = async () => {
-    try {
-      const res = await fetchWithAuth(
-        `${API_URL}/EstadoAprendiz`
-      );
-      const json = await res.json();
-      setEstadoApr(Array.isArray(json) ? json : []);
+      });
+      alert("Se ha cambiado el estado correctamente");
+      loadData();
     } catch (err) {
-      console.error("Error cargando estados aprendiz:", err);
+      console.error(err);
+      alert("Error al cambiar el estado");
     }
   };
-  cargarEstadosAprendiz();
-}, []);
 
-const handleEliminar = async (id) => {
-  if (!window.confirm("¿Seguro que deseas eliminar este aprendiz?")) return;
-  try {
-    await fetchWithAuth(
-      `${API_URL}/Aprendiz/eliminar/${id}`,
-      { method: "DELETE" }
-    );
-    alert("Eliminado");
-    loadData();
-  } catch (err) {
-    console.error(err);
-    alert("Error al eliminar");
-  }
-};
+  const handleVer = async (id) => {
+    try {
+      const res = await fetchWithAuth(`${API_URL}/aprendiz/${id}`);
+      const json = await res.json();
+      setDataVer(Array.isArray(json) ? json[0] ?? {} : json ?? {});
+      abrirModalPorId("modalVer");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-      const limpiarFormulario = () => {
+  const handleEditar = async (id) => {
+    try {
+      const res = await fetchWithAuth(`${API_URL}/aprendiz/${id}`);
+      const json = await res.json();
+      const item = Array.isArray(json) ? json[0] : json;
+      if (!item) return;
+
       setFormData({
-        tipoDocumento: "",
-        nroDocumento: "",
-        fechaNacimiento: "",
-        nombre: "",
-        segundoNombre: "",
-        apellido: "",
-        segundoApellido: "",
-        correoInstitucional: "",
-        correoPersonal: "",
-        telefono: "",
-        municipio: "",
-        direccion: "",
-        eps: "",
-        patologia: "",
-        estadoAprendiz: "",
-        tipoPoblacion: "",
-        acudienteNombre: "",
-        acudienteApellido: "",
-        acudienteTelefono: ""
+        tipoDocumento: item.tipoDocumento ?? "",
+        nroDocumento: item.nroDocumento ?? "",
+        fechaNacimiento: item.fechaNacimiento?.split("T")[0] ?? "",
+        nombre: item.nombres?.primerNombre ?? "",
+        segundoNombre: item.nombres?.segundoNombre ?? "",
+        apellido: item.apellidos?.primerApellido ?? "",
+        segundoApellido: item.apellidos?.segundoApellido ?? "",
+        correoInstitucional: item.contacto?.correoInstitucional ?? "",
+        correoPersonal: item.contacto?.correoPersonal ?? "",
+        telefono: item.contacto?.telefono ?? "",
+        municipio: item.ubicacion?.municipioID ?? "",
+        direccion: item.ubicacion?.direccion ?? "",
+        eps: item.eps ?? "",
+        patologia: item.patologia ?? "",
+        estadoAprendiz: item.estadoAprendiz?.estAprCodigo ?? "",
+        tipoPoblacion: item.tipoPoblacion ?? "",
+        acudienteNombre: item.contacto?.acudiente?.acudienteNombre ?? "",
+        acudienteApellido: item.contacto?.acudiente?.acudienteApellido ?? "",
+        acudienteTelefono: item.contacto?.acudiente?.acudienteTelefono ?? "",
       });
+      setMunicipioTexto(
+        item.ubicacion
+          ? `${item.ubicacion.municipio ?? ""} - ${item.ubicacion.departamento ?? ""}`
+          : ""
+      );
+      setModo("editar");
+      setIdEditar(item.codigo);
+      abrirModalPorId("exampleModal");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-      setMunicipioTexto("");
-      setListaMunicipios([]);
+  useEffect(() => {
+    const cargarEstadosAprendiz = async () => {
+      try {
+        const res = await fetchWithAuth(`${API_URL}/EstadoAprendiz`);
+        const json = await res.json();
+        setEstadoApr(Array.isArray(json) ? json : []);
+      } catch (err) {
+        console.error("Error cargando estados aprendiz:", err);
+      }
     };
-    
+    cargarEstadosAprendiz();
+  }, []);
+
+  const handleEliminar = async (id) => {
+    if (!window.confirm("¿Seguro que deseas eliminar este aprendiz?")) return;
+    try {
+      await fetchWithAuth(`${API_URL}/Aprendiz/eliminar/${id}`, {
+        method: "DELETE",
+      });
+      alert("Eliminado");
+      loadData();
+    } catch (err) {
+      console.error(err);
+      alert("Error al eliminar");
+    }
+  };
+
+  const limpiarFormulario = () => {
+    setFormData({
+      tipoDocumento: "",
+      nroDocumento: "",
+      fechaNacimiento: "",
+      nombre: "",
+      segundoNombre: "",
+      apellido: "",
+      segundoApellido: "",
+      correoInstitucional: "",
+      correoPersonal: "",
+      telefono: "",
+      municipio: "",
+      direccion: "",
+      eps: "",
+      patologia: "",
+      estadoAprendiz: "",
+      tipoPoblacion: "",
+      acudienteNombre: "",
+      acudienteApellido: "",
+      acudienteTelefono: "",
+    });
+    setMunicipioTexto("");
+    setListaMunicipios([]);
+  };
+
   const enviarPost = async (e) => {
     e.preventDefault();
 
@@ -337,13 +371,13 @@ const handleEliminar = async (id) => {
       aprTipoPoblacion: formData.tipoPoblacion,
       aprTelefonoAcudiente: formData.acudienteTelefono,
       aprAcudNombre: formData.acudienteNombre,
-      aprAcudApellido: formData.acudienteApellido
-    }
+      aprAcudApellido: formData.acudienteApellido,
+    };
 
-    const url = modo === "crear"
-              ? `${API_URL}/Aprendiz`
-              : `${API_URL}/Aprendiz/editar/${idEditar}`
-
+    const url =
+      modo === "crear"
+        ? `${API_URL}/Aprendiz`
+        : `${API_URL}/Aprendiz/editar/${idEditar}`;
     const method = modo === "crear" ? "POST" : "PUT";
 
     try {
@@ -361,14 +395,14 @@ const handleEliminar = async (id) => {
         );
         loadData();
         limpiarFormulario();
-        document.getElementById("btnCerrarModal").click();
+        document.getElementById("btnCerrarModal")?.click();
       } else {
         alert(
           modo === "crear"
             ? "Error al crear el aprendiz"
             : "Error al editar el aprendiz"
         );
-        document.getElementById("btnCerrarModal").click();
+        document.getElementById("btnCerrarModal")?.click();
       }
     } catch (err) {
       console.error(err);
@@ -376,147 +410,145 @@ const handleEliminar = async (id) => {
     }
   };
 
-  const busquedaDinamica = async (text) => {
-    if (text.length < 3) return loadData();
-    try {
-      const res = await fetchWithAuth(
-        `${API_URL}/aprendiz/busqueda-dinamica?texto=${encodeURIComponent(text)}`
-      );
-      const json = await res.json();
-      setUsuarios(Array.isArray(json) ? json : []);
-    } catch (err) {
-      console.error(err);
-    }
-  };
   useEffect(() => {
-      const fetchData = async () => {
-      await loadData();
-    };
-    fetchData();
-  }, [])
-
-
-  
-
+    loadData();
+  }, []);
 
   return (
     <>
-    <ModalEjemplo
-      formData={formData}
-      handleChange={handleChange}
-      enviarPost={enviarPost}
-      municipioTexto={municipioTexto}
-      listaMunicipios={listaMunicipios}
-      handleBuscarMunicipio={handleBuscarMunicipio}
-      seleccionarMunicipio={seleccionarMunicipio}
-      estadoApr={estadoApr}
-    />
-    <Modalver 
+      <ModalEjemplo
+        formData={formData}
+        handleChange={handleChange}
+        enviarPost={enviarPost}
+        municipioTexto={municipioTexto}
+        listaMunicipios={listaMunicipios}
+        handleBuscarMunicipio={handleBuscarMunicipio}
+        seleccionarMunicipio={seleccionarMunicipio}
+        estadoApr={estadoApr}
+        modo={modo}
+      />
+      <Modalver
         id="modalVer"
         titulo="Detalles del aprendiz"
         data={dataVer}
         campos={[
-            { nombre: "tipoDocumento", label: "Tipo de Documento" },
-            { nombre: "nroDocumento", label: "Número de Documento" },
-            { nombre: "nombres.primerNombre", label: "Nombre" },
-            { nombre: "nombres.segundoNombre", label: "Segundo Nombre" },
-            { nombre: "apellidos.primerApellido", label: "Apellido" },
-            { nombre: "apellidos.segundoApellido", label: "Segundo Apellido" },
-            { nombre: "ubicacion.departamento", label: "Departamento" },
-            { nombre: "ubicacion.municipio", label: "Municipio" },
-            { nombre: "ubicacion.direccion", label: "Dirección" },
-            { nombre: "contacto.telefono", label: "Teléfono" },
-            { nombre: "contacto.correoPersonal", label: "Correo Personal" },
-            { nombre: "contacto.correoInstitucional", label: "Correo Institucional" },
-            { nombre: "contacto.acudiente.acudienteNombre", label: "Nombre Acudiente" },
-            { nombre: "contacto.acudiente.acudienteApellido", label: "Apellido Acudiente" },
-            { nombre: "contacto.acudiente.acudienteTelefono", label: "Teléfono Acudiente" }
-        ]} />
-    {loading && (
+          { nombre: "tipoDocumento", label: "Tipo de Documento" },
+          { nombre: "nroDocumento", label: "Número de Documento" },
+          { nombre: "nombres.primerNombre", label: "Nombre" },
+          { nombre: "nombres.segundoNombre", label: "Segundo Nombre" },
+          { nombre: "apellidos.primerApellido", label: "Apellido" },
+          { nombre: "apellidos.segundoApellido", label: "Segundo Apellido" },
+          { nombre: "ubicacion.departamento", label: "Departamento" },
+          { nombre: "ubicacion.municipio", label: "Municipio" },
+          { nombre: "ubicacion.direccion", label: "Dirección" },
+          { nombre: "contacto.telefono", label: "Teléfono" },
+          { nombre: "contacto.correoPersonal", label: "Correo Personal" },
+          { nombre: "contacto.correoInstitucional", label: "Correo Institucional" },
+          { nombre: "contacto.acudiente.acudienteNombre", label: "Nombre Acudiente" },
+          { nombre: "contacto.acudiente.acudienteApellido", label: "Apellido Acudiente" },
+          { nombre: "contacto.acudiente.acudienteTelefono", label: "Teléfono Acudiente" },
+        ]}
+      />
+      {loading && (
         <div className="loader-overlay">
           <div className="loader"></div>
         </div>
       )}
 
-    <div className="container-fluid pb-4">
+      <div className="container-fluid pb-4">
         <h2>Listado de usuarios</h2>
-      <div className="encabezado w-100">
-        <div class="d-flex align-items-center justify-content-between gap-2 w-100">
-        <select className="seleccionCantidad" onChange={(e) => {
-          const nuevaCantidad = parseInt(e.target.value);
-          setCantidadReg(nuevaCantidad);
-          loadData(informacion?.paginaActual ?? 1, nuevaCantidad)
-        }}>
-          <option value="5" defaultChecked>5</option>
-          <option value="10">10</option>
-          <option value="15">15</option>
-        </select>
-        <div className="d-flex align-items-center gap-2">
-            <input
-              className="form-control"
-              style={{ width: "220px" }}
-              placeholder="Buscar…"
-              onChange={(e) => busquedaDinamica(e.target.value)}
-            />
-            <span class="input-group-text bg-success text-light"
-            data-bs-toggle="modal" 
-            data-bs-target="#exampleModal"
-            onClick={() => {
-              setModo("crear")
-            }}
-            id="aggreg">
-              +
-            </span>
+        <div className="encabezado w-100">
+          <div className="d-flex align-items-center justify-content-between gap-2 w-100">
+            <select
+              className="seleccionCantidad"
+              onChange={(e) => {
+                const nuevaCantidad = parseInt(e.target.value);
+                setCantidadReg(nuevaCantidad);
+                loadData(informacion?.paginaActual ?? 1, nuevaCantidad);
+              }}
+            >
+              <option value="5" defaultChecked>5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+            </select>
+            <div className="d-flex align-items-center gap-2">
+              <input
+                type="search"
+                className="form-control"
+                style={{ width: "280px" }}
+                placeholder="Buscar por nombre o N° documento…"
+                value={textoBusqueda}
+                aria-label="Buscar aprendices por nombre o documento"
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setTextoBusqueda(v);
+                  clearTimeout(timeoutBusquedaListado.current);
+                  if (!v.trim()) {
+                    loadData(1, cantidadReg);
+                    return;
+                  }
+                  timeoutBusquedaListado.current = setTimeout(
+                    () => ejecutarBusquedaAprendices(v),
+                    400
+                  );
+                }}
+              />
+              <button
+                type="button"
+                className="btn btn-success px-3"
+                title="Registrar nuevo aprendiz"
+                id="aggreg"
+                onClick={abrirFormularioNuevoAprendiz}
+              >
+                +
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      
-
-      <TablasInfo
-      columnas={columnas}
-      datos={usuarios}
-      informacion={informacion}
-      />
-      <div className="btn-group mt-3">
-        <button
-          type="button"
-          className="btn btn-outline-primary"
-          disabled={!informacion.paginaAnterior}
-          onClick={() => loadData(informacion.paginaAnterior, cantidadReg)}
-          aria-label="Página anterior"
-        >
-          <i className="bi bi-chevron-compact-left"></i>
-        </button>
-
-        {Array.from(
-          { length: informacion?.totalPaginas ?? 0 },
-          (_, i) => i + 1
-        ).map((num) => (
+        <TablasInfo
+          columnas={columnas}
+          datos={usuarios}
+          informacion={informacion}
+        />
+        <div className="btn-group mt-3">
           <button
-            key={num}
             type="button"
-            className={`btn ${informacion?.paginaActual === num ? "btn-primary" : "btn-outline-primary"}`}
-            onClick={() => loadData(num, cantidadReg)}
-            aria-label={`Página ${num}`}
-            aria-current={informacion?.paginaActual === num ? "page" : undefined}
+            className="btn btn-outline-primary"
+            disabled={!informacion.paginaAnterior}
+            onClick={() => loadData(informacion.paginaAnterior, cantidadReg)}
+            aria-label="Página anterior"
           >
-            {num}
+            <i className="bi bi-chevron-compact-left"></i>
           </button>
-        ))}
 
-        <button
-          type="button"
-          className="btn btn-outline-primary"
-          disabled={!informacion.paginaSiguiente}
-          onClick={() => loadData(informacion.paginaSiguiente, cantidadReg)}
-          aria-label="Página siguiente"
-        >
-          <i className="bi bi-chevron-compact-right"></i>
-        </button>
+          {Array.from(
+            { length: informacion?.totalPaginas ?? 0 },
+            (_, i) => i + 1
+          ).map((num) => (
+            <button
+              key={num}
+              type="button"
+              className={`btn ${informacion?.paginaActual === num ? "btn-primary" : "btn-outline-primary"}`}
+              onClick={() => loadData(num, cantidadReg)}
+              aria-label={`Página ${num}`}
+              aria-current={informacion?.paginaActual === num ? "page" : undefined}
+            >
+              {num}
+            </button>
+          ))}
+
+          <button
+            type="button"
+            className="btn btn-outline-primary"
+            disabled={!informacion.paginaSiguiente}
+            onClick={() => loadData(informacion.paginaSiguiente, cantidadReg)}
+            aria-label="Página siguiente"
+          >
+            <i className="bi bi-chevron-compact-right"></i>
+          </button>
+        </div>
       </div>
-
-    </div>
     </>
   );
 }

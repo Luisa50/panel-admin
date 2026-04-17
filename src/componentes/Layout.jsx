@@ -5,9 +5,11 @@ import BarraLateral from "./BarraLateral";
 import BarraSuperior from "./BarraSuperior";
 import { Outlet } from "react-router-dom";
 import { isAuthenticated } from "../services/auth";
+import { useLanguage } from "../context/LanguageContext";
 import "../estilos/layout.css";
 
 function Layout() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const autenticado = isAuthenticated();
@@ -29,9 +31,7 @@ function Layout() {
           <Outlet />
         </div>
         {!ocultarFooter ? (
-          <footer className="footer-sena">
-            Servicio Nacional de Aprendizaje SENA © 2025 — Todos los derechos reservados.
-          </footer>
+          <footer className="footer-sena">{t("layout.footer")}</footer>
         ) : null}
       </div>
 
@@ -44,17 +44,17 @@ function Layout() {
               strokeWidth={1.5}
             />
             <h2 className="layout-overlay-titulo">
-              Sin acceso a esta plataforma
+              {t("layout.overlayTitle")}
             </h2>
             <p className="layout-overlay-mensaje">
-              Debes iniciar sesión para poder usar el panel de administración.
+              {t("layout.overlayMessage")}
             </p>
             <button
               type="button"
               className="layout-overlay-boton"
               onClick={() => navigate("/")}
             >
-              Ir al inicio de sesión
+              {t("layout.overlayButton")}
             </button>
           </div>
         </div>

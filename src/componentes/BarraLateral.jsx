@@ -15,9 +15,11 @@ import {
 
 import ModalPerfilCliente from "./ModalPerfilCliente";
 import { logout } from "../services/auth.js";
+import { useLanguage } from "../context/LanguageContext";
 import "../estilos/barraLateral.css";
 
 const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -48,7 +50,7 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
           type="button"
           className="sidebar-hamburguesa hamburguesa"
           onClick={() => onToggleSidebar?.()}
-          aria-label="Abrir o cerrar menú lateral"
+          aria-label={t("nav.hamburger")}
           aria-expanded={expandida}
         >
           <Menu size={22} aria-hidden />
@@ -66,7 +68,7 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
             }}
           >
             <Home size={20} />
-            {expandida && <span>Inicio</span>}
+            {expandida && <span>{t("nav.home")}</span>}
 
             {expandida && (
               <ChevronDown
@@ -89,7 +91,7 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
                 onClick={() => expandida && toggleModulo("usuarios")}
               >
                 <Users size={18} />
-                {expandida && <span>Gestión de Usuarios</span>}
+                {expandida && <span>{t("nav.userManagement")}</span>}
                 {expandida && (
                   <ChevronDown
                     size={14}
@@ -111,7 +113,7 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
                   }`}
                   onClick={() => navigate("/usuarios")}
                 >
-                  Aprendices
+                  {t("nav.apprentices")}
                 </div>
 
                 <div
@@ -120,7 +122,7 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
                   }`}
                   onClick={() => navigate("/psicologos")}
                 >
-                  Psicólogos
+                  {t("nav.psychologists")}
                 </div>
 
                 <div
@@ -129,7 +131,7 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
                   }`}
                   onClick={() => navigate("/accesos")}
                 >
-                  Accesos
+                  {t("nav.access")}
                 </div>
               </div>
             </div>
@@ -140,7 +142,7 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
                 onClick={() => expandida && toggleModulo("academico")}
               >
                 <BookOpen size={18} />
-                {expandida && <span>Gestión Académica</span>}
+                {expandida && <span>{t("nav.academicManagement")}</span>}
                 {expandida && (
                   <ChevronDown
                     size={14}
@@ -157,28 +159,28 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
                 }`}
               >
                 <div className="menu-item" onClick={() => navigate("/programas")}>
-                  Programa de formación
+                  {t("nav.trainingProgram")}
                 </div>
                 <div className="menu-item" onClick={() => navigate("/fichas")}>
-                  Fichas
+                  {t("nav.records")}
                 </div>
                 <div className="menu-item" onClick={() => navigate("/niveles")}>
-                  Nivel de formación
+                  {t("nav.trainingLevel")}
                 </div>
                 <div className="menu-item" onClick={() => navigate("/area")}>
-                  Área
+                  {t("nav.area")}
                 </div>
                 <div className="menu-item" onClick={() => navigate("/centros")}>
-                  Centro
+                  {t("nav.center")}
                 </div>
                 <div
                   className="menu-item"
                   onClick={() => navigate("/regionales")}
                 >
-                  Regional
+                  {t("nav.regional")}
                 </div>
                 <div className="menu-item" onClick={() => navigate("/ciudades")}>
-                  Ciudad
+                  {t("nav.city")}
                 </div>
               </div>
             </div>
@@ -192,7 +194,7 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
                 }}
               >
                 <Wrench size={18} />
-                {expandida && <span>Informes</span>}
+                {expandida && <span>{t("nav.reports")}</span>}
                 {expandida && (
                   <ChevronDown
                     size={14}
@@ -218,7 +220,7 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
                   }`}
                   onClick={() => navigate("/informes/usuarios")}
                 >
-                  Usuarios
+                  {t("nav.users")}
                 </div>
                 <div
                   className={`menu-item ${
@@ -226,7 +228,7 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
                   }`}
                   onClick={() => navigate("/informes/psicologos")}
                 >
-                  Psicólogos
+                  {t("nav.psychologists")}
                 </div>
                 <div
                   className={`menu-item ${
@@ -234,7 +236,7 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
                   }`}
                   onClick={() => navigate("/informes/general")}
                 >
-                  General
+                  {t("nav.general")}
                 </div>
               </div>
             </div>
@@ -244,7 +246,7 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
               onClick={() => navigate("/reportes")}
             >
               <Mail size={18} />
-              {expandida && <span>Reportes</span>}
+              {expandida && <span>{t("nav.mailReports")}</span>}
             </div>
 
             <div
@@ -254,7 +256,7 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
               onClick={() => navigate("/configuracion")}
             >
               <Settings size={18} />
-              {expandida && <span>Configuración</span>}
+              {expandida && <span>{t("nav.settings")}</span>}
             </div>
           </div>
         </div>
@@ -264,25 +266,25 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
         <button
           type="button"
           className="sidebar-perfil-btn"
-          data-label="Mi perfil"
+          data-label={t("nav.myProfile")}
           onClick={() => setPerfilAbierto(true)}
-          aria-label="Abrir perfil de la cuenta"
+          aria-label={t("nav.profileAria")}
         >
           <UserCircle size={22} strokeWidth={1.75} />
-          {expandida && <span>Mi perfil</span>}
+          {expandida && <span>{t("nav.myProfile")}</span>}
         </button>
         <button
           type="button"
           className="sidebar-perfil-btn"
-          data-label="Cerrar sesión"
+          data-label={t("nav.logout")}
           onClick={() => {
             logout();
             navigate("/");
           }}
-          aria-label="Cerrar sesión"
+          aria-label={t("nav.logoutAria")}
         >
           <LogOut size={22} strokeWidth={1.75} />
-          {expandida && <span>Cerrar sesión</span>}
+          {expandida && <span>{t("nav.logout")}</span>}
         </button>
       </div>
 

@@ -12,17 +12,25 @@
   z-index: 9999;
 }
 
-
-.hoja-a4 {
-  background: white;
-  width: 794px;   
-  min-height: 1123px;
-  padding: 40px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.3);
-  position: relative;
-  font-family: Arial, sans-serif;
+:root {
+  --print-margin-apa: 25.4mm;
+  --print-sheet-width: 215.9mm;
+  --print-sheet-height: 279.4mm;
+  --print-content-width: calc(var(--print-sheet-width) - (var(--print-margin-apa) * 2));
+  --print-content-height: calc(var(--print-sheet-height) - (var(--print-margin-apa) * 2));
+  --print-container-width: var(--print-content-width);
 }
 
+/* Solo rutas con .pagina-informe (page: informe en @media print) */
+@page {
+  size: letter portrait;
+  margin: var(--print-margin-apa);
+}
+
+@page informe {
+  size: letter portrait;
+  margin: var(--print-margin-apa);
+}
 
 .encabezado {
   text-align: center;
@@ -150,19 +158,31 @@
 
 .pagina-informe {
   display: flex;
-  justify-content: center;   
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   background: #e5e5e5;
   padding: 30px 0;
+  gap: 18px;
+  box-sizing: border-box;
 }
 
 
 .hoja-a4 {
-  width: 215.9mm;            
-  min-height: 279.4mm;      
+  width: var(--print-sheet-width);
+  min-height: var(--print-sheet-height);
+  max-width: 100%;
   background: white;
-  padding: 25mm;
+  padding: 14mm;
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
   box-sizing: border-box;
+  position: relative;
+  font-family: Arial, sans-serif;
+  margin: 0 auto;
+}
+
+.hoja-a4 + .hoja-a4 {
+  margin-top: 0;
 }
 @media print {
   body {
@@ -170,25 +190,68 @@
   }
 
   .pagina-informe {
+    page: informe;
     padding: 0 !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
     overflow: visible !important;
     display: block !important;
     width: 100% !important;
-    max-width: none !important;
+    max-width: 100% !important;
     background: white !important;
+    box-sizing: border-box !important;
+  }
+
+  .pagina-informe .informe-parrafo,
+  .pagina-informe .informe-texto-contexto,
+  .pagina-informe .encabezado,
+  .pagina-informe .bloque,
+  .pagina-informe .pie {
+    max-width: 100% !important;
+    overflow-wrap: break-word !important;
+    word-wrap: break-word !important;
+  }
+
+  .pagina-informe img,
+  .pagina-informe svg {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .pagina-informe table {
+    width: 100% !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+  }
+
+  .pagina-informe th,
+  .pagina-informe td {
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+    white-space: normal !important;
+    hyphens: auto;
   }
 
   .hoja-a4 {
     box-shadow: none !important;
-    width: 100% !important;
-    max-width: 100% !important;
+    width: auto !important;
+    max-width: none !important;
     min-height: auto !important;
     padding: 0 !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
     position: static !important;
     overflow: visible !important;
     box-sizing: border-box !important;
+  }
+
+  .hoja-a4 {
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .hoja-a4:last-child {
+    break-after: auto;
+    page-break-after: auto;
   }
 
   .acciones {
@@ -203,9 +266,139 @@
     display: none !important;
   }
 
-  @page {
-    size: letter;
-    margin: 10mm 12mm;
+  .tabla-ranking-scroll {
+    overflow: visible !important;
+    max-width: 100% !important;
+  }
+
+  .tabla-ranking-scroll .tabla-desglose-citas {
+    min-width: 0 !important;
+    font-size: 10px !important;
+    border-collapse: collapse !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .tabla-ranking-scroll .tabla-desglose-citas th,
+  .tabla-ranking-scroll .tabla-desglose-citas td {
+    padding: 5px 6px !important;
+    word-break: break-word !important;
+    border: 0.75pt solid #334155 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .tabla-ranking-scroll .tabla-desglose-citas thead {
+    display: table-header-group !important;
+  }
+
+  /* Informes estratégicos: evitar 1 sola página — page-break-inside:avoid en
+     secciones grandes hace que Chrome recorte todo el documento */
+  .informe-estadistico-pagina .hoja-a4 {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .informe-estadistico-completo {
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  .informe-seccion-estadistica,
+  .informe-estadistico-completo .bloque {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  .informe-estadistico-completo .kpis {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Recharts: sin height:auto en el contenedor (rompe barras/SVG al imprimir) */
+  .informe-recharts-host {
+    min-height: 220px !important;
+    width: 100% !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+    overflow: visible !important;
+  }
+
+  .informe-recharts-host .recharts-responsive-container {
+    min-height: 220px !important;
+  }
+
+  .informe-recharts-host .recharts-surface,
+  .informe-recharts-host svg {
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .tabla-desglose-citas {
+    table-layout: fixed !important;
+    width: 100% !important;
+    font-size: 9pt !important;
+    line-height: 1.3 !important;
+  }
+
+  .tabla-desglose-citas th,
+  .tabla-desglose-citas td {
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+    white-space: normal !important;
+    hyphens: auto;
+  }
+
+  /* Ajuste de 8 columnas: prioriza correo y evita desborde horizontal */
+  .informe-tabla-cols-8 table {
+    font-size: 8.4pt !important;
+    line-height: 1.2 !important;
+  }
+
+  .informe-tabla-cols-8 th:nth-child(1),
+  .informe-tabla-cols-8 td:nth-child(1) {
+    width: 4% !important;
+  }
+
+  .informe-tabla-cols-8 th:nth-child(2),
+  .informe-tabla-cols-8 td:nth-child(2) {
+    width: 11% !important;
+  }
+
+  .informe-tabla-cols-8 th:nth-child(3),
+  .informe-tabla-cols-8 td:nth-child(3) {
+    width: 15% !important;
+  }
+
+  .informe-tabla-cols-8 th:nth-child(4),
+  .informe-tabla-cols-8 td:nth-child(4) {
+    width: 11% !important;
+  }
+
+  .informe-tabla-cols-8 th:nth-child(5),
+  .informe-tabla-cols-8 td:nth-child(5) {
+    width: 9% !important;
+  }
+
+  .informe-tabla-cols-8 th:nth-child(6),
+  .informe-tabla-cols-8 td:nth-child(6) {
+    width: 27% !important;
+  }
+
+  .informe-tabla-cols-8 th:nth-child(7),
+  .informe-tabla-cols-8 td:nth-child(7) {
+    width: 10% !important;
+  }
+
+  .informe-tabla-cols-8 th:nth-child(8),
+  .informe-tabla-cols-8 td:nth-child(8) {
+    width: 13% !important;
   }
 }
 .bloque {
@@ -278,72 +471,18 @@
   overflow-x: auto;
 }
 
-@media print {
-  .tabla-ranking-scroll {
-    overflow: visible !important;
-    max-width: 100% !important;
-  }
+/* Informes estratégicos: respetar carta real sin ancho inline extra */
+.informe-estadistico-pagina .hoja-a4 {
+  width: min(var(--print-container-width), 100%) !important;
+  max-width: var(--print-container-width) !important;
+}
 
-  .tabla-ranking-scroll .tabla-desglose-citas {
-    min-width: 0 !important;
-    font-size: 10px !important;
-  }
-
-  .tabla-ranking-scroll .tabla-desglose-citas th,
-  .tabla-ranking-scroll .tabla-desglose-citas td {
-    padding: 5px 6px !important;
-    word-break: break-word !important;
-  }
-
-  .tabla-ranking-scroll .tabla-desglose-citas thead {
-    display: table-header-group !important;
-  }
-
-  /* Informes estratégicos: evitar 1 sola página — page-break-inside:avoid en
-     secciones grandes hace que Chrome recorte todo el documento */
-  .informe-estadistico-pagina .hoja-a4 {
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    overflow: visible !important;
-  }
-
-  .informe-estadistico-completo {
-    overflow: visible !important;
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    page-break-inside: auto !important;
-    break-inside: auto !important;
-  }
-
-  .informe-seccion-estadistica,
-  .informe-estadistico-completo .bloque {
-    page-break-inside: auto !important;
-    break-inside: auto !important;
-  }
-
-  .informe-estadistico-completo .kpis {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  /* Recharts: sin height:auto en el contenedor (rompe barras/SVG al imprimir) */
-  .informe-recharts-host {
-    min-height: 220px !important;
-    width: 100% !important;
-    page-break-inside: auto !important;
-    break-inside: auto !important;
-    overflow: visible !important;
-  }
-
-  .informe-recharts-host .recharts-responsive-container {
-    min-height: 220px !important;
-  }
-
-  .informe-recharts-host .recharts-surface,
-  .informe-recharts-host svg {
-    max-width: 100% !important;
-    overflow: visible !important;
-  }
+/* Centrar gráficas horizontalmente dentro de cada sección */
+.informe-recharts-host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }

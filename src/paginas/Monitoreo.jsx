@@ -18,12 +18,14 @@ import {
   AreaChart,
   Area,
 } from "recharts";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchWithAuth } from "../services/auth";
 import { API_URL } from "../config";
+import { useLanguage } from "../context/LanguageContext";
 
-function formatoHoraActualizacion(fecha) {
-  return fecha.toLocaleTimeString("es-CO", {
+function formatoHoraActualizacion(fecha, loc) {
+  const tag = loc === "en" ? "en-US" : "es-CO";
+  return fecha.toLocaleTimeString(tag, {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
@@ -75,6 +77,8 @@ function interpretarRespuestaPorMes(json, anioSolicitado) {
 }
 
 export default function Monitoreo() {
+  const { t, locale } = useLanguage();
+
   const [anioGraficaUsuarios, setAnioGraficaUsuarios] = useState(() =>
     new Date().getFullYear()
   );
@@ -184,10 +188,14 @@ export default function Monitoreo() {
     return acc;
   }, {});
 
-  const estadosCitas = totalPorEstado.reduce((acc, item) => {
-    acc[item.estadoCita] = item.total;
-    return acc;
-  }, {});
+  const estadosCitas = useMemo(
+    () =>
+      totalPorEstado.reduce((acc, item) => {
+        acc[item.estadoCita] = item.total;
+        return acc;
+      }, {}),
+    [totalPorEstado]
+  );
 
   const usuariosPorMes = [
     { mes: "Ene", cantidad: datosAPI[1] ?? 0 },
@@ -204,29 +212,53 @@ export default function Monitoreo() {
     { mes: "Dic", cantidad: datosAPI[12] ?? 0 },
   ];
 
-  const citas = [
-    { name: "Pendientes", value: estadosCitas["pendiente"] ?? 0 },
-    { name: "Programadas", value: estadosCitas["programada"] ?? 0 },
-    { name: "Reprogramadas", value: estadosCitas["reprogramada"] ?? 0 },
-    { name: "Realizadas", value: estadosCitas["realizada"] ?? 0 },
-    { name: "Canceladas", value: estadosCitas["cancelada"] ?? 0 },
-    { name: "No asistidas", value: estadosCitas["no asistió"] ?? 0 },
-  ];
+  const citas = useMemo(
+    () => [
+      {
+        name: t("monitoreo.cita.pendiente"),
+        value: estadosCitas["pendiente"] ?? 0,
+      },
+      {
+        name: t("monitoreo.cita.programada"),
+        value: estadosCitas["programada"] ?? 0,
+      },
+      {
+        name: t("monitoreo.cita.reprogramada"),
+        value: estadosCitas["reprogramada"] ?? 0,
+      },
+      {
+        name: t("monitoreo.cita.realizada"),
+        value: estadosCitas["realizada"] ?? 0,
+      },
+      {
+        name: t("monitoreo.cita.cancelada"),
+        value: estadosCitas["cancelada"] ?? 0,
+      },
+      {
+        name: t("monitoreo.cita.noAsistio"),
+        value: estadosCitas["no asistió"] ?? 0,
+      },
+    ],
+    [estadosCitas, t]
+  );
 
-  const resumenCitasOperativas = [
-    {
-      nombre: "Exitosas",
-      cantidad: Number(totalActividadesExitosas?.exitosas) || 0,
-    },
-    {
-      nombre: "En proceso",
-      cantidad: Number(totalActividadesProceso?.citasEnProceso) || 0,
-    },
-    {
-      nombre: "Incidencias",
-      cantidad: Number(totalIncidencias?.citasEnIncidencias) || 0,
-    },
-  ];
+  const resumenCitasOperativas = useMemo(
+    () => [
+      {
+        nombre: t("monitoreo.op.exitosas"),
+        cantidad: Number(totalActividadesExitosas?.exitosas) || 0,
+      },
+      {
+        nombre: t("monitoreo.op.enProceso"),
+        cantidad: Number(totalActividadesProceso?.citasEnProceso) || 0,
+      },
+      {
+        nombre: t("monitoreo.op.incidencias"),
+        cantidad: Number(totalIncidencias?.citasEnIncidencias) || 0,
+      },
+    ],
+    [totalActividadesExitosas, totalActividadesProceso, totalIncidencias, t]
+  );
 
   let acumuladoParcial = 0;
   const usuariosAcumuladosPorMes = usuariosPorMes.map((row) => {
@@ -243,68 +275,96 @@ export default function Monitoreo() {
     "#006644",
   ];
 
-  const filaTarjetasKpi = (
-    <div className="row g-4 mb-4 pt-0">
-      <div className="col-12 col-sm-6 col-lg-3">
-        <div className="card stat-card dark-card" id="carta-monitoreo">
-          <div className="card-body">
-            <p
-              className="text-secondary m-0"
-              title="Crecimiento y promedio mensual de aprendices registrados, según la API de estadísticas."
-            >
-              Usuarios registrados por mes
-            </p>
-            <h3 className="fw-bold">{datosPorMes?.porcentajeCrecimiento ?? "—"}%</h3>
-            <small className="text-success">{datosPorMes?.promedioMensual ?? "—"} promedio</small>
+  const filaTarjetasKpi = useMemo(
+    () => (
+      <div className="row g-4 mb-4 pt-0">
+        <div className="col-12 col-sm-6 col-lg-3">
+          <div className="card stat-card dark-card" id="carta-monitoreo">
+            <div className="card-body">
+              <p
+                className="text-secondary m-0"
+                title={t("monitoreo.usersPerMonthTitle")}
+              >
+                {t("monitoreo.usersPerMonth")}
+              </p>
+              <h3 className="fw-bold">
+                {datosPorMes?.porcentajeCrecimiento ?? "—"}%
+              </h3>
+              <small className="text-success">
+                {datosPorMes?.promedioMensual ?? "—"} {t("monitoreo.average")}
+              </small>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="col-12 col-sm-6 col-lg-3">
-        <div className="card stat-card" id="carta-monitoreo">
-          <div className="card-body">
-            <p
-              className="text-secondary m-0"
-              title="Citas contabilizadas como actividad exitosa según los criterios definidos en el backend (por ejemplo, citas completadas o atendidas)."
-            >
-              Actividad exitosa
-            </p>
-            <h4 className="fw-bold">{totalActividadesExitosas?.porcentaje ?? "—"}%</h4>
-            <small className="text-danger">{totalActividadesExitosas?.exitosas ?? "—"} citas</small>
+        <div className="col-12 col-sm-6 col-lg-3">
+          <div className="card stat-card" id="carta-monitoreo">
+            <div className="card-body">
+              <p
+                className="text-secondary m-0"
+                title={t("monitoreo.successActivityTitle")}
+              >
+                {t("monitoreo.successActivity")}
+              </p>
+              <h4 className="fw-bold">
+                {totalActividadesExitosas?.porcentaje ?? "—"}%
+              </h4>
+              <small className="text-danger">
+                {totalActividadesExitosas?.exitosas ?? "—"}{" "}
+                {t("monitoreo.appointments")}
+              </small>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="col-12 col-sm-6 col-lg-3">
-        <div className="card stat-card" id="carta-monitoreo">
-          <div className="card-body">
-            <p
-              className="text-secondary m-0"
-              title="Citas que siguen en curso o en estados intermedios antes de cerrarse (pendientes de resolución operativa)."
-            >
-              Actividades en proceso
-            </p>
-            <h4 className="fw-bold">{totalActividadesProceso?.porcentajeEnProceso ?? "—"}%</h4>
-            <small className="text-success">{totalActividadesProceso?.citasEnProceso ?? "—"} citas</small>
+        <div className="col-12 col-sm-6 col-lg-3">
+          <div className="card stat-card" id="carta-monitoreo">
+            <div className="card-body">
+              <p
+                className="text-secondary m-0"
+                title={t("monitoreo.inProgressTitle")}
+              >
+                {t("monitoreo.inProgress")}
+              </p>
+              <h4 className="fw-bold">
+                {totalActividadesProceso?.porcentajeEnProceso ?? "—"}%
+              </h4>
+              <small className="text-success">
+                {totalActividadesProceso?.citasEnProceso ?? "—"}{" "}
+                {t("monitoreo.appointments")}
+              </small>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="col-12 col-sm-6 col-lg-3">
-        <div className="card stat-card" id="carta-monitoreo">
-          <div className="card-body">
-            <p
-              className="text-secondary m-0"
-              title="Citas con incidencias o situaciones que requieren seguimiento o intervención administrativa."
-            >
-              Incidencias
-            </p>
-            <h4 className="fw-bold">{totalIncidencias?.porcentajeEnProceso ?? "—"}%</h4>
-            <small className="text-danger">{totalIncidencias?.citasEnIncidencias ?? "—"} citas</small>
+        <div className="col-12 col-sm-6 col-lg-3">
+          <div className="card stat-card" id="carta-monitoreo">
+            <div className="card-body">
+              <p
+                className="text-secondary m-0"
+                title={t("monitoreo.incidentsTitle")}
+              >
+                {t("monitoreo.incidents")}
+              </p>
+              <h4 className="fw-bold">
+                {totalIncidencias?.porcentajeEnProceso ?? "—"}%
+              </h4>
+              <small className="text-danger">
+                {totalIncidencias?.citasEnIncidencias ?? "—"}{" "}
+                {t("monitoreo.appointments")}
+              </small>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    ),
+    [
+      datosPorMes,
+      totalActividadesExitosas,
+      totalActividadesProceso,
+      totalIncidencias,
+      t,
+    ]
   );
 
   return (
@@ -313,13 +373,15 @@ export default function Monitoreo() {
         <p className="text-muted small mb-0">
           {ultimaActualizacion ? (
             <>
-              Última actualización:{" "}
-              <strong>{formatoHoraActualizacion(ultimaActualizacion)}</strong>
+              {t("monitoreo.lastUpdate")}{" "}
+              <strong>
+                {formatoHoraActualizacion(ultimaActualizacion, locale)}
+              </strong>
             </>
           ) : cargando ? (
-            "Cargando datos del tablero…"
+            t("monitoreo.loading")
           ) : (
-            "Aún no hay datos cargados. Pulse Actualizar."
+            t("monitoreo.noData")
           )}
         </p>
         <button
@@ -327,7 +389,7 @@ export default function Monitoreo() {
           className="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1"
           onClick={() => cargarDashboard()}
           disabled={cargando}
-          title="Vuelve a solicitar todas las métricas al servidor"
+          title={t("monitoreo.refreshTitle")}
         >
           {cargando ? (
             <>
@@ -336,12 +398,12 @@ export default function Monitoreo() {
                 role="status"
                 aria-hidden="true"
               />
-              Actualizando…
+              {t("monitoreo.updating")}
             </>
           ) : (
             <>
               <i className="bi bi-arrow-clockwise" aria-hidden="true" />
-              Actualizar
+              {t("monitoreo.refresh")}
             </>
           )}
         </button>
@@ -354,13 +416,13 @@ export default function Monitoreo() {
           <div className="card graph-card p-3 p-md-4 p-lg-5 h-100">
             <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
               <h5 className="fw-semibold mb-0">
-                Usuarios registrados por mes
+                {t("monitoreo.chartUsersYear")}
                 {apiFiltraAnio
                   ? ` (${anioGraficaUsuarios})`
-                  : " (todos los años — API sin actualizar)"}
+                  : t("monitoreo.chartUsersAllYears")}
               </h5>
               <label className="d-flex align-items-center gap-2 small text-muted mb-0">
-                <span>Año</span>
+                <span>{t("monitoreo.year")}</span>
                 <select
                   className="form-select form-select-sm"
                   style={{ width: "auto", minWidth: 96 }}
@@ -369,7 +431,7 @@ export default function Monitoreo() {
                   onChange={(e) =>
                     setAnioGraficaUsuarios(Number(e.target.value))
                   }
-                  aria-label="Año para la gráfica de usuarios por mes"
+                  aria-label={t("monitoreo.yearAria")}
                 >
                   {aniosDisponibles.map((y) => (
                     <option key={y} value={y}>
@@ -385,11 +447,11 @@ export default function Monitoreo() {
                 role="alert"
               >
                 <i className="bi bi-exclamation-triangle-fill me-1" />
-                <strong>La API desplegada no soporta filtro por año.</strong>{" "}
-                Los datos que se muestran son el total acumulado de todos los
-                años. Para activar el filtro, despliega la versión actualizada
-                de la API (el endpoint <code>estadistica/por-mes</code> debe
-                devolver <code>anioAplicado</code>).
+                <strong>{t("monitoreo.apiWarningBold")}</strong>{" "}
+                {t("monitoreo.apiWarningBody")}{" "}
+                <code>estadistica/por-mes</code> {t("monitoreo.apiWarningMid")}{" "}
+                <code>anioAplicado</code>
+                {t("monitoreo.apiWarningClose")}
               </div>
             )}
             <div style={{ width: "100%", minWidth: 0 }}>
@@ -422,7 +484,9 @@ export default function Monitoreo() {
 
         <div className="col-12 col-xl-4">
           <div className="card graph-card p-3 h-100">
-            <h5 className="fw-semibold mb-3">Estados de citas</h5>
+            <h5 className="fw-semibold mb-3">
+              {t("monitoreo.appointmentStates")}
+            </h5>
             <div style={{ width: "100%", minWidth: 0 }}>
               <ResponsiveContainer width="100%" height={320} debounce={50}>
                 <PieChart>
@@ -473,13 +537,13 @@ export default function Monitoreo() {
             <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
               <h5 className="fw-semibold mb-0">
                 {apiFiltraAnio
-                  ? `Acumulado en el año ${anioGraficaUsuarios}`
-                  : "Acumulado (todos los años)"}
+                  ? `${t("monitoreo.accumulatedYear")} ${anioGraficaUsuarios}`
+                  : t("monitoreo.accumulatedAll")}
               </h5>
               <span className="small text-muted">
                 {apiFiltraAnio
-                  ? "Mismo año que la gráfica superior"
-                  : "Pendiente de actualizar la API"}
+                  ? t("monitoreo.sameYearHint")
+                  : t("monitoreo.apiPendingHint")}
               </span>
             </div>
             <div style={{ width: "100%", minWidth: 0 }}>
@@ -501,7 +565,7 @@ export default function Monitoreo() {
                   <Area
                     type="monotone"
                     dataKey="acumulado"
-                    name="Total acumulado"
+                    name={t("monitoreo.totalAccumulated")}
                     stroke="#003366"
                     strokeWidth={2}
                     fill="#003366"
@@ -515,7 +579,9 @@ export default function Monitoreo() {
 
         <div className="col-12 col-xl-4">
           <div className="card graph-card p-3 h-100">
-            <h5 className="fw-semibold mb-3">Citas por situación operativa</h5>
+            <h5 className="fw-semibold mb-3">
+              {t("monitoreo.operationalSituations")}
+            </h5>
             <div style={{ width: "100%", minWidth: 0 }}>
               <ResponsiveContainer width="100%" height={320} debounce={50}>
                 <BarChart
@@ -528,7 +594,7 @@ export default function Monitoreo() {
                   <Tooltip />
                   <Bar
                     dataKey="cantidad"
-                    name="Citas"
+                    name={t("monitoreo.barName")}
                     fill="#1A73E8"
                     radius={[6, 6, 0, 0]}
                   />

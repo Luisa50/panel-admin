@@ -32,8 +32,47 @@ export default function Fichas() {
   const [programaTexto, setProgramaTexto] = useState("");
   const [listaProgramas, setListaProgramas] = useState([]);
   const buscarProgramaTimeout = React.useRef(null);
+  const timeoutBusquedaListado = React.useRef(null);
+  const [textoBusqueda, setTextoBusqueda] = useState("");
+
+  const abrirModalPorId = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    Modal.getOrCreateInstance(el).show();
+  };
+
+  const cerrarModalPorId = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const inst = Modal.getInstance(el);
+    inst?.hide();
+  };
+
+  const cumpleMinimoBusqueda = (texto) => {
+    const t = texto.trim();
+    if (!t) return false;
+    if (/^\d+$/.test(t)) return t.length >= 1;
+    return t.length >= 2;
+  };
+
+  /** Si la API no devuelve coincidencias, filtra en cliente por código o nombre de programa. */
+  const filtrarFichasLocal = (lista, textoRaw) => {
+    const t = textoRaw.trim().toLowerCase();
+    if (!t) return lista;
+    return lista.filter((f) => {
+      const cod = String(f.ficCodigo ?? "");
+      const nom = (f.programaFormacion?.progNombre ?? "").toLowerCase();
+      const jur = String(f.ficJornada ?? "").toLowerCase();
+      return (
+        cod.includes(textoRaw.trim()) ||
+        nom.includes(t) ||
+        jur.includes(t)
+      );
+    });
+  };
 
   const loadData = async (pag = 1, tamanoPagina = 10) => {
+    setTextoBusqueda("");
     try {
       let url = `${API_URL}/Ficha/listar?Pagina=${pag}&TamanoPagina=${tamanoPagina}`;
       let res = await fetchWithAuth(url);
@@ -42,11 +81,12 @@ export default function Fichas() {
       if (res.ok) {
         json = await res.json();
       } else {
-        // Si no existe listar, usar GET /api/Ficha (lista completa, una sola página)
         res = await fetchWithAuth(`${API_URL}/Ficha`);
         if (!res.ok) return;
         json = await res.json();
-        const arr = Array.isArray(json) ? json : (json?.datos ?? json?.resultado ?? json?.resultados ?? []);
+        const arr = Array.isArray(json)
+          ? json
+          : (json?.datos ?? json?.resultado ?? json?.resultados ?? []);
         setFichas(arr);
         setInformacion({
           paginaActual: 1,
@@ -59,15 +99,19 @@ export default function Fichas() {
         return;
       }
 
-      const lista = json?.datos ?? json?.resultado ?? json?.resultados ?? (Array.isArray(json) ? json : []);
+      const lista =
+        json?.datos ?? json?.resultado ?? json?.resultados ?? (Array.isArray(json) ? json : []);
       setFichas(lista);
       setInformacion({
         resultado: lista,
         totalRegistros: json?.totalRegistros ?? lista.length,
         paginaActual: json?.paginaActual ?? pag,
         paginaAnterior: json?.paginaAnterior ?? (pag > 1 ? pag - 1 : null),
-        paginaSiguiente: json?.paginaSiguiente ?? (lista.length === tamanoPagina ? pag + 1 : null),
-        totalPaginas: json?.totalPaginas ?? Math.max(1, Math.ceil((json?.totalRegistros ?? lista.length) / tamanoPagina)),
+        paginaSiguiente:
+          json?.paginaSiguiente ?? (lista.length === tamanoPagina ? pag + 1 : null),
+        totalPaginas:
+          json?.totalPaginas ??
+          Math.max(1, Math.ceil((json?.totalRegistros ?? lista.length) / tamanoPagina)),
         tamanoPagina: json?.tamanoPagina ?? tamanoPagina,
       });
     } catch (err) {
@@ -110,9 +154,53 @@ export default function Fichas() {
   const abrirModal = () => {
     limpiarFormulario();
     setModo("crear");
-    const modalEl = document.getElementById("modalFicha");
-    const modal = new Modal(modalEl);
-    modal.show();
+    setIdEditar(null);
+    window.requestAnimationFrame(() => {
+      abrirModalPorId("modalFicha");
+    });
+  };
+
+  const ejecutarBusquedaFichas = async (textoRaw) => {
+    const texto = textoRaw.trim();
+    if (!texto) {
+      await loadData(informacion?.paginaActual ?? 1);
+      return;
+    }
+    if (!cumpleMinimoBusqueda(textoRaw)) return;
+
+    try {
+      const res = await fetchWithAuth(
+        `${API_URL}/Ficha/busqueda-dinamica?texto=${encodeURIComponent(texto)}`
+      );
+      if (!res?.ok) return;
+      const json = await res.json();
+      let arr = Array.isArray(json) ? json : [];
+
+      if (arr.length === 0) {
+        const resLista = await fetchWithAuth(
+          `${API_URL}/Ficha/listar?Pagina=1&TamanoPagina=500`
+        );
+        if (resLista?.ok) {
+          const j2 = await resLista.json();
+          const lista =
+            j2?.datos ?? j2?.resultado ?? j2?.resultados ?? [];
+          const base = Array.isArray(lista) ? lista : [];
+          arr = filtrarFichasLocal(base, textoRaw);
+        }
+      }
+
+      setFichas(arr);
+      setInformacion((prev) => ({
+        ...prev,
+        paginaActual: 1,
+        totalPaginas: 1,
+        paginaAnterior: null,
+        paginaSiguiente: null,
+        totalRegistros: arr.length,
+      }));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleVer = async (id) => {
@@ -120,6 +208,7 @@ export default function Fichas() {
       const res = await fetchWithAuth(`${API_URL}/Ficha/${id}`);
       const json = await res.json();
       setDataVer(Array.isArray(json) ? json[0] ?? {} : json ?? {});
+      abrirModalPorId("modalVer");
     } catch (err) {
       console.error(err);
     }
@@ -142,13 +231,9 @@ export default function Fichas() {
       });
       setProgramaTexto(data.programaFormacion?.progNombre ?? "");
       setListaProgramas([]);
-
       setModo("editar");
       setIdEditar(id);
-
-      const modalEl = document.getElementById("modalFicha");
-      const modal = new Modal(modalEl);
-      modal.show();
+      abrirModalPorId("modalFicha");
     } catch (err) {
       console.error(err);
     }
@@ -171,7 +256,9 @@ export default function Fichas() {
   const enviarPost = async (e) => {
     e.preventDefault();
     if (!formData.ficProgramaFK) {
-      alert("Seleccione un programa de la lista (escriba al menos 3 letras y elija una opción).");
+      alert(
+        "Seleccione un programa de la lista (escriba al menos 3 letras y elija una opción)."
+      );
       return;
     }
     const cuerpoPost = { ...formData };
@@ -192,10 +279,7 @@ export default function Fichas() {
       alert(modo === "crear" ? "Ficha creada" : "Ficha actualizada");
       loadData(informacion?.paginaActual ?? 1);
       limpiarFormulario();
-
-      const modalEl = document.getElementById("modalFicha");
-      const modal = Modal.getInstance(modalEl);
-      modal?.hide();
+      cerrarModalPorId("modalFicha");
     } catch (err) {
       console.error(err);
       alert("Error al guardar ficha");
@@ -215,19 +299,6 @@ export default function Fichas() {
     setListaProgramas([]);
     setModo("crear");
     setIdEditar(null);
-  };
-
-  const busquedaDinamica = async (text) => {
-    if (text.length < 3) return loadData(informacion?.paginaActual ?? 1);
-    try {
-      const res = await fetchWithAuth(
-        `${API_URL}/Ficha/busqueda-dinamica?texto=${encodeURIComponent(text)}`
-      );
-      const json = await res.json();
-      setFichas(Array.isArray(json) ? json : []);
-    } catch (err) {
-      console.error(err);
-    }
   };
 
   const columnas = [
@@ -251,12 +322,18 @@ export default function Fichas() {
     },
     {
       title: "Acciones",
-      data: "ficCodigo",
+      data: null,
+      defaultContent: "",
       orderable: false,
       searchable: false,
-      createdCell: (td, id) => {
-        const root = ReactDOM.createRoot(td);
-        root.render(
+      createdCell: (td, _cellData, rowData) => {
+        const id = rowData?.ficCodigo;
+
+        td.innerHTML = "";
+        const container = document.createElement("div");
+        td.appendChild(container);
+
+        ReactDOM.createRoot(container).render(
           <AccionesAprendiz
             id={id}
             onVer={handleVer}
@@ -302,22 +379,40 @@ export default function Fichas() {
       <div className="container-fluid pb-4">
         <h2>Listado de Fichas</h2>
 
-        {/* Buscador y botón + */}
         <div className="d-flex justify-content-end mb-2 align-items-center gap-2">
           <input
+            type="search"
             className="form-control"
-            style={{ width: "220px" }}
-            placeholder="Buscar…"
-            onChange={(e) => busquedaDinamica(e.target.value)}
+            style={{ width: "280px" }}
+            placeholder="Buscar por código, jornada o programa…"
+            value={textoBusqueda}
+            aria-label="Buscar fichas por código o nombre de programa"
+            onChange={(e) => {
+              const v = e.target.value;
+              setTextoBusqueda(v);
+              clearTimeout(timeoutBusquedaListado.current);
+              if (!v.trim()) {
+                loadData(informacion?.paginaActual ?? 1);
+                return;
+              }
+              timeoutBusquedaListado.current = setTimeout(
+                () => ejecutarBusquedaFichas(v),
+                400
+              );
+            }}
           />
-          <button className="btn btn-success" onClick={abrirModal}>
+          <button
+            type="button"
+            className="btn btn-success px-3"
+            title="Registrar nueva ficha"
+            onClick={abrirModal}
+          >
             +
           </button>
         </div>
 
         <TablasInfo columnas={columnas} datos={fichas} informacion={informacion} />
 
-        {/* Paginación */}
         <div className="d-flex justify-content-start mt-3">
           <div className="btn-group">
             <button

@@ -9,7 +9,6 @@ export default function CentrosNodos() {
 
   const [centros, setCentros] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [expandido, setExpandido] = useState({});
   const [busqueda, setBusqueda] = useState("");
 
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -18,12 +17,15 @@ export default function CentrosNodos() {
 
 
   const [tipo, setTipo] = useState("centro");
+  const [mostrarModalVer, setMostrarModalVer] = useState(false);
+  const [centroVer, setCentroVer] = useState(null);
 
   const [formData, setFormData] = useState({
     cenNombre: "",
     cenDireccion: "",
     cenCodFk: ""
   });
+  const [busquedaCentroModal, setBusquedaCentroModal] = useState("");
 
 
   const cargarCentros = async () => {
@@ -51,13 +53,6 @@ export default function CentrosNodos() {
     return nodos.filter(n => n.cenCodFk === cenCodigo);
   };
 
-  const toggleExpand = (id) => {
-    setExpandido(prev => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
-  };
-
   const filtrados = centrosPrincipales.filter(c =>
     c.cenNombre.toLowerCase().includes(busqueda.toLowerCase())
   );
@@ -79,6 +74,7 @@ export default function CentrosNodos() {
     setTipo("centro");
     setModo("crear");
     setIdEditar(null);
+    setBusquedaCentroModal("");
   };
 
 
@@ -122,9 +118,19 @@ export default function CentrosNodos() {
     if (!window.confirm("¿Eliminar centro?")) return;
 
     try {
-      setCentros(prev => prev.filter(c => c.cenCodigo !== id));
+      const res = await fetchWithAuth(`${CENTRO_API}/${id}`, {
+        method: "DELETE",
+      });
+      if (!res || !res.ok) {
+        alert("No se pudo eliminar el registro.");
+        return;
+      }
+      setCentros((prev) =>
+        prev.filter((c) => c.cenCodigo !== id && c.cenCodFk !== id)
+      );
     } catch (error) {
       console.error(error);
+      alert("Error eliminando el registro.");
     }
   };
 
@@ -137,8 +143,31 @@ export default function CentrosNodos() {
       cenDireccion: centro.cenDireccion,
       cenCodFk: centro.cenCodFk
     });
+    const centroActual = centrosPrincipales.find(
+      (c) => String(c.cenCodigo) === String(centro.cenCodFk)
+    );
+    setBusquedaCentroModal(centroActual?.cenNombre ?? "");
 
     setMostrarModal(true);
+  };
+
+  const centrosFiltradosModal = centrosPrincipales.filter((c) =>
+    c.cenNombre.toLowerCase().includes(busquedaCentroModal.toLowerCase())
+  );
+
+  const seleccionarCentroModal = (centro) => {
+    setFormData((prev) => ({ ...prev, cenCodFk: String(centro.cenCodigo) }));
+    setBusquedaCentroModal(centro.cenNombre);
+  };
+
+  const abrirModalVer = (centro) => {
+    setCentroVer(centro);
+    setMostrarModalVer(true);
+  };
+
+  const cerrarModalVer = () => {
+    setMostrarModalVer(false);
+    setCentroVer(null);
   };
 
   return (
@@ -193,17 +222,22 @@ export default function CentrosNodos() {
 
                     <td style={{ fontWeight: "bold" }}>
                       {c.cenNombre}
-                      <i
-                        className="bi bi-chevron-down ms-2"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => toggleExpand(c.cenCodigo)}
-                      ></i>
                     </td>
 
                     <td>{c.cenDireccion}</td>
                     <td>{c.regional?.regNombre}</td>
 
                     <td>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-link p-0 me-3 icono-ver-centro"
+                        onClick={() => abrirModalVer(c)}
+                        title="Ver nodos del centro"
+                        aria-label="Ver nodos del centro"
+                      >
+                        <i className="bi bi-eye"></i>
+                      </button>
+
                       <i
                         className="bi bi-pencil me-3"
                         style={{ cursor: "pointer" }}
@@ -217,24 +251,6 @@ export default function CentrosNodos() {
                       ></i>
                     </td>
                   </tr>
-
-                  {expandido[c.cenCodigo] && (
-                    <tr>
-                      <td colSpan="5">
-                        {nodosCentro.length > 0 ? (
-                          <ul>
-                            {nodosCentro.map(n => (
-                              <li key={n.cenCodigo}>
-                                {n.cenNombre}
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p>No hay nodos disponibles</p>
-                        )}
-                      </td>
-                    </tr>
-                  )}
 
                 </React.Fragment>
               );
@@ -268,18 +284,57 @@ export default function CentrosNodos() {
                 </select>
 
                 {tipo === "nodo" && (
-                  <select
-                    className="form-control mb-2"
-                    name="cenCodFk"
-                    onChange={handleChange}
-                  >
-                    <option value="">Seleccione centro</option>
-                    {centrosPrincipales.map(c => (
-                      <option key={c.cenCodigo} value={c.cenCodigo}>
-                        {c.cenNombre}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="selector-centro-multi mb-2">
+                    <label className="form-label small text-muted mb-1">
+                      Centro asociado
+                    </label>
+                    <input
+                      className="form-control"
+                      placeholder="Buscar centro..."
+                      value={busquedaCentroModal}
+                      onChange={(e) => {
+                        setBusquedaCentroModal(e.target.value);
+                        if (formData.cenCodFk) {
+                          setFormData((prev) => ({ ...prev, cenCodFk: "" }));
+                        }
+                      }}
+                    />
+                    <div className="selector-centro-lista">
+                      {centrosFiltradosModal.length > 0 ? (
+                        centrosFiltradosModal.map((c) => {
+                          const activo =
+                            String(formData.cenCodFk) === String(c.cenCodigo);
+                          return (
+                            <button
+                              type="button"
+                              key={c.cenCodigo}
+                              className={`selector-centro-item ${activo ? "activo" : ""}`}
+                              onClick={() => seleccionarCentroModal(c)}
+                            >
+                              <span>{c.cenNombre}</span>
+                              {activo && <i className="bi bi-check2" aria-hidden="true" />}
+                            </button>
+                          );
+                        })
+                      ) : (
+                        <p className="selector-centro-empty mb-0">
+                          No se encontraron centros.
+                        </p>
+                      )}
+                    </div>
+                    {formData.cenCodFk && (
+                      <div className="selector-centro-chip mt-2">
+                        <span>Centro seleccionado:</span>
+                        <span className="chip-item">
+                          {
+                            centrosPrincipales.find(
+                              (c) => String(c.cenCodigo) === String(formData.cenCodFk)
+                            )?.cenNombre
+                          }
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 )}
 
                 <input
@@ -316,6 +371,39 @@ export default function CentrosNodos() {
                 </button>
               </div>
 
+            </div>
+          </div>
+        </div>
+      )}
+
+      {mostrarModalVer && centroVer && (
+        <div className="modal show d-block">
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5>Nodos del centro</h5>
+                <button onClick={cerrarModalVer}>X</button>
+              </div>
+              <div className="modal-body">
+                <p className="text-muted mb-2">Centro</p>
+                <h6 className="mb-3">{centroVer.cenNombre}</h6>
+                {obtenerNodos(centroVer.cenCodigo).length > 0 ? (
+                  <div className="nodos-stack-wrap">
+                    {obtenerNodos(centroVer.cenCodigo).map((n) => (
+                      <span key={n.cenCodigo} className="nodo-stack-item">
+                        {n.cenNombre}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="sin-nodos mb-0">No hay nodos asociados.</p>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={cerrarModalVer}>
+                  Cerrar
+                </button>
+              </div>
             </div>
           </div>
         </div>
