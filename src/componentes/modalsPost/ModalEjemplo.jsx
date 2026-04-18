@@ -12,23 +12,23 @@ export default function ModalEjemplo({
     modo
 }) {
   return (
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">
+    <div className="modal fade" id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div className="modal-dialog modal-xl modal-dialog-centered">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h1 className="modal-title fs-5" id="exampleModalLabel">
               {modo === "crear" ? "Agregar aprendiz" : "Editar aprendiz"}
             </h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
+          <div className="modal-body">
             <form onSubmit={enviarPost}>
               <div className="p-2">
-                <div class="container text-center">
-                  <div class="row g-3 pb-4">
-                    <div class="col-12 col-md-6 col-lg-4">
-                      <div class="form-floating">
-                        <select class="form-select" id="floatingSelect"
+                <div className="container text-center">
+                  <div className="row g-3 pb-4">
+                    <div className="col-12 col-md-6 col-lg-4">
+                      <div className="form-floating">
+                        <select className="form-select" id="floatingSelect"
                         name="tipoDocumento"
                         aria-label="Floating label select example" 
                         value={formData.tipoDocumento}
@@ -39,155 +39,155 @@ export default function ModalEjemplo({
                           <option value="TI">TI</option>
                           <option value="CE">CE</option>
                         </select>
-                        <label for="floatingSelect">Tipo de documento</label>
+                        <label htmlFor="floatingSelect">Tipo de documento</label>
                       </div>
                     </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                      <div class="form-floating">
-                        <input type="text" class="form-control" 
+                    <div className="col-12 col-md-6 col-lg-4">
+                      <div className="form-floating">
+                        <input type="text" className="form-control" 
                         name="nroDocumento"
                         id="floatingInputGrid" placeholder="jsakldfj" 
                         value={formData.nroDocumento}
                         onChange={handleChange}
                         required/>
-                        <label for="floatingInputGrid">Número de documento</label>
+                        <label htmlFor="floatingInputGrid">Número de documento</label>
                       </div>
                     </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                      <div class="form-floating">
-                        <input type="date" class="form-control text-dark" 
+                    <div className="col-12 col-md-6 col-lg-4">
+                      <div className="form-floating">
+                        <input type="date" className="form-control text-dark" 
                         name="fechaNacimiento"
                         id="floatingInputGrid" placeholder="fecha de nacimiento"
                         value={formData.fechaNacimiento}
                         onChange={handleChange}
                         required/>
-                        <label for="floatingInputGrid">Fecha de nacimiento</label>
+                        <label htmlFor="floatingInputGrid">Fecha de nacimiento</label>
                       </div>
                     </div>
                   </div>
 
-                  <div class="row g-3 pb-4">
-                    <div class="col-12 col-md-6 col-lg-6">
-                      <div class="form-floating">
-                        <input type="text" class="form-control" 
+                  <div className="row g-3 pb-4">
+                    <div className="col-12 col-md-6 col-lg-6">
+                      <div className="form-floating">
+                        <input type="text" className="form-control" 
                         name="nombre"
                         id="floatingInputGrid" placeholder="Nombre"
                         value={formData.nombre}
                         onChange={handleChange}
                         required/>
-                        <label for="floatingSelect">Nombre</label>
+                        <label htmlFor="floatingSelect">Nombre</label>
                       </div>
                     </div>
-                    <div class="col-12 col-md-6 col-lg-6">
-                      <div class="form-floating">
-                        <input type="text" class="form-control" 
+                    <div className="col-12 col-md-6 col-lg-6">
+                      <div className="form-floating">
+                        <input type="text" className="form-control" 
                         name="segundoNombre"
                         id="floatingInputGrid" placeholder="Segundo nombre" 
                         value={formData.segundoNombre}
                         onChange={handleChange}
                         />
-                        <label for="floatingInputGrid">Segundo nombre</label>
+                        <label htmlFor="floatingInputGrid">Segundo nombre</label>
                       </div>
                     </div>
                   </div>
 
-                  <div class="row g-3 pb-4">
-                    <div class="col-12 col-md-6 col-lg-6">
-                      <div class="form-floating">
-                        <input type="text" class="form-control" 
+                  <div className="row g-3 pb-4">
+                    <div className="col-12 col-md-6 col-lg-6">
+                      <div className="form-floating">
+                        <input type="text" className="form-control" 
                         name="apellido"
                         id="floatingInputGrid" placeholder="Apellido" 
                         value={formData.apellido}
                         onChange={handleChange}
                         required/>
-                        <label for="floatingSelect">Apellido</label>
+                        <label htmlFor="floatingSelect">Apellido</label>
                       </div>
                     </div>
-                    <div class="col-12 col-md-6 col-lg-6">
-                      <div class="form-floating">
-                        <input type="text" class="form-control" 
+                    <div className="col-12 col-md-6 col-lg-6">
+                      <div className="form-floating">
+                        <input type="text" className="form-control" 
                         name="segundoApellido"
                         id="floatingInputGrid" placeholder="Segundo apellido" 
                         value={formData.segundoApellido}
                         onChange={handleChange}
                         required/>
-                        <label for="floatingInputGrid">Segundo apellido</label>
+                        <label htmlFor="floatingInputGrid">Segundo apellido</label>
                       </div>
                     </div>
                   </div>
 
                   <hr />
                   <h3>Contacto</h3>
-                  <div class="row g-3 pb-4">
-                    <div class="col-12 col-md-12 col-lg-12">
-                      <div class="form-floating">
-                        <input type="email" class="form-control" 
+                  <div className="row g-3 pb-4">
+                    <div className="col-12 col-md-12 col-lg-12">
+                      <div className="form-floating">
+                        <input type="email" className="form-control" 
                         name="correoInstitucional"
                         id="floatingInputGrid" placeholder="Correo institucional" 
                         value={formData.correoInstitucional}
                         onChange={handleChange}
                         required/>
-                        <label for="floatingSelect">Correo institucional</label>
+                        <label htmlFor="floatingSelect">Correo institucional</label>
                       </div>
                     </div>
                   </div>
-                  <div class="row g-3 pb-4">
-                    <div class="col-12 col-md-6 col-lg-6">
-                      <div class="form-floating">
-                        <input type="email" class="form-control" 
+                  <div className="row g-3 pb-4">
+                    <div className="col-12 col-md-6 col-lg-6">
+                      <div className="form-floating">
+                        <input type="email" className="form-control" 
                         name="correoPersonal"
                         id="floatingInputGrid" placeholder="Correo personal" 
                         value={formData.correoPersonal}
                         onChange={handleChange}
                         required/>
-                        <label for="floatingSelect">Correo personal</label>
+                        <label htmlFor="floatingSelect">Correo personal</label>
                       </div>
                     </div>
-                    <div class="col-12 col-md-6 col-lg-6">
-                      <div class="form-floating">
-                        <input type="text" class="form-control" 
+                    <div className="col-12 col-md-6 col-lg-6">
+                      <div className="form-floating">
+                        <input type="text" className="form-control" 
                         name="telefono"
                         id="floatingInputGrid" placeholder="Teléfono" 
                         value={formData.telefono}
                         onChange={handleChange}
                         required/>
-                        <label for="floatingInputGrid">Teléfono</label>
+                        <label htmlFor="floatingInputGrid">Teléfono</label>
                       </div>
                     </div>
                   </div>
 
-                  <div class="row g-3 pb-4">
-                    <div class="col-12 col-md-6 col-lg-4">
-                      <div class="form-floating">
-                        <input type="text" class="form-control" 
+                  <div className="row g-3 pb-4">
+                    <div className="col-12 col-md-6 col-lg-4">
+                      <div className="form-floating">
+                        <input type="text" className="form-control" 
                         name="acudienteNombre"
                         id="floatingInputGrid" placeholder="Nombre del acudiente" 
                         value={formData.acudienteNombre}
                         onChange={handleChange}
                         required/>
-                        <label for="floatingSelect">Nombre del acudiente</label>
+                        <label htmlFor="floatingSelect">Nombre del acudiente</label>
                       </div>
                     </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                      <div class="form-floating">
-                        <input type="text" class="form-control" 
+                    <div className="col-12 col-md-6 col-lg-4">
+                      <div className="form-floating">
+                        <input type="text" className="form-control" 
                         name="acudienteApellido"
                         id="floatingInputGrid" placeholder="Apellido del acudiente" 
                         value={formData.acudienteApellido}
                         onChange={handleChange}
                         required/>
-                        <label for="floatingInputGrid">Apellido del acudiente</label>
+                        <label htmlFor="floatingInputGrid">Apellido del acudiente</label>
                       </div>
                     </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                      <div class="form-floating">
-                        <input type="text" class="form-control" 
+                    <div className="col-12 col-md-6 col-lg-4">
+                      <div className="form-floating">
+                        <input type="text" className="form-control" 
                         name="acudienteTelefono"
                         id="floatingInputGrid" placeholder="Teléfono del acudiente" 
                         value={formData.acudienteTelefono}
                         onChange={handleChange}
                         required/>
-                        <label for="floatingInputGrid">Teléfono del acudiente</label>
+                        <label htmlFor="floatingInputGrid">Teléfono del acudiente</label>
                       </div>
                     </div>
                   </div>
@@ -195,9 +195,9 @@ export default function ModalEjemplo({
                   <hr />
 
                   <h3>Ubicación</h3>
-                  <div class="row g-3 pb-4">
-                    <div class="col-12 col-md-12 col-lg-12">
-                      <div class="form-floating">
+                  <div className="row g-3 pb-4">
+                    <div className="col-12 col-md-12 col-lg-12">
+                      <div className="form-floating">
                         <div className="position-relative">
                           <input
                             type="text"
@@ -227,16 +227,16 @@ export default function ModalEjemplo({
                     </div>
                   </div>
 
-                  <div class="row g-3 pb-4">
-                    <div class="col-12 col-md-12 col-lg-12">
-                      <div class="form-floating">
-                        <input type="text" class="form-control" 
+                  <div className="row g-3 pb-4">
+                    <div className="col-12 col-md-12 col-lg-12">
+                      <div className="form-floating">
+                        <input type="text" className="form-control" 
                         name="direccion"
                         id="floatingInputGrid" placeholder="Dirección" 
                         value={formData.direccion}
                         onChange={handleChange}
                         required/>
-                        <label for="floatingSelect">Dirección</label>
+                        <label htmlFor="floatingSelect">Dirección</label>
                       </div>
                     </div>
                   </div>
@@ -244,21 +244,21 @@ export default function ModalEjemplo({
                   <hr />
 
 
-                  <div class="row g-3 pb-4 pt-4">
-                    <div class="col-12 col-md-6 col-lg-4">
-                      <div class="form-floating">
-                        <input type="text" class="form-control" 
+                  <div className="row g-3 pb-4 pt-4">
+                    <div className="col-12 col-md-6 col-lg-4">
+                      <div className="form-floating">
+                        <input type="text" className="form-control" 
                         name="patologia"
                         id="floatingInputGrid" placeholder="Patología" 
                         value={formData.patologia}
                         onChange={handleChange}
                         required/>
-                        <label for="floatingSelect">Patología</label>
+                        <label htmlFor="floatingSelect">Patología</label>
                       </div>
                     </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                      <div class="form-floating">
-                        <select class="form-select" 
+                    <div className="col-12 col-md-6 col-lg-4">
+                      <div className="form-floating">
+                        <select className="form-select" 
                         name="tipoPoblacion"
                         id="floatingSelect" aria-label="Floating label select example"
                         value={formData.tipoPoblacion}
@@ -274,26 +274,26 @@ export default function ModalEjemplo({
                           <option value="Indigena">Indigena</option>
                           <option value="Ninguno">Ninguno</option>
                         </select>
-                        <label for="floatingSelect">Tipo de población</label>
+                        <label htmlFor="floatingSelect">Tipo de población</label>
                       </div>
                     </div>
-                    <div class="col-12 col-md-6 col-lg-4">
-                      <div class="form-floating">
-                        <input type="text" class="form-control" 
+                    <div className="col-12 col-md-6 col-lg-4">
+                      <div className="form-floating">
+                        <input type="text" className="form-control" 
                         name="eps"
                         id="floatingInputGrid" placeholder="eps" 
                         value={formData.eps}
                         onChange={handleChange}
                         required/>
-                        <label for="floatingSelect">Eps</label>
+                        <label htmlFor="floatingSelect">Eps</label>
                       </div>
                     </div>
                   </div>
 
                   <div className="row g-3 pb-2 pt-2">
-                    <div class="col-12 col-md-12 col-lg-12">
-                      <div class="form-floating">
-                        <select class="form-select" 
+                    <div className="col-12 col-md-12 col-lg-12">
+                      <div className="form-floating">
+                        <select className="form-select" 
                         name="estadoAprendiz"
                         id="floatingSelect" aria-label="Floating label select example"
                         value={formData.estadoAprendiz}
@@ -307,7 +307,7 @@ export default function ModalEjemplo({
                               </option>
                           ))}
                         </select>
-                        <label for="floatingSelect">Estado del aprendiz</label>
+                        <label htmlFor="floatingSelect">Estado del aprendiz</label>
                       </div>
                     </div>
                   </div>
@@ -317,13 +317,13 @@ export default function ModalEjemplo({
                 <div className="btn-group" role="group" >
                   <button type="button" id="btnCerrarModal" 
                   aria-label="First group" 
-                  class="btn btn-secondary" 
+                  className="btn btn-secondary" 
                   data-bs-dismiss="modal">
                     <X/> 
                     </button>
 
                   <button type="submit" 
-                  class="btn btn-success" 
+                  className="btn btn-success" 
                   aria-label="Second group">
                     <Save />
                     </button>

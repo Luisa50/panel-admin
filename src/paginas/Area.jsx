@@ -1,17 +1,29 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { Modal } from "bootstrap";
 import { fetchWithAuth } from "../services/auth";
 import { API_URL } from "../config";
+import "../estilos/centrosnodos.css";
 import "../estilos/area.css";
+import Modalver from "../componentes/modalsPost/ModalVer.jsx";
+import EncabezadoListadoMaestro from "../componentes/EncabezadoListadoMaestro.jsx";
+import MaestroAcciones from "../componentes/MaestroAcciones.jsx";
+
+function abrirModalPorId(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  Modal.getOrCreateInstance(el).show();
+}
 
 export default function Area() {
   const [areas, setAreas] = useState([]);
   const [psicologos, setPsicologos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [guardando, setGuardando] = useState(false);
+
+  const [modo, setModo] = useState("crear");
   const [edicion, setEdicion] = useState(null);
   const [psiSeleccionado, setPsiSeleccionado] = useState("");
-  const [mostrarModal, setMostrarModal] = useState(false);
+  const [dataVer, setDataVer] = useState({});
 
   const botonDisparadorRef = useRef(null);
 
@@ -33,10 +45,19 @@ export default function Area() {
     try {
       const res = await fetchWithAuth(`${API_URL}/Area`);
       if (!res) return;
+      if (res.status === 404) {
+        setAreas([]);
+        return;
+      }
+      if (!res.ok) {
+        setAreas([]);
+        return;
+      }
       const data = await res.json();
       setAreas(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error(error);
+      setAreas([]);
     }
   }, []);
 
@@ -52,281 +73,269 @@ export default function Area() {
     };
   }, [cargarAreas, cargarPsicologos]);
 
-  /** Bloquea scroll del body mientras el modal está abierto (comportamiento Bootstrap). */
-  useEffect(() => {
-    if (!mostrarModal) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [mostrarModal]);
+  const cerrarModalForm = () => {
+    document.getElementById("btnCerrarModalArea")?.click();
+  };
 
-  /** Cierra con Escape. */
-  useEffect(() => {
-    if (!mostrarModal) return;
-    const onKey = (e) => {
-      if (e.key === "Escape") cerrarModal();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [mostrarModal]);
-
-  /** Enfoca el selector al abrir (evita foco “perdido” y advertencias de aria-hidden). */
-  useEffect(() => {
-    if (!mostrarModal || !edicion) return;
-    const id = window.requestAnimationFrame(() => {
-      const sel = document.getElementById("selectPsiArea");
-      sel?.focus({ preventScroll: true });
-    });
-    return () => window.cancelAnimationFrame(id);
-  }, [mostrarModal, edicion]);
+  const abrirNuevaArea = () => {
+    setModo("crear");
+    setEdicion({ areaCodigo: null, areaNombre: "" });
+    setPsiSeleccionado("");
+    window.requestAnimationFrame(() => abrirModalPorId("modalAreaForm"));
+  };
 
   const abrirEdicion = (area, event) => {
     const actual =
       area.areaPsicologo?.psiCodigo ??
       area.areaPsiFk ??
-      area.psiCodigo ??
-      area.psiFk ??
+      area.areaPsicCodFk ??
       null;
     if (event?.currentTarget instanceof HTMLElement) {
       botonDisparadorRef.current = event.currentTarget;
     }
+    setModo("editar");
     setEdicion({
       areaCodigo: area.areaCodigo,
-      areaNombre: area.areaNombre,
+      areaNombre: area.areaNombre ?? "",
     });
     setPsiSeleccionado(
       actual !== undefined && actual !== null ? String(actual) : ""
     );
-    setMostrarModal(true);
+    window.requestAnimationFrame(() => abrirModalPorId("modalAreaForm"));
   };
 
-  /** Construye el objeto anidado que usa la tabla a partir del listado de psicólogos. */
-  const areaPsicologoDesdeSeleccion = (valorSelect) => {
-    if (valorSelect === "" || valorSelect == null) return null;
-    const p = psicologos.find(
-      (x) => String(x.psiCodigo) === String(valorSelect)
-    );
-    if (!p) return null;
-    return {
-      psiCodigo: p.psiCodigo,
-      psiNombre: p.psiNombre,
-      psiApellido: p.psiApellido,
-      psiDocumento: p.psiDocumento,
-      psiEspecialidad: p.psiEspecialidad,
-      psiTelefono: p.psiTelefono,
-      psiCorreoInstitucional: p.psiCorreoInstitucional,
-    };
+  const handleVer = async (id) => {
+    try {
+      const res = await fetchWithAuth(`${API_URL}/Area/${id}`);
+      if (!res?.ok) return;
+      const json = await res.json();
+      const item = Array.isArray(json) ? json[0] : json;
+      setDataVer(item ?? {});
+      window.requestAnimationFrame(() => abrirModalPorId("modalVerArea"));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  /** Cierra el modal y limpia el estado de edición; devuelve foco al botón que abrió. */
-  const cerrarModal = () => {
-    setMostrarModal(false);
-    setEdicion(null);
-    setPsiSeleccionado("");
-    window.requestAnimationFrame(() => {
-      const btn = botonDisparadorRef.current;
-      if (btn && typeof btn.focus === "function") {
-        btn.focus({ preventScroll: true });
+  const handleEditar = (id) => {
+    const area = areas.find((a) => a.areaCodigo === id);
+    if (area) abrirEdicion(area, null);
+  };
+
+  const handleEliminar = async (id) => {
+    if (!window.confirm("¿Eliminar esta área? (baja lógica)")) return;
+    try {
+      const res = await fetchWithAuth(`${API_URL}/Area/eliminar/${id}`, {
+        method: "PUT",
+      });
+      if (res?.status === 403) {
+        alert(
+          "No tienes permiso para eliminar áreas. Solo el administrador puede hacerlo."
+        );
+        return;
       }
-      botonDisparadorRef.current = null;
-    });
+      if (res?.ok) {
+        alert("Área eliminada correctamente.");
+        await cargarAreas();
+        return;
+      }
+      const txt = await res?.text();
+      alert(`No se pudo eliminar (${res?.status}). ${txt ?? ""}`);
+    } catch (err) {
+      console.error(err);
+      alert("Error al eliminar");
+    }
   };
 
-  const aplicarCambioEnEstadoLocal = () => {
-    if (!edicion) return;
-    const nuevoPsi = areaPsicologoDesdeSeleccion(psiSeleccionado);
-    setAreas((prev) =>
-      prev.map((a) =>
-        a.areaCodigo === edicion.areaCodigo
-          ? {
-              ...a,
-              areaNombre: edicion.areaNombre,
-              areaPsiFk: psiSeleccionado === "" ? null : Number(psiSeleccionado),
-              areaPsicologo: nuevoPsi,
-            }
-          : a
-      )
-    );
-  };
+  const cuerpoAreaDto = () => ({
+    areaNombre: (edicion?.areaNombre ?? "").trim(),
+    psicologoCodigo:
+      psiSeleccionado === "" || psiSeleccionado == null
+        ? null
+        : Number(psiSeleccionado),
+  });
 
-  const guardarReasignacion = async (e) => {
+  const guardarArea = async (e) => {
     e.preventDefault();
     if (!edicion) return;
     setGuardando(true);
     try {
-      const areaPsiFk =
-        psiSeleccionado === "" ? null : Number(psiSeleccionado);
+      const cuerpo = cuerpoAreaDto();
+      if (modo === "crear") {
+        const res = await fetchWithAuth(`${API_URL}/Area`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(cuerpo),
+        });
+        if (res?.ok) {
+          alert("Área creada correctamente.");
+          cerrarModalForm();
+          setEdicion(null);
+          await cargarAreas();
+        } else {
+          const txt = await res?.text();
+          alert(`No se pudo crear (${res?.status}). ${txt ?? ""}`);
+        }
+        return;
+      }
+
       const res = await fetchWithAuth(
         `${API_URL}/Area/editar/${edicion.areaCodigo}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            areaNombre: edicion.areaNombre,
-            areaPsiFk,
-          }),
+          body: JSON.stringify(cuerpo),
         }
       );
-      if (!res) return;
-      if (res.ok) {
-        aplicarCambioEnEstadoLocal();
-        alert("Psicólogo actualizado correctamente.");
-        cerrarModal();
+      if (res?.ok) {
+        alert("Área actualizada correctamente.");
+        cerrarModalForm();
+        setEdicion(null);
+        await cargarAreas();
+        window.requestAnimationFrame(() => {
+          const btn = botonDisparadorRef.current;
+          if (btn && typeof btn.focus === "function") {
+            btn.focus({ preventScroll: true });
+          }
+          botonDisparadorRef.current = null;
+        });
       } else {
-        const txt = await res.text();
-        console.error("Error API área:", res.status, txt);
-        const usarEstadoLocal =
-          res.status === 404 ||
-          res.status === 405 ||
-          res.status === 501 ||
-          res.status >= 500;
-        if (usarEstadoLocal) {
-          aplicarCambioEnEstadoLocal();
-          cerrarModal();
-          alert(
-            "El servidor no pudo confirmar el cambio. Se aplicó solo en esta sesión."
-          );
-        } else {
-          alert(
-            `No se pudo guardar la asignación (código ${res.status}).`
-          );
-        }
+        const txt = await res?.text();
+        alert(`No se pudo guardar (${res?.status}). ${txt ?? ""}`);
       }
     } catch (error) {
       console.error(error);
-      aplicarCambioEnEstadoLocal();
-      cerrarModal();
-      alert(
-        "No hay conexión con el servidor. El psicólogo se actualizó solo en esta sesión."
-      );
+      alert("Error de conexión");
     } finally {
       setGuardando(false);
     }
   };
 
-  const modalContenido =
-    mostrarModal && edicion ? (
-      <>
-        <div
-          className="modal-backdrop fade show"
-          aria-hidden="true"
-          onClick={cerrarModal}
-        />
-        <div
-          className="modal fade show d-block"
-          id="modalReasignarArea"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modalReasignarAreaLabel"
-          tabIndex={-1}
-          style={{ zIndex: 1055 }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) cerrarModal();
-          }}
-        >
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content area-modal-reasignar">
-              <div className="modal-header">
-                <h2 className="modal-title h5" id="modalReasignarAreaLabel">
-                  Reasignar psicólogo
-                </h2>
+  return (
+    <div className="centro-container area-pagina">
+      <EncabezadoListadoMaestro
+        titulo="Áreas"
+        mostrarBusqueda={false}
+        onNuevo={abrirNuevaArea}
+        tituloBotonNuevo="Nueva área"
+      />
+
+      <div
+        className="modal fade"
+        id="modalAreaForm"
+        tabIndex={-1}
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content area-modal-reasignar">
+            <div className="modal-header">
+              <h2 className="modal-title h5">
+                {modo === "crear" ? "Nueva área" : "Editar área"}
+              </h2>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Cerrar"
+              />
+            </div>
+            <form onSubmit={guardarArea}>
+              <div className="modal-body">
+                {modo === "editar" && edicion?.areaCodigo != null ? (
+                  <p className="text-muted small mb-3">
+                    Código: <strong>{edicion.areaCodigo}</strong>
+                  </p>
+                ) : null}
+                <label
+                  className="form-label small text-muted mb-1"
+                  htmlFor="inputNombreArea"
+                >
+                  Nombre del área
+                </label>
+                <input
+                  id="inputNombreArea"
+                  type="text"
+                  className="form-control form-control-sm mb-3"
+                  value={edicion?.areaNombre ?? ""}
+                  onChange={(e) =>
+                    setEdicion((prev) =>
+                      prev
+                        ? { ...prev, areaNombre: e.target.value }
+                        : { areaCodigo: null, areaNombre: e.target.value }
+                    )
+                  }
+                  required
+                />
+                <label
+                  className="form-label small text-muted mb-1"
+                  htmlFor="selectPsiArea"
+                >
+                  Psicólogo asignado
+                </label>
+                <select
+                  id="selectPsiArea"
+                  className="form-select form-select-sm area-select-psi"
+                  value={psiSeleccionado}
+                  onChange={(e) => setPsiSeleccionado(e.target.value)}
+                >
+                  <option value="">Sin asignar</option>
+                  {psicologos.map((p) => (
+                    <option key={p.psiCodigo} value={String(p.psiCodigo)}>
+                      {p.psiNombre} {p.psiApellido}
+                      {p.psiEspecialidad ? ` · ${p.psiEspecialidad}` : ""}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="modal-footer border-0 pt-0">
                 <button
                   type="button"
-                  className="btn-close"
-                  onClick={cerrarModal}
-                  aria-label="Cerrar"
-                />
+                  id="btnCerrarModalArea"
+                  className="btn btn-sm btn-outline-secondary"
+                  data-bs-dismiss="modal"
+                  onClick={() => {
+                    setEdicion(null);
+                    setPsiSeleccionado("");
+                  }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-sm btn-primary"
+                  disabled={guardando || !edicion}
+                >
+                  {guardando ? "Guardando…" : "Guardar"}
+                </button>
               </div>
-              <form onSubmit={guardarReasignacion}>
-                <div className="modal-body">
-                  <p className="area-modal-area-nombre mb-2">
-                    <span className="text-muted">Área:</span>{" "}
-                    <strong>{edicion.areaNombre}</strong>
-                  </p>
-                  <p className="area-modal-hint text-muted small mb-3">
-                    Selecciona el profesional que acompañará esta área en el
-                    trimestre académico vigente.
-                  </p>
-                  <label
-                    className="form-label small text-muted mb-1"
-                    htmlFor="inputNombreArea"
-                  >
-                    Nombre del área
-                  </label>
-                  <input
-                    id="inputNombreArea"
-                    type="text"
-                    className="form-control form-control-sm mb-3"
-                    value={edicion.areaNombre}
-                    onChange={(e) =>
-                      setEdicion((prev) =>
-                        prev ? { ...prev, areaNombre: e.target.value } : prev
-                      )
-                    }
-                    required
-                  />
-                  <label
-                    className="form-label small text-muted mb-1"
-                    htmlFor="selectPsiArea"
-                  >
-                    Psicólogo asignado
-                  </label>
-                  <select
-                    id="selectPsiArea"
-                    className="form-select form-select-sm area-select-psi"
-                    value={psiSeleccionado}
-                    onChange={(e) => setPsiSeleccionado(e.target.value)}
-                  >
-                    <option value="">Sin asignar</option>
-                    {psicologos.map((p) => (
-                      <option key={p.psiCodigo} value={String(p.psiCodigo)}>
-                        {p.psiNombre} {p.psiApellido}
-                        {p.psiEspecialidad
-                          ? ` · ${p.psiEspecialidad}`
-                          : ""}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="modal-footer border-0 pt-0">
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline-secondary"
-                    onClick={cerrarModal}
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn btn-sm btn-primary"
-                    disabled={guardando || !edicion}
-                  >
-                    {guardando ? "Guardando…" : "Guardar"}
-                  </button>
-                </div>
-              </form>
-            </div>
+            </form>
           </div>
         </div>
-      </>
-    ) : null;
-
-  return (
-    <div className="area-container">
-      {typeof document !== "undefined" &&
-        modalContenido &&
-        createPortal(modalContenido, document.body)}
-
-      <div className="area-header">
-        <h2>Áreas</h2>
       </div>
+
+      <Modalver
+        id="modalVerArea"
+        titulo="Detalle del área"
+        data={dataVer}
+        campos={[
+          { nombre: "areaCodigo", label: "Código" },
+          { nombre: "areaNombre", label: "Nombre" },
+          { nombre: "areaPsicologo.psiNombre", label: "Psicólogo (nombre)" },
+          { nombre: "areaPsicologo.psiApellido", label: "Psicólogo (apellido)" },
+          { nombre: "areaPsicologo.psiDocumento", label: "Documento" },
+          { nombre: "areaPsicologo.psiEspecialidad", label: "Especialidad" },
+          { nombre: "areaPsicologo.psiTelefono", label: "Teléfono" },
+          {
+            nombre: "areaPsicologo.psiCorreoInstitucional",
+            label: "Correo",
+          },
+        ]}
+      />
 
       {loading ? (
         <p>Cargando...</p>
       ) : (
-        <table className="area-table">
+        <table className="centro-table area-table">
           <thead>
             <tr>
               <th>Código</th>
@@ -336,36 +345,30 @@ export default function Area() {
               <th>Especialidad</th>
               <th>Teléfono</th>
               <th>Correo</th>
-              <th className="area-col-acciones">Acciones</th>
+              <th>Acciones</th>
             </tr>
           </thead>
-
           <tbody>
             {areas.map((area) => (
               <tr key={area.areaCodigo}>
                 <td>{area.areaCodigo}</td>
                 <td>{area.areaNombre}</td>
-
                 <td>
                   {area.areaPsicologo
                     ? `${area.areaPsicologo.psiNombre} ${area.areaPsicologo.psiApellido}`
                     : "—"}
                 </td>
-
                 <td>{area.areaPsicologo?.psiDocumento || "—"}</td>
                 <td>{area.areaPsicologo?.psiEspecialidad || "—"}</td>
                 <td>{area.areaPsicologo?.psiTelefono || "—"}</td>
                 <td>{area.areaPsicologo?.psiCorreoInstitucional || "—"}</td>
-                <td className="area-col-acciones">
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline-secondary area-btn-editar"
-                    title="Cambiar psicólogo asignado"
-                    onClick={(e) => abrirEdicion(area, e)}
-                  >
-                    <i className="bi bi-pencil" aria-hidden="true" />
-                    <span className="area-btn-editar-text">Editar</span>
-                  </button>
+                <td>
+                  <MaestroAcciones
+                    id={area.areaCodigo}
+                    onVer={handleVer}
+                    onEditar={handleEditar}
+                    onEliminar={handleEliminar}
+                  />
                 </td>
               </tr>
             ))}

@@ -80,8 +80,12 @@ body.dark-mode .centro-container {
   color: #888;
 }
 
-/* MODAL */
-.modal {
+/*
+ * Overlay de modales inline SOLO en la página Centros (modal show d-block).
+ * No usar .centro-container .modal: también afecta modales Bootstrap (.modal.fade)
+ * en ProgramaFormación, NivelFormación, etc. y deja una capa invisible que bloquea clics.
+ */
+.centro-modal-centros {
   position: fixed;
   top: 0;
   left: 0;
@@ -94,19 +98,19 @@ body.dark-mode .centro-container {
   z-index: 1000;
 }
 
-.modal-grande {
+.centro-modal-centros.modal-grande {
   width: 600px;
   max-height: 90vh;
   overflow-y: auto;
 }
 
-.modal-content {
+.centro-modal-centros .modal-content {
   background: white;
   padding: 20px;
   border-radius: 10px;
 }
 
-.modal-header {
+.centro-modal-centros .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -126,7 +130,7 @@ body.dark-mode .centro-container {
   border: 1px solid #ccc;
 }
 
-.modal-buttons {
+.centro-modal-centros .modal-buttons {
   display: flex;
   justify-content: space-between;
   margin-top: 15px;

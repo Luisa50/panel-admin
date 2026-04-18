@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { fetchWithAuth } from "../services/auth";
 import { API_URL } from "../config";
 import "../estilos/centrosnodos.css";
+import EncabezadoListadoMaestro from "../componentes/EncabezadoListadoMaestro.jsx";
 
 const CENTRO_API = `${API_URL}/Centro`;
 
@@ -173,27 +174,17 @@ export default function CentrosNodos() {
   return (
     <div className="centro-container">
 
-      <div className="centro-header d-flex justify-content-between align-items-center">
-        <h2>Centros</h2>
-
-        <div className="d-flex gap-2">
-          <input
-            className="form-control"
-            placeholder="Buscar…"
-            onChange={(e) => setBusqueda(e.target.value)}
-          />
-
-          <button
-            className="btn btn-success"
-            onClick={() => {
-              limpiar();
-              setMostrarModal(true);
-            }}
-          >
-            +
-          </button>
-        </div>
-      </div>
+      <EncabezadoListadoMaestro
+        titulo="Centros"
+        busqueda={busqueda}
+        onChangeBusqueda={(e) => setBusqueda(e.target.value)}
+        placeholderBusqueda="Buscar…"
+        onNuevo={() => {
+          limpiar();
+          setMostrarModal(true);
+        }}
+        tituloBotonNuevo="Nuevo centro o nodo"
+      />
 
       {loading ? (
         <p>Cargando...</p>
@@ -262,7 +253,7 @@ export default function CentrosNodos() {
 
       
       {mostrarModal && (
-        <div className="modal show d-block">
+        <div className="modal show d-block centro-modal-centros">
           <div className="modal-dialog">
             <div className="modal-content">
 
@@ -377,7 +368,7 @@ export default function CentrosNodos() {
       )}
 
       {mostrarModalVer && centroVer && (
-        <div className="modal show d-block">
+        <div className="modal show d-block centro-modal-centros">
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header">

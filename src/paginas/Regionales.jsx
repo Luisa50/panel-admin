@@ -4,7 +4,6 @@ import { API_URL } from "../config";
 import "../estilos/centrosnodos.css";
 
 export default function Regionales() {
-
   const [regionales, setRegionales] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -13,13 +12,10 @@ export default function Regionales() {
     const obtenerRegionales = async () => {
       try {
         setLoading(true);
-
         const response = await fetchWithAuth(`${API_URL}/Regional`);
         if (!response) return;
-
         const data = await response.json();
-        setRegionales(data);
-
+        setRegionales(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error(error);
         setError("No se pudieron cargar las regionales");
@@ -27,13 +23,11 @@ export default function Regionales() {
         setLoading(false);
       }
     };
-
     obtenerRegionales();
   }, []);
 
   return (
     <div className="centro-container">
-
       <div className="centro-header">
         <h2>Regionales</h2>
       </div>
@@ -44,14 +38,12 @@ export default function Regionales() {
         <p>{error}</p>
       ) : (
         <table className="centro-table">
-
           <thead>
             <tr>
               <th>Código</th>
               <th>Nombre</th>
             </tr>
           </thead>
-
           <tbody>
             {regionales.map((reg) => (
               <tr key={reg.regCodigo}>
@@ -60,10 +52,8 @@ export default function Regionales() {
               </tr>
             ))}
           </tbody>
-
         </table>
       )}
-
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { propiedadesAnidadas } from "../../utilidades/propiedadesAnidadas";
 
 export default function Modalver({ id, titulo, data, campos }) {
   return (
-    <div className="modal fade" id={id} tabIndex="-1">
+    <div className="modal fade" id={id} tabIndex={-1}>
       <div className="modal-dialog modal-lg modal-dialog-centered">
         <div className="modal-content">
 
