@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ShieldAlert } from "lucide-react";
 import BarraLateral from "./BarraLateral";
 import BarraSuperior from "./BarraSuperior";
 import { Outlet } from "react-router-dom";
-import { isAuthenticated } from "../services/auth";
+import {
+  isAuthenticated,
+  bootstrapSession,
+  refreshSession,
+  scheduleProactiveRefresh,
+  getToken,
+  isAccessExpired,
+} from "../services/auth";
 import { useLanguage } from "../context/LanguageContext";
 import "../estilos/layout.css";
 
@@ -13,10 +20,34 @@ function Layout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const autenticado = isAuthenticated();
+  /** Sin token no hace falta esperar bootstrap; con token evita overlay de “no autenticado” mientras se intenta refrescar. */
+  const [sessionBootstrapped, setSessionBootstrapped] = useState(
+    () => !getToken()
+  );
   const [sidebarExpandida, setSidebarExpandida] = useState(false);
   const ocultarFooter = pathname === "/inicio";
 
   const toggleSidebar = () => setSidebarExpandida((v) => !v);
+
+  useEffect(() => {
+    if (!getToken()) return;
+    void bootstrapSession().finally(() => setSessionBootstrapped(true));
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated() || !sessionBootstrapped) return;
+    const onVis = () => {
+      if (document.visibilityState !== "visible") return;
+      const t = getToken();
+      if (t && isAccessExpired(t, 150)) {
+        void refreshSession().then((ok) => {
+          if (ok) scheduleProactiveRefresh();
+        });
+      }
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, [sessionBootstrapped]);
 
   return (
     <div className="layout-contenedor">
@@ -35,7 +66,7 @@ function Layout() {
         ) : null}
       </div>
 
-      {!autenticado && (
+      {!autenticado && sessionBootstrapped && (
         <div className="layout-overlay" role="alert" aria-live="assertive">
           <div className="layout-overlay-panel">
             <ShieldAlert
