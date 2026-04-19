@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { X, Save } from "lucide-react";
 
 export default function ModalUsuario({ visible, onCerrar, onGuardar, usuario }) {
   const [form, setForm] = useState({ nombre:"", correo:"", rol:"usuario" });
@@ -32,8 +33,14 @@ export default function ModalUsuario({ visible, onCerrar, onGuardar, usuario }) 
         </div>
 
         <div className="d-flex justify-content-end gap-2">
-          <button className="btn btn-secondary" onClick={onCerrar}>Cancelar</button>
-          <button className="btn btn-primary" onClick={()=>{ onGuardar(form); }}>Guardar</button>
+          <button type="button" className="btn btn-secondary" onClick={onCerrar}>
+            <X className="me-1" size={18} strokeWidth={1.75} aria-hidden />
+            Cancelar
+          </button>
+          <button type="button" className="btn btn-primary" onClick={()=>{ onGuardar(form); }}>
+            <Save className="me-1 text-white" size={18} strokeWidth={1.75} aria-hidden />
+            Guardar
+          </button>
         </div>
       </div>
     </div>

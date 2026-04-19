@@ -8,6 +8,7 @@ import DT from "datatables.net-dt";
 import "datatables.net-select-dt";
 import "datatables.net-responsive-dt";
 import AccionesAprendiz from "../componentes/AccionesAprendiz";
+import PaginacionTablaMinimal from "../componentes/PaginacionTablaMinimal.jsx";
 import ModalPsicologo from "../componentes/modalsPost/ModalPsicologo.jsx";
 import Modalver from "../componentes/modalsPost/ModalVer.jsx";
 import { fetchWithAuth } from "../services/auth";
@@ -330,7 +331,7 @@ export default function Psicologos() {
       <div className="container-fluid pb-4">
         <h2>Listado de psicologos</h2>
         <div className="encabezado w-100">
-          <div className="d-flex align-items-center justify-content-between gap-2 w-100">
+          <div className="d-flex align-items-center justify-content-between gap-3 w-100 flex-wrap">
             <select
               className="seleccionCantidad"
               onChange={(e) => {
@@ -343,14 +344,13 @@ export default function Psicologos() {
               <option value="10">10</option>
               <option value="15">15</option>
             </select>
-            <div className="d-flex align-items-center gap-2">
+            <div className="usuarios-toolbar-buscar">
               <input
                 type="search"
                 className="form-control"
-                style={{ width: "280px" }}
-                placeholder="Buscar por nombre o N° documento…"
+                placeholder="Buscar"
                 value={textoBusqueda}
-                aria-label="Buscar psicólogos por nombre o documento"
+                aria-label="Buscar"
                 onChange={(e) => {
                   const v = e.target.value;
                   setTextoBusqueda(v);
@@ -367,7 +367,7 @@ export default function Psicologos() {
               />
               <button
                 type="button"
-                className="btn btn-success px-3"
+                className="btn btn-primary px-3"
                 title="Registrar nuevo psicólogo"
                 id="aggreg"
                 onClick={abrirFormularioNuevoPsicologo}
@@ -383,43 +383,11 @@ export default function Psicologos() {
           datos={usuarios}
           informacion={informacion}
         />
-        <div className="btn-group mt-3">
-          <button
-            type="button"
-            className="btn btn-outline-primary"
-            disabled={!informacion.paginaAnterior}
-            onClick={() => loadData(informacion.paginaAnterior, cantidadReg)}
-            aria-label="Página anterior"
-          >
-            <i className="bi bi-chevron-compact-left"></i>
-          </button>
-
-          {Array.from(
-            { length: informacion?.totalPaginas ?? 0 },
-            (_, i) => i + 1
-          ).map((num) => (
-            <button
-              key={num}
-              type="button"
-              className={`btn ${informacion?.paginaActual === num ? "btn-primary" : "btn-outline-primary"}`}
-              onClick={() => loadData(num, cantidadReg)}
-              aria-label={`Página ${num}`}
-              aria-current={informacion?.paginaActual === num ? "page" : undefined}
-            >
-              {num}
-            </button>
-          ))}
-
-          <button
-            type="button"
-            className="btn btn-outline-primary"
-            disabled={!informacion.paginaSiguiente}
-            onClick={() => loadData(informacion.paginaSiguiente, cantidadReg)}
-            aria-label="Página siguiente"
-          >
-            <i className="bi bi-chevron-compact-right"></i>
-          </button>
-        </div>
+        <PaginacionTablaMinimal
+          paginaActual={informacion?.paginaActual ?? 1}
+          totalPaginas={Math.max(1, informacion?.totalPaginas ?? 1)}
+          onCambiarPagina={(n) => loadData(n, cantidadReg)}
+        />
       </div>
     </>
   );

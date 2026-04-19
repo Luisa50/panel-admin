@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { X, Save } from "lucide-react";
 import { Modal, Button, Form, Badge } from "react-bootstrap";
 import { useApp } from "../context/AppContext";
 import { fetchWithAuth } from "../services/auth";
@@ -409,8 +410,16 @@ export default function Reportes() {
       </div>
 
       <Modal show={mostrarModal} onHide={cerrarModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>{reporteSeleccionado?.titulo}</Modal.Title>
+        <Modal.Header closeButton={false} className="align-items-center">
+          <Modal.Title className="mb-0">{reporteSeleccionado?.titulo}</Modal.Title>
+          <button
+            type="button"
+            className="btn btn-link p-1 text-secondary text-decoration-none border-0 lh-1 ms-auto"
+            onClick={cerrarModal}
+            aria-label="Cerrar"
+          >
+            <X size={20} strokeWidth={1.75} />
+          </button>
         </Modal.Header>
 
         <Modal.Body>
@@ -469,9 +478,11 @@ export default function Reportes() {
 
         <Modal.Footer>
           <Button variant="secondary" onClick={cerrarModal}>
-            Cerrar
+            <X className="me-1" size={18} strokeWidth={1.75} aria-hidden />
+            Cancelar
           </Button>
-          <Button variant="success" onClick={guardarCambios}>
+          <Button variant="primary" onClick={guardarCambios}>
+            <Save className="me-1 text-white" size={18} strokeWidth={1.75} aria-hidden />
             Guardar cambios
           </Button>
         </Modal.Footer>

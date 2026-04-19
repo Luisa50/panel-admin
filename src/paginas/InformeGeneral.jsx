@@ -99,13 +99,11 @@ export default function InformeGeneral() {
       : null;
 
   return (
-    <div className="pagina-informe">
-      <div className="hoja-a4">
-        <header className="encabezado">
+    <div className="pagina-informe informe-print-pro">
+      <div className="hoja-a4 informe-print-pro-hoja">
+        <header className="encabezado informe-print-pro-encabezado">
+          <p className="informe-print-pro-fecha">Generado el {fechaActual}</p>
           <h2>Informe general HealthyMind</h2>
-          <p style={{ margin: "8px 0 0", fontSize: 13, color: "#666" }}>
-            Generado el {fechaActual}
-          </p>
         </header>
 
         <div className="bloque">
@@ -209,12 +207,24 @@ export default function InformeGeneral() {
         </footer>
 
         <div className="acciones no-print">
-          <button type="button" onClick={() => window.print()}>
-            <i className="bi bi-printer"></i>
-          </button>
-          <button type="button" onClick={() => window.history.back()}>
-            <i className="bi bi-arrow-left"></i>
-          </button>
+          <div className="acciones-grupo">
+            <button
+              type="button"
+              onClick={() => window.print()}
+              title="Descargar o imprimir informe (PDF)"
+            >
+              <i className="bi bi-box-arrow-in-down" aria-hidden="true" />
+              <span>Descargar informe</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => window.history.back()}
+              title="Volver a la pantalla anterior"
+            >
+              <i className="bi bi-box-arrow-in-left" aria-hidden="true" />
+              <span>Regresar</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

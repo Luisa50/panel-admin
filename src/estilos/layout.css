@@ -145,42 +145,66 @@ body.dark-mode .layout-derecha {
   display: flex;
 }
 
-/* Impresión: sin recorte a una pantalla (overflow del layout rompía PDF/paginación) */
+/* Impresión: caja útil = 100 % del área de @page; sin desborde horizontal al guardar PDF */
 @media print {
-  html,
+  html {
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    width: auto !important;
+    max-width: 100% !important;
+  }
+
   body,
   #root {
     height: auto !important;
     min-height: 0 !important;
-    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .layout-contenedor {
     display: block !important;
     height: auto !important;
     min-height: 0 !important;
-    overflow: visible !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
   }
 
   .sidebar,
-  .layout-topbar {
+  .layout-topbar,
+  nav[role="navigation"],
+  .navbar,
+  .no-print {
     display: none !important;
   }
 
   .layout-derecha {
     margin-left: 0 !important;
-    width: 100% !important;
+    width: auto !important;
     max-width: 100% !important;
+    min-width: 0 !important;
     min-height: 0 !important;
-    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
   }
 
   .layout-contenido {
-    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
     height: auto !important;
     max-height: none !important;
     padding: 0 !important;
-    width: 100% !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
 
   .footer-sena {

@@ -42,9 +42,9 @@ export default function Informesss() {
   ];
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2 style={{ marginBottom: "5px" }}>Informes</h2>
-      <p style={{ color: "#666", marginBottom: "25px" }}>
+    <div className="informes-hub-page px-2 px-sm-3 py-3">
+      <h2 className="informes-hub-page__title">Informes</h2>
+      <p className="informes-hub-page__lead mb-4">
         Generación de informes y análisis del sistema
       </p>
 
@@ -55,33 +55,25 @@ export default function Informesss() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => navigate(inf.ruta)}
+              className="informes-tarjeta"
               style={{
-                cursor: "pointer",
-                padding: "20px",
-                borderRadius: "14px",
-                background: "#fff",
-                boxShadow: "0 6px 18px rgba(0,0,0,0.1)",
                 borderLeft: `6px solid ${inf.color}`,
-                height: "100%",
               }}
             >
-              <div style={{ fontSize: "26px", color: inf.color }}>
+              <div
+                className="informes-tarjeta__icono"
+                style={{ color: inf.color }}
+              >
                 <i className={inf.icono}></i>
               </div>
 
-              <h5 style={{ marginTop: "10px", marginBottom: "6px" }}>
-                {inf.titulo}
-              </h5>
+              <h5 className="informes-tarjeta__titulo">{inf.titulo}</h5>
 
-              <small style={{ color: "#666" }}>{inf.descripcion}</small>
+              <small className="informes-tarjeta__desc">{inf.descripcion}</small>
 
               <div
-                style={{
-                  marginTop: "15px",
-                  fontSize: "13px",
-                  color: inf.color,
-                  fontWeight: "500",
-                }}
+                className="informes-tarjeta__cta"
+                style={{ color: inf.color }}
               >
                 Generar informe →
               </div>

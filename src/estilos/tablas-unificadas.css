@@ -15,6 +15,11 @@
   --tabla-app-row-border: #f1f5f9;
   --tabla-app-padding: 12px 14px;
   --tabla-app-accent: #2563eb;
+  /* Paginación minimal: tono suave verde-agua (minimalista, buen contraste) */
+  --paginacion-minimal-surface: #f0fdf9;
+  --paginacion-minimal-border: #a7e9d3;
+  --paginacion-minimal-center-bg: #dcfce7;
+  --paginacion-minimal-accent: #059669;
 }
 
 /* ——— DataTables ——— */
@@ -127,6 +132,131 @@ table.dataTable.no-footer {
   padding: 6px 10px;
   border: 1px solid #cbd5e1;
   font-size: 0.875rem;
+}
+
+/* ——— Paginación minimal (listados con servidor: &lt; página &gt;) ——— */
+.paginacion-tabla-minimal {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.paginacion-tabla-minimal-inner {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--paginacion-minimal-border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--paginacion-minimal-surface);
+  box-shadow: 0 1px 2px rgba(16, 185, 129, 0.08);
+}
+
+.paginacion-tabla-minimal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.125rem;
+  height: 2.125rem;
+  padding: 0 0.4rem;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.paginacion-tabla-minimal-btn:hover:not(:disabled) {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--paginacion-minimal-accent);
+}
+
+.paginacion-tabla-minimal-btn:focus-visible {
+  outline: 2px solid var(--paginacion-minimal-accent);
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+.paginacion-tabla-minimal-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.paginacion-tabla-minimal-pagina {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.125rem;
+  padding: 0 0.65rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--tabla-app-header-color);
+  background: var(--paginacion-minimal-center-bg);
+  border-left: 1px solid var(--paginacion-minimal-border);
+  border-right: 1px solid var(--paginacion-minimal-border);
+  user-select: none;
+}
+
+/* ——— Tabla regionales: anchos fijos + nombre con ellipsis (sin saltos al paginar) ——— */
+.regionales-tabla-estable {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.regionales-tabla-estable col.regionales-col-codigo {
+  width: 7rem;
+}
+
+.regionales-tabla-estable col.regionales-col-nombre-col {
+  width: 26%;
+}
+
+.regionales-tabla-estable col.regionales-col-ciudades {
+  width: 7.5rem;
+}
+
+.regionales-tabla-estable .regionales-col-codigo {
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.regionales-tabla-estable .regionales-col-nombre {
+  max-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.regionales-tabla-estable thead .regionales-col-nombre {
+  text-align: center;
+}
+
+.regionales-tabla-estable .regionales-col-ciudades {
+  vertical-align: middle;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.regionales-tabla-estable tbody tr {
+  height: 2.85rem;
+}
+
+.regionales-tabla-estable tbody td {
+  vertical-align: middle;
+}
+
+body.dark-mode .regionales-tabla-estable .regionales-col-nombre {
+  color: #e2e8f0;
 }
 
 /* ——— Tablas HTML (.centro-table, .area-table, .gestion-tabla) ——— */
@@ -247,9 +377,11 @@ table.dataTable.no-footer {
 /* Impresión / PDF: ancho completo, columnas proporcionadas, varias páginas */
 @media print {
   .tabla-usuarios {
-    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
     max-width: 100% !important;
     width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .tabla-usuarios table {
@@ -257,7 +389,7 @@ table.dataTable.no-footer {
     min-width: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
-    font-size: 9pt !important;
+    font-size: 8.75pt !important;
     line-height: 1.35 !important;
     box-shadow: none !important;
     border-radius: 0 !important;
@@ -278,7 +410,8 @@ table.dataTable.no-footer {
 
   .tabla-usuarios th,
   .tabla-usuarios td {
-    padding: 5px 7px !important;
+    min-width: 0 !important;
+    padding: 4px 6px !important;
     word-break: break-word !important;
     overflow-wrap: anywhere !important;
     white-space: normal !important;
@@ -424,6 +557,28 @@ body.dark-mode .dataTables_length select {
   border-color: #475569;
 }
 
+body.dark-mode .paginacion-tabla-minimal-inner {
+  background: rgba(6, 78, 59, 0.45);
+  border-color: rgba(52, 211, 153, 0.35);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .paginacion-tabla-minimal-btn {
+  color: #94a3b8;
+}
+
+body.dark-mode .paginacion-tabla-minimal-btn:hover:not(:disabled) {
+  background: rgba(16, 185, 129, 0.22);
+  color: #6ee7b7;
+}
+
+body.dark-mode .paginacion-tabla-minimal-pagina {
+  background: rgba(4, 120, 87, 0.4);
+  color: #f1f5f9;
+  border-left-color: rgba(52, 211, 153, 0.28);
+  border-right-color: rgba(52, 211, 153, 0.28);
+}
+
 body.dark-mode .centro-table,
 body.dark-mode .area-table,
 body.dark-mode .gestion-tabla {
@@ -476,4 +631,101 @@ body.dark-mode .tabla-usuarios td {
 
 body.dark-mode .tabla-usuarios tbody tr:hover {
   background: #1e293b;
+}
+
+/* ——— Acciones: ver → editar → eliminar; ícono con color; hover = recuadro del mismo color + ícono blanco ——— */
+.acciones-tabla-centro {
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+.acciones-tabla-centro .acciones-tabla-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  margin: 0;
+  border-radius: 6px;
+  text-decoration: none;
+  box-shadow: none;
+  line-height: 1;
+  flex-shrink: 0;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.acciones-tabla-centro .acciones-tabla-btn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.acciones-tabla-centro .icono-ver-centro {
+  color: #2563eb;
+  background-color: transparent;
+}
+
+.acciones-tabla-centro .icono-ver-centro:hover:not(:disabled),
+.acciones-tabla-centro .icono-ver-centro:focus-visible:not(:disabled) {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.acciones-tabla-centro-editar {
+  color: #ca8a04;
+  background-color: transparent;
+}
+
+.acciones-tabla-centro-editar:hover:not(:disabled),
+.acciones-tabla-centro-editar:focus-visible:not(:disabled) {
+  background-color: #ca8a04;
+  color: #ffffff;
+}
+
+.acciones-tabla-centro-eliminar {
+  color: #dc2626 !important;
+  background-color: transparent;
+}
+
+.acciones-tabla-centro-eliminar:hover:not(:disabled),
+.acciones-tabla-centro-eliminar:focus-visible:not(:disabled) {
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
+}
+
+.acciones-tabla-centro .btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+body.dark-mode .acciones-tabla-centro .icono-ver-centro {
+  color: #60a5fa;
+}
+
+body.dark-mode .acciones-tabla-centro .icono-ver-centro:hover:not(:disabled),
+body.dark-mode .acciones-tabla-centro .icono-ver-centro:focus-visible:not(:disabled) {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+body.dark-mode .acciones-tabla-centro-editar {
+  color: #facc15;
+}
+
+body.dark-mode .acciones-tabla-centro-editar:hover:not(:disabled),
+body.dark-mode .acciones-tabla-centro-editar:focus-visible:not(:disabled) {
+  background-color: #ca8a04;
+  color: #ffffff;
+}
+
+body.dark-mode .acciones-tabla-centro-eliminar {
+  color: #f87171 !important;
+}
+
+body.dark-mode .acciones-tabla-centro-eliminar:hover:not(:disabled),
+body.dark-mode .acciones-tabla-centro-eliminar:focus-visible:not(:disabled) {
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
 }

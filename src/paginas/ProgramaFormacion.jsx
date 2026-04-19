@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { X, Save } from "lucide-react";
 import { Modal } from "bootstrap";
 import { fetchWithAuth } from "../services/auth";
 import { API_URL } from "../config";
@@ -6,6 +7,9 @@ import "../estilos/centrosnodos.css";
 import Modalver from "../componentes/modalsPost/ModalVer.jsx";
 import EncabezadoListadoMaestro from "../componentes/EncabezadoListadoMaestro.jsx";
 import MaestroAcciones from "../componentes/MaestroAcciones.jsx";
+import PaginacionTablaMinimal, {
+  LISTADO_TAM_PAGINA,
+} from "../componentes/PaginacionTablaMinimal.jsx";
 
 async function jsonListaSegura(response) {
   if (!response) return [];
@@ -48,6 +52,7 @@ export default function ProgramaFormacion() {
   });
 
   const [dataVer, setDataVer] = useState({});
+  const [paginaLista, setPaginaLista] = useState(1);
 
   const cargarCatalogos = useCallback(async () => {
     const [rNiv, rArea, rCen] = await Promise.all([
@@ -86,6 +91,24 @@ export default function ProgramaFormacion() {
     cargarCatalogos();
     obtenerProgramas();
   }, [cargarCatalogos, obtenerProgramas]);
+
+  useEffect(() => {
+    setPaginaLista(1);
+  }, [programas]);
+
+  const totalPaginasProgramas = Math.max(
+    1,
+    Math.ceil(programas.length / LISTADO_TAM_PAGINA)
+  );
+  const paginaProgramasSegura = Math.min(paginaLista, totalPaginasProgramas);
+  const programasPagina = useMemo(() => {
+    const ini = (paginaProgramasSegura - 1) * LISTADO_TAM_PAGINA;
+    return programas.slice(ini, ini + LISTADO_TAM_PAGINA);
+  }, [programas, paginaProgramasSegura]);
+
+  useEffect(() => {
+    setPaginaLista((p) => Math.min(p, totalPaginasProgramas));
+  }, [totalPaginasProgramas]);
 
   const ejecutarBusquedaApi = useCallback(
     async (texto) => {
@@ -271,14 +294,14 @@ export default function ProgramaFormacion() {
         titulo="Programas de Formación"
         busqueda={busqueda}
         onChangeBusqueda={onChangeBusqueda}
-        placeholderBusqueda="Buscar por nombre…"
+        placeholderBusqueda="Buscar"
         onNuevo={abrirNuevo}
         tituloBotonNuevo="Nuevo programa"
-        ariaLabelBusqueda="Buscar programas"
+        ariaLabelBusqueda="Buscar"
       />
 
       <div
-        className="modal fade"
+        className="modal fade modal-listado-root"
         id="modalProgramaForm"
         tabIndex={-1}
         aria-hidden="true"
@@ -291,10 +314,12 @@ export default function ProgramaFormacion() {
               </h2>
               <button
                 type="button"
-                className="btn-close"
+                className="btn btn-link p-1 text-secondary text-decoration-none border-0 lh-1 ms-auto"
                 data-bs-dismiss="modal"
                 aria-label="Cerrar"
-              />
+              >
+                <X size={20} strokeWidth={1.75} />
+              </button>
             </div>
             <form onSubmit={enviarForm}>
               <div className="modal-body">
@@ -413,9 +438,11 @@ export default function ProgramaFormacion() {
                   className="btn btn-secondary"
                   data-bs-dismiss="modal"
                 >
+                  <X className="me-1" size={18} strokeWidth={1.75} aria-hidden />
                   Cancelar
                 </button>
                 <button type="submit" className="btn btn-primary">
+                  <Save className="me-1 text-white" size={18} strokeWidth={1.75} aria-hidden />
                   Guardar
                 </button>
               </div>
@@ -463,7 +490,7 @@ export default function ProgramaFormacion() {
             </tr>
           </thead>
           <tbody>
-            {programas.map((prog) => (
+            {programasPagina.map((prog) => (
               <tr key={prog.progCodigo}>
                 <td>{prog.progCodigo}</td>
                 <td>{prog.progNombre}</td>
@@ -490,6 +517,16 @@ export default function ProgramaFormacion() {
 
       {!loading && programas.length === 0 && !error ? (
         <p className="text-muted mt-2">No hay programas para mostrar.</p>
+      ) : null}
+
+      {!loading && programas.length > 0 ? (
+        <PaginacionTablaMinimal
+          paginaActual={paginaProgramasSegura}
+          totalPaginas={totalPaginasProgramas}
+          onCambiarPagina={setPaginaLista}
+          ocultarSiVacio
+          totalItems={programas.length}
+        />
       ) : null}
     </div>
   );

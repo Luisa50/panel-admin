@@ -1,5 +1,6 @@
 // src/componentes/modalsPost/ModalEditar.jsx
 import React from "react";
+import { X } from "lucide-react";
 import { propiedadesAnidadas } from "../../utilidades/propiedadesAnidadas";
 
 export default function Modalver({ id, titulo, data, campos }) {
@@ -10,7 +11,14 @@ export default function Modalver({ id, titulo, data, campos }) {
 
           <div className="modal-header">
             <h5 className="modal-title">{titulo}</h5>
-            <button className="btn-close" data-bs-dismiss="modal"></button>
+            <button
+              type="button"
+              className="btn btn-link p-1 text-secondary text-decoration-none border-0 lh-1 ms-auto"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            >
+              <X size={20} strokeWidth={1.75} />
+            </button>
           </div>
 
           <div className="modal-body">
@@ -37,7 +45,8 @@ export default function Modalver({ id, titulo, data, campos }) {
           </div>
 
           <div className="modal-footer">
-            <button className="btn btn-secondary" data-bs-dismiss="modal">
+            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
+              <X className="me-1" size={18} strokeWidth={1.75} aria-hidden />
               Cerrar
             </button>
           </div>

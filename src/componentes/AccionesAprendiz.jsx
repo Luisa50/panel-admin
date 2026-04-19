@@ -1,33 +1,39 @@
 import React from "react";
 
+/** Misma apariencia que la columna de acciones en Centros (enlace + iconos lápiz / papelera). */
 export default function AccionesAprendiz({ id, onVer, onEditar, onEliminar }) {
+  const disabled = id == null || id === "";
   return (
-    <div className="btn-group" role="group">
+    <div className="acciones-tabla-centro d-inline-flex align-items-center flex-nowrap">
       <button
         type="button"
-        className="btn btn-info btn-sm"
+        className="btn btn-sm btn-link acciones-tabla-btn icono-ver-centro border-0"
         onClick={() => onVer(id)}
-        disabled={id == null || id === ""}
+        disabled={disabled}
+        title="Ver"
+        aria-label="Ver"
       >
-        <i className="bi bi-eye"></i>
+        <i className="bi bi-eye" aria-hidden="true" />
       </button>
-
       <button
         type="button"
-        className="btn btn-warning btn-sm"
+        className="btn btn-sm btn-link acciones-tabla-btn border-0 acciones-tabla-centro-editar"
         onClick={() => onEditar(id)}
-        disabled={id == null || id === ""}
+        disabled={disabled}
+        title="Editar"
+        aria-label="Editar"
       >
-        <i className="bi bi-pencil-square"></i>
+        <i className="bi bi-pencil" aria-hidden="true" />
       </button>
-
       <button
         type="button"
-        className="btn btn-danger btn-sm"
+        className="btn btn-sm btn-link acciones-tabla-btn border-0 acciones-tabla-centro-eliminar"
         onClick={() => onEliminar(id)}
-        disabled={id == null || id === ""}
+        disabled={disabled}
+        title="Eliminar"
+        aria-label="Eliminar"
       >
-        <i className="bi bi-trash"></i>
+        <i className="bi bi-trash" aria-hidden="true" />
       </button>
     </div>
   );

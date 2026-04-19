@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Container,
   Typography,
@@ -16,6 +16,10 @@ import {
 
 import { fetchWithAuth } from "../services/auth";
 import { API_URL } from "../config";
+import PaginacionTablaMinimal, {
+  LISTADO_TAM_PAGINA_COMPACTO,
+} from "../componentes/PaginacionTablaMinimal.jsx";
+import "../estilos/ciudades.css";
 
 export default function Ciudades() {
   const [ciudades, setCiudades] = useState([]);
@@ -24,6 +28,7 @@ export default function Ciudades() {
   const [regionalSeleccionada, setRegionalSeleccionada] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [paginaLista, setPaginaLista] = useState(1);
 
   useEffect(() => {
     const obtenerCiudades = async () => {
@@ -51,6 +56,24 @@ export default function Ciudades() {
     obtenerCiudades();
   }, []);
 
+  useEffect(() => {
+    setPaginaLista(1);
+  }, [regionalSeleccionada, ciudadesFiltradas.length]);
+
+  const totalPaginasCiudades = Math.max(
+    1,
+    Math.ceil(ciudadesFiltradas.length / LISTADO_TAM_PAGINA_COMPACTO)
+  );
+  const paginaCiudadesSegura = Math.min(paginaLista, totalPaginasCiudades);
+  const ciudadesPagina = useMemo(() => {
+    const ini = (paginaCiudadesSegura - 1) * LISTADO_TAM_PAGINA_COMPACTO;
+    return ciudadesFiltradas.slice(ini, ini + LISTADO_TAM_PAGINA_COMPACTO);
+  }, [ciudadesFiltradas, paginaCiudadesSegura]);
+
+  useEffect(() => {
+    setPaginaLista((p) => Math.min(p, totalPaginasCiudades));
+  }, [totalPaginasCiudades]);
+
   const handleFiltroRegional = (codigoRegional) => {
     setRegionalSeleccionada(codigoRegional);
     const filtradas = ciudades.filter(
@@ -60,6 +83,7 @@ export default function Ciudades() {
   };
 
   return (
+    <div className="ciudades-modulo">
     <Container className="mt-5">
       <Paper elevation={3} sx={{ padding: 4, borderRadius: 3 }}>
         <Typography variant="h4" gutterBottom>
@@ -112,7 +136,7 @@ export default function Ciudades() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {ciudadesFiltradas.map((ciudad) => (
+                  {ciudadesPagina.map((ciudad) => (
                     <TableRow key={ciudad.ciuCodigo}>
                       <TableCell>{ciudad.ciuCodigo}</TableCell>
                       <TableCell>{ciudad.ciuNombre}</TableCell>
@@ -122,9 +146,20 @@ export default function Ciudades() {
                 </TableBody>
               </Table>
             )}
+
+            {regionalSeleccionada && ciudadesFiltradas.length > 0 ? (
+              <PaginacionTablaMinimal
+                paginaActual={paginaCiudadesSegura}
+                totalPaginas={totalPaginasCiudades}
+                onCambiarPagina={setPaginaLista}
+                ocultarSiVacio
+                totalItems={ciudadesFiltradas.length}
+              />
+            ) : null}
           </>
         )}
       </Paper>
     </Container>
+    </div>
   );
 }

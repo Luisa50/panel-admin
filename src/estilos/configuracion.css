@@ -200,6 +200,19 @@
   color: #fff;
 }
 
+/* Botón “Ver credenciales”: en modo oscuro no usar --config-text como fondo (sería claro). */
+body.dark-mode .config-btn--primary {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+body.dark-mode .config-btn--primary:hover {
+  background: #4b5563;
+  border-color: #6b7280;
+  color: #fff;
+}
+
 /* Modal */
 .config-modal-overlay {
   position: fixed;
@@ -274,7 +287,7 @@
 }
 
 /* Modo oscuro */
-.dark-mode .config-page {
+body.dark-mode .config-page {
   --config-text: #f3f4f6;
   --config-text-muted: #9ca3af;
   --config-border: #374151;

@@ -13,23 +13,24 @@
 }
 
 :root {
-  --print-margin-apa: 25.4mm;
-  --print-sheet-width: 215.9mm;
-  --print-sheet-height: 279.4mm;
+  /* APA: 2,54 cm por lado; hoja A4 (misma caja útil en pantalla y en PDF) */
+  --print-margin-apa: 2.54cm;
+  --print-sheet-width: 21cm;
+  --print-sheet-height: 29.7cm;
   --print-content-width: calc(var(--print-sheet-width) - (var(--print-margin-apa) * 2));
   --print-content-height: calc(var(--print-sheet-height) - (var(--print-margin-apa) * 2));
   --print-container-width: var(--print-content-width);
 }
 
-/* Solo rutas con .pagina-informe (page: informe en @media print) */
+/* A4 + márgenes fijos (no dependen del margen del diálogo de impresión del navegador) */
 @page {
-  size: letter portrait;
-  margin: var(--print-margin-apa);
+  size: A4;
+  margin: 2.54cm;
 }
 
 @page informe {
-  size: letter portrait;
-  margin: var(--print-margin-apa);
+  size: A4;
+  margin: 2.54cm;
 }
 
 .encabezado {
@@ -48,6 +49,45 @@
   font-size: 13px;
   color: #555;
   font-weight: normal;
+}
+
+/* Informes: fecha arriba a la derecha, título centrado debajo (pantalla e impresión) */
+.informe-print-pro .informe-print-pro-encabezado {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
+.informe-print-pro .informe-print-pro-fecha {
+  margin: 0 0 0.625rem 0;
+  padding: 0;
+  width: 100%;
+  text-align: right;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: #64748b;
+  font-weight: 400;
+}
+
+.informe-print-pro .informe-print-pro-encabezado h2 {
+  margin: 0;
+  text-align: center;
+}
+
+.informe-estadistico-pagina .informe-estadistico-encabezado-texto {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
+.informe-estadistico-pagina .informe-estadistico-encabezado-texto .informe-print-pro-fecha {
+  text-align: right;
+}
+
+.informe-estadistico-pagina .informe-estadistico-encabezado-texto h2 {
+  text-align: center;
 }
 
 .informe-seccion-titulo {
@@ -136,23 +176,77 @@
 }
 
 
+/* Contenedor exterior: centra el grupo de botones en la hoja */
 .acciones {
   margin-top: 20px;
+  margin-left: 0;
+  margin-right: 0;
+  width: 100%;
+  max-width: 100%;
   display: flex;
-  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 8px;
+  text-align: center;
 }
 
-.acciones button {
+/* Grupo interno: botones en fila centrada; en pantallas estrechas pasan a varias filas centradas */
+.acciones-grupo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  max-width: 100%;
+}
+
+.acciones-grupo button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   padding: 8px 16px;
   cursor: pointer;
   border: none;
   background: #2f80ed;
   color: white;
-  border-radius: 4px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.2;
+  transition:
+    background 0.15s ease,
+    filter 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
-.acciones button:last-child {
-  background: #828282;
+.acciones-grupo button .bi {
+  font-size: 1.05rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.acciones-grupo button span {
+  display: inline-block;
+  line-height: 1.2;
+}
+
+.acciones-grupo button:hover {
+  filter: brightness(1.06);
+  box-shadow: 0 2px 8px rgba(47, 128, 237, 0.35);
+}
+
+.acciones-grupo button:active {
+  filter: brightness(0.94);
+}
+
+.acciones-grupo button:last-of-type {
+  background: #64748b;
+}
+
+.acciones-grupo button:last-of-type:hover {
+  box-shadow: 0 2px 8px rgba(100, 116, 139, 0.35);
 }
 
 
@@ -173,7 +267,7 @@
   min-height: var(--print-sheet-height);
   max-width: 100%;
   background: white;
-  padding: 14mm;
+  padding: var(--print-margin-apa);
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
   box-sizing: border-box;
   position: relative;
@@ -185,20 +279,93 @@
   margin-top: 0;
 }
 @media print {
-  body {
-    background: white;
+  /* Refuerzo: mismas reglas @page al imprimir / guardar PDF */
+  @page {
+    size: A4;
+    margin: 2.54cm;
   }
 
+  html {
+    width: auto !important;
+    max-width: 100% !important;
+  }
+
+  body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: auto !important;
+    max-width: 100% !important;
+  }
+
+  /* auto + max-width: evita que el 100 % empuje más allá del área entre márgenes en algunos motores */
   .pagina-informe {
     page: informe;
     padding: 0 !important;
     margin: 0 auto !important;
-    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
     display: block !important;
-    width: 100% !important;
+    width: auto !important;
     max-width: 100% !important;
+    min-width: 0 !important;
     background: white !important;
     box-sizing: border-box !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Tipografía ligeramente más compacta solo al imprimir (mismo diseño, menos riesgo de desborde) */
+  .pagina-informe .hoja-a4 {
+    font-size: 11pt !important;
+  }
+
+  .pagina-informe .encabezado h2 {
+    font-size: 18pt !important;
+  }
+
+  .pagina-informe .informe-parrafo,
+  .pagina-informe .informe-texto-contexto {
+    font-size: 11pt !important;
+    line-height: 1.45 !important;
+  }
+
+  .pagina-informe .informe-seccion-titulo {
+    font-size: 12pt !important;
+  }
+
+  .pagina-informe .pie {
+    font-size: 9pt !important;
+  }
+
+  /* Contenedores del informe: nunca más anchos que el área imprimible (@page) */
+  .pagina-informe .bloque,
+  .pagina-informe section,
+  .pagina-informe .tabla-usuarios,
+  .pagina-informe header.encabezado,
+  .pagina-informe footer.pie {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Tablas: refuerzo con especificidad alta (carga de CSS / orden de hojas) */
+  .pagina-informe .tabla-usuarios table {
+    table-layout: fixed !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    border-collapse: collapse !important;
+  }
+
+  .pagina-informe .tabla-usuarios th,
+  .pagina-informe .tabla-usuarios td {
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+    white-space: normal !important;
+    min-width: 0 !important;
   }
 
   .pagina-informe .informe-parrafo,
@@ -226,25 +393,26 @@
 
   .pagina-informe th,
   .pagina-informe td {
+    min-width: 0 !important;
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
     white-space: normal !important;
     hyphens: auto;
   }
 
+  /* Sin padding en la hoja al imprimir: los 2,54 cm los aplica solo @page (como el padding de la hoja en pantalla) */
   .hoja-a4 {
     box-shadow: none !important;
     width: auto !important;
-    max-width: none !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
     min-height: auto !important;
     padding: 0 !important;
     margin: 0 auto !important;
     position: static !important;
-    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
     box-sizing: border-box !important;
-  }
-
-  .hoja-a4 {
     break-after: page;
     page-break-after: always;
   }
@@ -267,7 +435,8 @@
   }
 
   .tabla-ranking-scroll {
-    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
     max-width: 100% !important;
   }
 
@@ -292,13 +461,13 @@
     display: table-header-group !important;
   }
 
-  /* Informes estratégicos: evitar 1 sola página — page-break-inside:avoid en
-     secciones grandes hace que Chrome recorte todo el documento */
+  /* Informes estratégicos: alto fluido; sin overflow:visible (reintroducía desborde horizontal al PDF) */
   .informe-estadistico-pagina .hoja-a4 {
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
-    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
   }
 
   .informe-estadistico-completo {
@@ -332,6 +501,12 @@
 
   .informe-recharts-host .recharts-responsive-container {
     min-height: 220px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .informe-recharts-host .recharts-wrapper {
+    max-width: 100% !important;
   }
 
   .informe-recharts-host .recharts-surface,
@@ -343,12 +518,15 @@
   .tabla-desglose-citas {
     table-layout: fixed !important;
     width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
     font-size: 9pt !important;
     line-height: 1.3 !important;
   }
 
   .tabla-desglose-citas th,
   .tabla-desglose-citas td {
+    min-width: 0 !important;
     overflow-wrap: anywhere !important;
     word-break: break-word !important;
     white-space: normal !important;
@@ -399,6 +577,208 @@
   .informe-tabla-cols-8 th:nth-child(8),
   .informe-tabla-cols-8 td:nth-child(8) {
     width: 13% !important;
+  }
+
+  /* —— Informes con .informe-print-pro (Usuarios, Psicólogos, General, Estratégico): PDF unificado —— */
+  .pagina-informe.informe-print-pro {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .pagina-informe.informe-print-pro .informe-print-pro-hoja.hoja-a4,
+  .pagina-informe.informe-print-pro .hoja-a4.informe-print-pro-hoja {
+    flex: 0 1 auto !important;
+    width: 100% !important;
+    max-width: min(900px, 100%) !important;
+    min-width: 0 !important;
+    margin: 0 auto !important;
+    padding: 24pt !important;
+    box-sizing: border-box !important;
+  }
+
+  .informe-print-pro .informe-print-pro-encabezado {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    margin-bottom: 22pt !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  .informe-estadistico-pagina .informe-print-pro-encabezado > .d-flex {
+    width: 100% !important;
+  }
+
+  .informe-print-pro .informe-print-pro-fecha {
+    text-align: right !important;
+    width: 100% !important;
+    margin: 0 0 10pt 0 !important;
+    padding: 0 !important;
+    font-size: 9.5pt !important;
+    line-height: 1.35 !important;
+    color: #64748b !important;
+    font-weight: 400 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .informe-print-pro .informe-print-pro-encabezado h2 {
+    text-align: center !important;
+    font-size: 17pt !important;
+    margin: 0 !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em !important;
+    page-break-after: avoid !important;
+  }
+
+  .informe-print-pro .bloque {
+    margin-bottom: 18pt !important;
+    text-align: start !important;
+    page-break-inside: auto !important;
+    orphans: 3 !important;
+    widows: 3 !important;
+  }
+
+  .informe-print-pro .informe-parrafo {
+    text-align: justify !important;
+    line-height: 1.58 !important;
+    font-size: 11pt !important;
+    margin-bottom: 12pt !important;
+    color: #1f2937 !important;
+    orphans: 3 !important;
+    widows: 3 !important;
+  }
+
+  .informe-print-pro .informe-seccion-estadistica,
+  .informe-print-pro .informe-estadistico-completo > h3 {
+    page-break-after: avoid !important;
+  }
+
+  .informe-print-pro .tabla-usuarios {
+    margin-top: 8pt !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  .informe-print-pro .tabla-usuarios table {
+    width: 100% !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+    border: 1pt solid #9ca3af !important;
+    font-size: 10pt !important;
+    line-height: 1.4 !important;
+    page-break-inside: auto !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .informe-print-pro .tabla-usuarios thead {
+    display: table-header-group !important;
+  }
+
+  .informe-print-pro .tabla-usuarios tbody {
+    display: table-row-group !important;
+  }
+
+  .informe-print-pro .tabla-usuarios thead th {
+    background: #f3f4f6 !important;
+    color: #111827 !important;
+    font-weight: 600 !important;
+    border: 0.75pt solid #9ca3af !important;
+    padding: 9pt 10pt !important;
+    vertical-align: middle !important;
+    text-align: left !important;
+  }
+
+  .informe-print-pro .tabla-usuarios tbody td {
+    border: 0.75pt solid #d1d5db !important;
+    padding: 8pt 10pt !important;
+    vertical-align: top !important;
+    color: #1f2937 !important;
+    background: #fff !important;
+    text-align: left !important;
+  }
+
+  .informe-print-pro .tabla-usuarios tbody tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .informe-print-pro .tabla-usuarios tbody tr:nth-child(even) td {
+    background: #fafafa !important;
+  }
+
+  .informe-print-pro .tabla-usuarios .text-end {
+    text-align: right !important;
+  }
+
+  /* Informe General: tabla de desglose de citas */
+  .informe-print-pro table.tabla-desglose-citas {
+    width: 100% !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+    border: 1pt solid #9ca3af !important;
+    font-size: 10pt !important;
+    page-break-inside: auto !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .informe-print-pro table.tabla-desglose-citas thead {
+    display: table-header-group !important;
+  }
+
+  .informe-print-pro table.tabla-desglose-citas thead th {
+    background: #f3f4f6 !important;
+    color: #111827 !important;
+    font-weight: 600 !important;
+    border: 0.75pt solid #9ca3af !important;
+    padding: 9pt 10pt !important;
+    text-align: left !important;
+  }
+
+  .informe-print-pro table.tabla-desglose-citas tbody td,
+  .informe-print-pro table.tabla-desglose-citas tbody th {
+    border: 0.75pt solid #d1d5db !important;
+    padding: 8pt 10pt !important;
+    color: #1f2937 !important;
+    background: #fff !important;
+  }
+
+  .informe-print-pro table.tabla-desglose-citas tbody tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .informe-print-pro .tabla-ranking-scroll .tabla-desglose-citas {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .informe-print-pro footer.pie,
+  .informe-print-pro .pie {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-top: 28pt !important;
+    margin-bottom: 0 !important;
+    padding-top: 14pt !important;
+    border-top: 0.5pt solid #d1d5db !important;
+    text-align: center !important;
+    font-size: 8.5pt !important;
+    color: #6b7280 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-before: auto !important;
   }
 }
 .bloque {
@@ -471,10 +851,12 @@
   overflow-x: auto;
 }
 
-/* Informes estratégicos: respetar carta real sin ancho inline extra */
-.informe-estadistico-pagina .hoja-a4 {
-  width: min(var(--print-container-width), 100%) !important;
-  max-width: var(--print-container-width) !important;
+/* Informes estratégicos: misma hoja A4 y márgenes APA que el resto */
+.informe-estadistico-pagina .hoja-a4.informe-print-pro-hoja {
+  width: min(var(--print-sheet-width), 100%) !important;
+  max-width: var(--print-sheet-width) !important;
+  padding: var(--print-margin-apa) !important;
+  box-sizing: border-box !important;
 }
 
 /* Centrar gráficas horizontalmente dentro de cada sección */
@@ -485,4 +867,295 @@
   width: 100%;
   margin-left: auto;
   margin-right: auto;
+}
+
+/* Hub de informes (ruta /informes): tarjetas según tema */
+.informes-hub-page__title {
+  margin-bottom: 5px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.informes-hub-page__lead {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.9375rem;
+}
+
+.informes-tarjeta {
+  cursor: pointer;
+  padding: 20px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  border-left-width: 6px;
+  border-left-style: solid;
+}
+
+.informes-tarjeta__icono {
+  font-size: 26px;
+}
+
+.informes-tarjeta__titulo {
+  margin: 10px 0 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.informes-tarjeta__desc {
+  display: block;
+  color: #4b5563;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.informes-tarjeta__cta {
+  margin-top: 15px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+body.dark-mode .informes-hub-page__title {
+  color: #f3f4f6;
+}
+
+body.dark-mode .informes-hub-page__lead {
+  color: #cbd5e1;
+}
+
+body.dark-mode .informes-tarjeta {
+  background: #1f2937;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45);
+  border-color: #374151;
+}
+
+body.dark-mode .informes-tarjeta__titulo {
+  color: #f3f4f6;
+}
+
+body.dark-mode .informes-tarjeta__desc {
+  color: #cbd5e1;
+}
+
+/* Listas tipo hub en subrutas de informes */
+body.dark-mode .informe-hub-item {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+body.dark-mode .informe-hub-item:hover {
+  background: #273549;
+}
+
+body.dark-mode .informe-hub-item-titulo {
+  color: #f3f4f6;
+}
+
+body.dark-mode .informe-hub-item-texto {
+  color: #cbd5e1;
+}
+
+/* =============================================================================
+   Informes (.pagina-informe): en tema oscuro la “hoja” sigue siendo documento
+   claro (texto oscuro sobre blanco) para coincidir con impresión / PDF.
+   ============================================================================= */
+body.dark-mode .informe-estadistico-pagina {
+  background: #e5e5e5 !important;
+}
+
+body.dark-mode .pagina-informe .hoja-a4 {
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+body.dark-mode .pagina-informe .hoja-a4 h1,
+body.dark-mode .pagina-informe .hoja-a4 h2,
+body.dark-mode .pagina-informe .hoja-a4 h3,
+body.dark-mode .pagina-informe .hoja-a4 h4 {
+  color: #111827 !important;
+}
+
+body.dark-mode .pagina-informe .hoja-a4 .informe-parrafo,
+body.dark-mode .pagina-informe .hoja-a4 .informe-texto-contexto,
+body.dark-mode .pagina-informe .hoja-a4 .informe-seccion-titulo,
+body.dark-mode .pagina-informe .hoja-a4 .pie,
+body.dark-mode .pagina-informe .hoja-a4 .pie p,
+body.dark-mode .pagina-informe .hoja-a4 footer.pie {
+  color: #1f2937 !important;
+}
+
+body.dark-mode .pagina-informe .hoja-a4 .informe-seccion-titulo {
+  border-bottom-color: #e5e7eb !important;
+}
+
+body.dark-mode .pagina-informe .hoja-a4 .text-muted {
+  color: #6b7280 !important;
+}
+
+body.dark-mode .pagina-informe .tabla-usuarios table {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+body.dark-mode .pagina-informe .tabla-usuarios th {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+body.dark-mode .pagina-informe .tabla-usuarios td {
+  background: #ffffff !important;
+  color: #1e293b !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+body.dark-mode .pagina-informe .tabla-usuarios tbody tr:hover {
+  background: #f1f5f9 !important;
+}
+
+body.dark-mode .pagina-informe .kpi {
+  background: #f9fafb !important;
+  border-color: #e5e7eb !important;
+}
+
+body.dark-mode .pagina-informe .kpi h3 {
+  color: #1d4ed8 !important;
+}
+
+body.dark-mode .pagina-informe .kpi span {
+  color: #4b5563 !important;
+}
+
+body.dark-mode .pagina-informe .tabla-desglose-citas th,
+body.dark-mode .pagina-informe .tabla-desglose-citas td {
+  color: #1f2937 !important;
+  background: #ffffff !important;
+  border-color: #e5e7eb !important;
+}
+
+body.dark-mode .pagina-informe .tabla-desglose-citas th {
+  background: #f9fafb !important;
+}
+
+/* Gráficos Recharts: ejes y leyendas legibles sobre hoja clara */
+body.dark-mode .pagina-informe .recharts-cartesian-axis-tick-value,
+body.dark-mode .pagina-informe .recharts-legend-item-text {
+  fill: #334155 !important;
+}
+
+body.dark-mode .pagina-informe .recharts-cartesian-axis-tick tspan {
+  fill: #334155 !important;
+}
+
+body.dark-mode .pagina-informe .recharts-text.recharts-label {
+  fill: #1e293b !important;
+}
+
+/* =============================================================================
+   Impresión / Guardar como PDF: mismo aspecto que “documento en papel”
+   (anula colores del tema oscuro para texto y tablas).
+   ============================================================================= */
+@media print {
+  body.dark-mode,
+  body.dark-mode .layout,
+  body.dark-mode .layout-derecha,
+  body.dark-mode .layout-contenido,
+  body.dark-mode .contenido {
+    background: #ffffff !important;
+    color: #111827 !important;
+  }
+
+  body.dark-mode .informe-estadistico-pagina {
+    background: #ffffff !important;
+  }
+
+  body.dark-mode .pagina-informe .hoja-a4 {
+    background: #ffffff !important;
+    color: #111827 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body.dark-mode .pagina-informe .hoja-a4 h1,
+  body.dark-mode .pagina-informe .hoja-a4 h2,
+  body.dark-mode .pagina-informe .hoja-a4 h3,
+  body.dark-mode .pagina-informe .hoja-a4 h4 {
+    color: #111827 !important;
+  }
+
+  body.dark-mode .pagina-informe .hoja-a4 .informe-parrafo,
+  body.dark-mode .pagina-informe .hoja-a4 .informe-texto-contexto,
+  body.dark-mode .pagina-informe .hoja-a4 .informe-seccion-titulo,
+  body.dark-mode .pagina-informe .hoja-a4 .pie,
+  body.dark-mode .pagina-informe .hoja-a4 .pie p,
+  body.dark-mode .pagina-informe .hoja-a4 footer.pie {
+    color: #1f2937 !important;
+  }
+
+  body.dark-mode .pagina-informe .hoja-a4 .informe-seccion-titulo {
+    border-bottom-color: #d1d5db !important;
+  }
+
+  body.dark-mode .pagina-informe .hoja-a4 .text-muted {
+    color: #4b5563 !important;
+  }
+
+  body.dark-mode .pagina-informe .tabla-usuarios table {
+    background: #ffffff !important;
+    border-color: #1e293b !important;
+  }
+
+  body.dark-mode .pagina-informe .tabla-usuarios th {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+  }
+
+  body.dark-mode .pagina-informe .tabla-usuarios td {
+    background: #ffffff !important;
+    color: #1e293b !important;
+  }
+
+  body.dark-mode .pagina-informe .tabla-usuarios tbody tr:hover {
+    background: #ffffff !important;
+  }
+
+  body.dark-mode .pagina-informe .kpi {
+    background: #f9fafb !important;
+    border-color: #e5e7eb !important;
+  }
+
+  body.dark-mode .pagina-informe .kpi h3 {
+    color: #1d4ed8 !important;
+  }
+
+  body.dark-mode .pagina-informe .kpi span {
+    color: #4b5563 !important;
+  }
+
+  body.dark-mode .pagina-informe .tabla-desglose-citas th,
+  body.dark-mode .pagina-informe .tabla-desglose-citas td {
+    color: #111827 !important;
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  body.dark-mode .pagina-informe .tabla-desglose-citas th {
+    background: #f3f4f6 !important;
+  }
+
+  body.dark-mode .pagina-informe .recharts-cartesian-axis-tick-value,
+  body.dark-mode .pagina-informe .recharts-legend-item-text {
+    fill: #1f2937 !important;
+  }
+
+  body.dark-mode .pagina-informe .recharts-cartesian-axis-tick tspan {
+    fill: #1f2937 !important;
+  }
+
+  body.dark-mode .pagina-informe .recharts-cartesian-grid line {
+    stroke: #cbd5e1 !important;
+  }
 }

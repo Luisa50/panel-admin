@@ -1,0 +1,74 @@
+/**
+ * Módulo Ciudades (MUI): modo oscuro alineado con body.dark-mode
+ */
+
+body.dark-mode .ciudades-modulo {
+  color: #e5e7eb;
+}
+
+body.dark-mode .ciudades-modulo .MuiPaper-root {
+  background-color: #1f2937 !important;
+  color: #e5e7eb !important;
+  border: 1px solid #374151;
+  background-image: none !important;
+}
+
+body.dark-mode .ciudades-modulo .MuiTypography-h4 {
+  color: #f3f4f6;
+}
+
+body.dark-mode .ciudades-modulo .MuiTypography-colorError {
+  color: #f87171 !important;
+}
+
+body.dark-mode .ciudades-modulo .MuiTypography-colorTextSecondary {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .ciudades-modulo .MuiTableCell-root {
+  color: #e5e7eb;
+  border-color: #374151;
+}
+
+body.dark-mode .ciudades-modulo .MuiTableHead-root .MuiTableCell-root {
+  color: #f1f5f9;
+  font-weight: 600;
+  background-color: #111827;
+  border-bottom-color: #4b5563;
+}
+
+body.dark-mode .ciudades-modulo .MuiTableBody-root .MuiTableRow-root:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+body.dark-mode .ciudades-modulo .MuiInputBase-input {
+  color: #f3f4f6;
+}
+
+body.dark-mode .ciudades-modulo .MuiOutlinedInput-notchedOutline {
+  border-color: #4b5563 !important;
+}
+
+body.dark-mode .ciudades-modulo .MuiInputBase-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #6b7280 !important;
+}
+
+body.dark-mode .ciudades-modulo .Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #60a5fa !important;
+}
+
+body.dark-mode .ciudades-modulo .MuiInputLabel-root {
+  color: #9ca3af;
+}
+
+body.dark-mode .ciudades-modulo .MuiInputLabel-root.Mui-focused {
+  color: #93c5fd;
+}
+
+body.dark-mode .ciudades-modulo .MuiSelect-icon {
+  color: #9ca3af;
+}
+
+body.dark-mode .ciudades-modulo .MuiCircularProgress-root {
+  color: #60a5fa !important;
+}

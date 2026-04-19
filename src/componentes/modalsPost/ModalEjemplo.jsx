@@ -12,17 +12,30 @@ export default function ModalEjemplo({
     modo
 }) {
   return (
-    <div className="modal fade" id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div className="modal-dialog modal-xl modal-dialog-centered">
+    <div
+      className="modal fade modal-listado-root"
+      id="exampleModal"
+      tabIndex={-1}
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div className="modal-content">
           <div className="modal-header">
-            <h1 className="modal-title fs-5" id="exampleModalLabel">
+            <h2 className="modal-title fs-5" id="exampleModalLabel">
               {modo === "crear" ? "Agregar aprendiz" : "Editar aprendiz"}
-            </h1>
-            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </h2>
+            <button
+              type="button"
+              className="btn btn-link p-1 text-secondary text-decoration-none border-0 lh-1 ms-auto"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            >
+              <X size={20} strokeWidth={1.75} />
+            </button>
           </div>
-          <div className="modal-body">
             <form onSubmit={enviarPost}>
+          <div className="modal-body">
               <div className="p-2">
                 <div className="container text-center">
                   <div className="row g-3 pb-4">
@@ -313,25 +326,23 @@ export default function ModalEjemplo({
                   </div>
                 </div>
               </div>
-              <div className="d-flex pe-3 w-100 justify-content-end">
-                <div className="btn-group" role="group" >
-                  <button type="button" id="btnCerrarModal" 
-                  aria-label="First group" 
-                  className="btn btn-secondary" 
-                  data-bs-dismiss="modal">
-                    <X/> 
-                    </button>
-
-                  <button type="submit" 
-                  className="btn btn-success" 
-                  aria-label="Second group">
-                    <Save />
-                    </button>
-                </div>
+          </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  id="btnCerrarModal"
+                  className="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  <X className="me-1" size={18} strokeWidth={1.75} aria-hidden />
+                  Cancelar
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  <Save className="me-1 text-white" size={18} strokeWidth={1.75} aria-hidden />
+                  Guardar
+                </button>
               </div>
             </form>
-          </div>
-          
         </div>
       </div>
     </div>

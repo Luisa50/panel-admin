@@ -64,13 +64,13 @@ const InformeUsuarios = () => {
   });
 
   return (
-    <div className="pagina-informe">
-      <div className="hoja-a4">
-        <header className="encabezado">
-          <h2>Usuarios registrados en HealthyMind</h2>
-          <p style={{ margin: "8px 0 0", fontSize: 13, color: "#666" }}>
+    <div className="pagina-informe informe-print-pro">
+      <div className="hoja-a4 informe-print-pro-hoja">
+        <header className="encabezado informe-print-pro-encabezado">
+          <p className="informe-print-pro-fecha">
             Corte de información: {fechaConsulta}
           </p>
+          <h2>Usuarios registrados en HealthyMind</h2>
         </header>
 
         <div className="bloque">
@@ -162,12 +162,24 @@ const InformeUsuarios = () => {
         </footer>
 
         <div className="acciones no-print">
-          <button type="button" onClick={() => window.print()}>
-            <i className="bi bi-arrow-bar-down"></i>
-          </button>
-          <button type="button" onClick={() => window.history.back()}>
-            <i className="bi bi-arrow-return-left"></i>
-          </button>
+          <div className="acciones-grupo">
+            <button
+              type="button"
+              onClick={() => window.print()}
+              title="Descargar o imprimir informe (PDF)"
+            >
+              <i className="bi bi-box-arrow-in-down" aria-hidden="true" />
+              <span>Descargar informe</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => window.history.back()}
+              title="Volver a la pantalla anterior"
+            >
+              <i className="bi bi-box-arrow-in-left" aria-hidden="true" />
+              <span>Regresar</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -1,8 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { X, Save } from "lucide-react";
 import { fetchWithAuth } from "../services/auth";
 import { API_URL } from "../config";
 import "../estilos/centrosnodos.css";
 import EncabezadoListadoMaestro from "../componentes/EncabezadoListadoMaestro.jsx";
+import PaginacionTablaMinimal, {
+  LISTADO_TAM_PAGINA,
+} from "../componentes/PaginacionTablaMinimal.jsx";
 
 const CENTRO_API = `${API_URL}/Centro`;
 
@@ -27,7 +31,7 @@ export default function CentrosNodos() {
     cenCodFk: ""
   });
   const [busquedaCentroModal, setBusquedaCentroModal] = useState("");
-
+  const [paginaLista, setPaginaLista] = useState(1);
 
   const cargarCentros = async () => {
     try {
@@ -58,7 +62,24 @@ export default function CentrosNodos() {
     c.cenNombre.toLowerCase().includes(busqueda.toLowerCase())
   );
 
-  
+  useEffect(() => {
+    setPaginaLista(1);
+  }, [busqueda]);
+
+  const totalPaginasCentros = Math.max(
+    1,
+    Math.ceil(filtrados.length / LISTADO_TAM_PAGINA)
+  );
+  const paginaCentrosSegura = Math.min(paginaLista, totalPaginasCentros);
+  const filtradosPagina = useMemo(() => {
+    const ini = (paginaCentrosSegura - 1) * LISTADO_TAM_PAGINA;
+    return filtrados.slice(ini, ini + LISTADO_TAM_PAGINA);
+  }, [filtrados, paginaCentrosSegura]);
+
+  useEffect(() => {
+    setPaginaLista((p) => Math.min(p, totalPaginasCentros));
+  }, [totalPaginasCentros]);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -197,12 +218,12 @@ export default function CentrosNodos() {
               <th>Centro</th>
               <th>Dirección</th>
               <th>Regional</th>
-              <th></th>
+              <th>Acciones</th>
             </tr>
           </thead>
 
           <tbody>
-            {filtrados.map((c) => {
+            {filtradosPagina.map((c) => {
               const nodosCentro = obtenerNodos(c.cenCodigo);
 
               return (
@@ -211,35 +232,41 @@ export default function CentrosNodos() {
                   <tr>
                     <td>{c.cenCodigo}</td>
 
-                    <td style={{ fontWeight: "bold" }}>
-                      {c.cenNombre}
-                    </td>
+                    <td>{c.cenNombre}</td>
 
                     <td>{c.cenDireccion}</td>
                     <td>{c.regional?.regNombre}</td>
 
-                    <td>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-link p-0 me-3 icono-ver-centro"
-                        onClick={() => abrirModalVer(c)}
-                        title="Ver nodos del centro"
-                        aria-label="Ver nodos del centro"
-                      >
-                        <i className="bi bi-eye"></i>
-                      </button>
-
-                      <i
-                        className="bi bi-pencil me-3"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => editar(c)}
-                      ></i>
-
-                      <i
-                        className="bi bi-trash"
-                        style={{ cursor: "pointer", color: "red" }}
-                        onClick={() => eliminar(c.cenCodigo)}
-                      ></i>
+                    <td className="text-nowrap">
+                      <div className="acciones-tabla-centro d-inline-flex align-items-center flex-nowrap">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-link acciones-tabla-btn icono-ver-centro border-0"
+                          onClick={() => abrirModalVer(c)}
+                          title="Ver nodos del centro"
+                          aria-label="Ver nodos del centro"
+                        >
+                          <i className="bi bi-eye" aria-hidden="true" />
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-link acciones-tabla-btn border-0 acciones-tabla-centro-editar"
+                          onClick={() => editar(c)}
+                          title="Editar"
+                          aria-label="Editar"
+                        >
+                          <i className="bi bi-pencil" aria-hidden="true" />
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-link acciones-tabla-btn border-0 acciones-tabla-centro-eliminar"
+                          onClick={() => eliminar(c.cenCodigo)}
+                          title="Eliminar"
+                          aria-label="Eliminar"
+                        >
+                          <i className="bi bi-trash" aria-hidden="true" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
 
@@ -251,7 +278,16 @@ export default function CentrosNodos() {
         </table>
       )}
 
-      
+      {!loading && filtrados.length > 0 ? (
+        <PaginacionTablaMinimal
+          paginaActual={paginaCentrosSegura}
+          totalPaginas={totalPaginasCentros}
+          onCambiarPagina={setPaginaLista}
+          ocultarSiVacio
+          totalItems={filtrados.length}
+        />
+      ) : null}
+
       {mostrarModal && (
         <div className="modal show d-block centro-modal-centros">
           <div className="modal-dialog">
@@ -259,7 +295,14 @@ export default function CentrosNodos() {
 
               <div className="modal-header">
                 <h5>Crear</h5>
-                <button onClick={() => setMostrarModal(false)}>X</button>
+                <button
+                  type="button"
+                  className="btn btn-link p-1 text-secondary text-decoration-none border-0 lh-1 ms-auto"
+                  onClick={() => setMostrarModal(false)}
+                  aria-label="Cerrar"
+                >
+                  <X size={20} strokeWidth={1.75} />
+                </button>
               </div>
 
               <div className="modal-body">
@@ -348,16 +391,20 @@ export default function CentrosNodos() {
 
               <div className="modal-footer">
                 <button
+                  type="button"
                   className="btn btn-secondary"
                   onClick={() => setMostrarModal(false)}
                 >
+                  <X className="me-1" size={18} strokeWidth={1.75} aria-hidden />
                   Cancelar
                 </button>
 
                 <button
-                  className="btn btn-success"
+                  type="button"
+                  className="btn btn-primary"
                   onClick={guardar}
                 >
+                  <Save className="me-1 text-white" size={18} strokeWidth={1.75} aria-hidden />
                   Guardar
                 </button>
               </div>
@@ -373,7 +420,14 @@ export default function CentrosNodos() {
             <div className="modal-content">
               <div className="modal-header">
                 <h5>Nodos del centro</h5>
-                <button onClick={cerrarModalVer}>X</button>
+                <button
+                  type="button"
+                  className="btn btn-link p-1 text-secondary text-decoration-none border-0 lh-1 ms-auto"
+                  onClick={cerrarModalVer}
+                  aria-label="Cerrar"
+                >
+                  <X size={20} strokeWidth={1.75} />
+                </button>
               </div>
               <div className="modal-body">
                 <p className="text-muted mb-2">Centro</p>
@@ -391,7 +445,8 @@ export default function CentrosNodos() {
                 )}
               </div>
               <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={cerrarModalVer}>
+                <button type="button" className="btn btn-secondary" onClick={cerrarModalVer}>
+                  <X className="me-1" size={18} strokeWidth={1.75} aria-hidden />
                   Cerrar
                 </button>
               </div>

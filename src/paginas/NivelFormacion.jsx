@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { X, Save } from "lucide-react";
 import { Modal } from "bootstrap";
 import { fetchWithAuth } from "../services/auth";
 import { API_URL } from "../config";
@@ -6,6 +7,9 @@ import "../estilos/centrosnodos.css";
 import Modalver from "../componentes/modalsPost/ModalVer.jsx";
 import EncabezadoListadoMaestro from "../componentes/EncabezadoListadoMaestro.jsx";
 import MaestroAcciones from "../componentes/MaestroAcciones.jsx";
+import PaginacionTablaMinimal, {
+  LISTADO_TAM_PAGINA,
+} from "../componentes/PaginacionTablaMinimal.jsx";
 
 function abrirModalPorId(id) {
   const el = document.getElementById(id);
@@ -26,6 +30,7 @@ export default function NivelFormacion() {
     nivForDescripcion: "",
   });
   const [dataVer, setDataVer] = useState({});
+  const [paginaLista, setPaginaLista] = useState(1);
 
   const cargar = useCallback(async () => {
     try {
@@ -60,6 +65,24 @@ export default function NivelFormacion() {
       (n.nivForDescripcion && n.nivForDescripcion.toLowerCase().includes(t))
     );
   });
+
+  useEffect(() => {
+    setPaginaLista(1);
+  }, [busqueda]);
+
+  const totalPaginasNiveles = Math.max(
+    1,
+    Math.ceil(nivelesFiltrados.length / LISTADO_TAM_PAGINA)
+  );
+  const paginaNivelesSegura = Math.min(paginaLista, totalPaginasNiveles);
+  const nivelesPagina = useMemo(() => {
+    const ini = (paginaNivelesSegura - 1) * LISTADO_TAM_PAGINA;
+    return nivelesFiltrados.slice(ini, ini + LISTADO_TAM_PAGINA);
+  }, [nivelesFiltrados, paginaNivelesSegura]);
+
+  useEffect(() => {
+    setPaginaLista((p) => Math.min(p, totalPaginasNiveles));
+  }, [totalPaginasNiveles]);
 
   const limpiarForm = () => {
     setFormData({ nivForNombre: "", nivForDescripcion: "" });
@@ -168,19 +191,19 @@ export default function NivelFormacion() {
         titulo="Niveles de Formación"
         busqueda={busqueda}
         onChangeBusqueda={(e) => setBusqueda(e.target.value)}
-        placeholderBusqueda="Filtrar por nombre o descripción…"
+        placeholderBusqueda="Buscar"
         onNuevo={abrirNuevo}
         tituloBotonNuevo="Nuevo nivel"
-        ariaLabelBusqueda="Filtrar niveles"
+        ariaLabelBusqueda="Buscar"
       />
 
       <div
-        className="modal fade"
+        className="modal fade modal-listado-root"
         id="modalNivelForm"
         tabIndex={-1}
         aria-hidden="true"
       >
-        <div className="modal-dialog modal-dialog-centered">
+        <div className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
           <div className="modal-content">
             <div className="modal-header">
               <h2 className="modal-title fs-5">
@@ -188,10 +211,12 @@ export default function NivelFormacion() {
               </h2>
               <button
                 type="button"
-                className="btn-close"
+                className="btn btn-link p-1 text-secondary text-decoration-none border-0 lh-1 ms-auto"
                 data-bs-dismiss="modal"
                 aria-label="Cerrar"
-              />
+              >
+                <X size={20} strokeWidth={1.75} />
+              </button>
             </div>
             <form onSubmit={enviarForm}>
               <div className="modal-body">
@@ -229,9 +254,11 @@ export default function NivelFormacion() {
                   className="btn btn-secondary"
                   data-bs-dismiss="modal"
                 >
+                  <X className="me-1" size={18} strokeWidth={1.75} aria-hidden />
                   Cancelar
                 </button>
                 <button type="submit" className="btn btn-primary">
+                  <Save className="me-1 text-white" size={18} strokeWidth={1.75} aria-hidden />
                   Guardar
                 </button>
               </div>
@@ -266,7 +293,7 @@ export default function NivelFormacion() {
             </tr>
           </thead>
           <tbody>
-            {nivelesFiltrados.map((nivel) => (
+            {nivelesPagina.map((nivel) => (
               <tr key={nivel.nivForCodigo}>
                 <td>{nivel.nivForCodigo}</td>
                 <td>{nivel.nivForNombre}</td>
@@ -287,6 +314,16 @@ export default function NivelFormacion() {
 
       {!loading && nivelesFiltrados.length === 0 ? (
         <p className="text-muted mt-2">No hay niveles para mostrar.</p>
+      ) : null}
+
+      {!loading && nivelesFiltrados.length > 0 ? (
+        <PaginacionTablaMinimal
+          paginaActual={paginaNivelesSegura}
+          totalPaginas={totalPaginasNiveles}
+          onCambiarPagina={setPaginaLista}
+          ocultarSiVacio
+          totalItems={nivelesFiltrados.length}
+        />
       ) : null}
     </div>
   );

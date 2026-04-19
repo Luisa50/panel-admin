@@ -708,25 +708,25 @@ export default function InformeEstadistico() {
 
   return (
     <div
-      className="pagina-informe informe-estadistico-pagina"
+      className="pagina-informe informe-estadistico-pagina informe-print-pro"
       style={{ background: "#f0f2f5" }}
     >
-      <div
-        className="hoja-a4"
-        style={{ minHeight: "auto", padding: "30px 36px" }}
-      >
-        <header className="encabezado" style={{ textAlign: "left", marginBottom: 20 }}>
-          <div className="d-flex flex-wrap align-items-center justify-content-between gap-2">
-            <div>
+      <div className="hoja-a4 informe-print-pro-hoja" style={{ minHeight: "auto" }}>
+        <header
+          className="encabezado informe-print-pro-encabezado"
+          style={{ marginBottom: 20 }}
+        >
+          <div className="d-flex flex-wrap align-items-start justify-content-between gap-3 w-100">
+            <div className="flex-grow-1 min-w-0 informe-estadistico-encabezado-texto">
+              <p className="informe-print-pro-fecha">
+                Generado el {fechaActual}
+              </p>
               <h2 style={{ fontSize: 22, margin: 0 }}>
                 <i className="bi bi-graph-up-arrow me-2" />
                 Informes estratégicos
               </h2>
-              <p style={{ margin: "4px 0 0", fontSize: 13, color: "#666" }}>
-                Generado el {fechaActual}
-              </p>
             </div>
-            <div className="d-flex gap-2 align-items-center no-print">
+            <div className="d-flex gap-2 align-items-center no-print flex-shrink-0 flex-wrap">
               <input
                 type="date"
                 className="form-control form-control-sm"
@@ -745,26 +745,15 @@ export default function InformeEstadistico() {
                 title="Fecha hasta"
               />
               <button
+                type="button"
                 className="btn btn-sm btn-outline-secondary"
-                onClick={() => { setDesde(""); setHasta(""); }}
+                onClick={() => {
+                  setDesde("");
+                  setHasta("");
+                }}
                 title="Limpiar filtros"
               >
                 <i className="bi bi-x-lg" />
-              </button>
-              <button
-                type="button"
-                className="btn btn-sm btn-primary"
-                onClick={abrirImpresion}
-                title="Imprimir o guardar como PDF (monta todos los gráficos antes de imprimir)"
-              >
-                <i className="bi bi-printer me-1" />
-                Imprimir
-              </button>
-              <button
-                className="btn btn-sm btn-outline-secondary"
-                onClick={() => window.history.back()}
-              >
-                <i className="bi bi-arrow-left" />
               </button>
             </div>
           </div>
@@ -798,7 +787,7 @@ export default function InformeEstadistico() {
           </div>
         ) : (
           <>
-            <ul className="nav nav-tabs mb-4">
+            <ul className="nav nav-tabs mb-4 no-print">
               {TABS.map(t => (
                 <li className="nav-item" key={t.id}>
                   <button
@@ -819,6 +808,27 @@ export default function InformeEstadistico() {
         <footer className="pie" style={{ marginTop: 30 }}>
           <p>Documento generado automáticamente por HealthyMind</p>
         </footer>
+
+        <div className="acciones no-print">
+          <div className="acciones-grupo">
+            <button
+              type="button"
+              onClick={abrirImpresion}
+              title="Imprimir o guardar como PDF (monta todos los gráficos antes de imprimir)"
+            >
+              <i className="bi bi-box-arrow-in-down" aria-hidden="true" />
+              <span>Descargar informe</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => window.history.back()}
+              title="Volver a la pantalla anterior"
+            >
+              <i className="bi bi-box-arrow-in-left" aria-hidden="true" />
+              <span>Regresar</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

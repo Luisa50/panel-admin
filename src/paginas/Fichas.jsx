@@ -8,6 +8,7 @@ import "datatables.net-select-dt";
 import "datatables.net-responsive-dt";
 import { Modal } from "bootstrap";
 import AccionesAprendiz from "../componentes/AccionesAprendiz";
+import PaginacionTablaMinimal from "../componentes/PaginacionTablaMinimal.jsx";
 import ModalFicha from "../componentes/modalsPost/ModalFicha.jsx";
 import Modalver from "../componentes/modalsPost/ModalVer.jsx";
 import { fetchWithAuth } from "../services/auth";
@@ -384,9 +385,9 @@ export default function Fichas() {
             type="search"
             className="form-control"
             style={{ width: "280px" }}
-            placeholder="Buscar por código, jornada o programa…"
+            placeholder="Buscar"
             value={textoBusqueda}
-            aria-label="Buscar fichas por código o nombre de programa"
+            aria-label="Buscar"
             onChange={(e) => {
               const v = e.target.value;
               setTextoBusqueda(v);
@@ -403,7 +404,7 @@ export default function Fichas() {
           />
           <button
             type="button"
-            className="btn btn-success px-3"
+            className="btn btn-primary px-3"
             title="Registrar nueva ficha"
             onClick={abrirModal}
           >
@@ -413,45 +414,11 @@ export default function Fichas() {
 
         <TablasInfo columnas={columnas} datos={fichas} informacion={informacion} />
 
-        <div className="d-flex justify-content-start mt-3">
-          <div className="btn-group">
-            <button
-              type="button"
-              className="btn btn-outline-primary"
-              disabled={!informacion.paginaAnterior}
-              onClick={() => loadData(informacion.paginaAnterior)}
-              aria-label="Página anterior"
-            >
-              <i className="bi bi-chevron-compact-left"></i>
-            </button>
-
-            {Array.from(
-              { length: informacion?.totalPaginas ?? 1 },
-              (_, i) => i + 1
-            ).map((num) => (
-              <button
-                key={num}
-                type="button"
-                className={`btn ${informacion?.paginaActual === num ? "btn-primary" : "btn-outline-primary"}`}
-                onClick={() => loadData(num)}
-                aria-label={`Página ${num}`}
-                aria-current={informacion?.paginaActual === num ? "page" : undefined}
-              >
-                {num}
-              </button>
-            ))}
-
-            <button
-              type="button"
-              className="btn btn-outline-primary"
-              disabled={!informacion.paginaSiguiente}
-              onClick={() => loadData(informacion.paginaSiguiente)}
-              aria-label="Página siguiente"
-            >
-              <i className="bi bi-chevron-compact-right"></i>
-            </button>
-          </div>
-        </div>
+        <PaginacionTablaMinimal
+          paginaActual={informacion?.paginaActual ?? 1}
+          totalPaginas={Math.max(1, informacion?.totalPaginas ?? 1)}
+          onCambiarPagina={(n) => loadData(n)}
+        />
       </div>
     </>
   );

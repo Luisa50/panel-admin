@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { X, Save } from "lucide-react";
 import { Modal } from "bootstrap";
 import { fetchWithAuth } from "../services/auth";
 import { API_URL } from "../config";
@@ -7,6 +8,9 @@ import "../estilos/area.css";
 import Modalver from "../componentes/modalsPost/ModalVer.jsx";
 import EncabezadoListadoMaestro from "../componentes/EncabezadoListadoMaestro.jsx";
 import MaestroAcciones from "../componentes/MaestroAcciones.jsx";
+import PaginacionTablaMinimal, {
+  LISTADO_TAM_PAGINA,
+} from "../componentes/PaginacionTablaMinimal.jsx";
 
 function abrirModalPorId(id) {
   const el = document.getElementById(id);
@@ -24,6 +28,7 @@ export default function Area() {
   const [edicion, setEdicion] = useState(null);
   const [psiSeleccionado, setPsiSeleccionado] = useState("");
   const [dataVer, setDataVer] = useState({});
+  const [paginaLista, setPaginaLista] = useState(1);
 
   const botonDisparadorRef = useRef(null);
 
@@ -72,6 +77,20 @@ export default function Area() {
       cancelado = true;
     };
   }, [cargarAreas, cargarPsicologos]);
+
+  const totalPaginasAreas = Math.max(
+    1,
+    Math.ceil(areas.length / LISTADO_TAM_PAGINA)
+  );
+  const paginaAreasSegura = Math.min(paginaLista, totalPaginasAreas);
+  const areasPagina = useMemo(() => {
+    const ini = (paginaAreasSegura - 1) * LISTADO_TAM_PAGINA;
+    return areas.slice(ini, ini + LISTADO_TAM_PAGINA);
+  }, [areas, paginaAreasSegura]);
+
+  useEffect(() => {
+    setPaginaLista((p) => Math.min(p, totalPaginasAreas));
+  }, [totalPaginasAreas]);
 
   const cerrarModalForm = () => {
     document.getElementById("btnCerrarModalArea")?.click();
@@ -234,10 +253,12 @@ export default function Area() {
               </h2>
               <button
                 type="button"
-                className="btn-close"
+                className="btn btn-link p-1 text-secondary text-decoration-none border-0 lh-1 ms-auto"
                 data-bs-dismiss="modal"
                 aria-label="Cerrar"
-              />
+              >
+                <X size={20} strokeWidth={1.75} />
+              </button>
             </div>
             <form onSubmit={guardarArea}>
               <div className="modal-body">
@@ -287,25 +308,33 @@ export default function Area() {
                   ))}
                 </select>
               </div>
-              <div className="modal-footer border-0 pt-0">
+              <div className="modal-footer">
                 <button
                   type="button"
                   id="btnCerrarModalArea"
-                  className="btn btn-sm btn-outline-secondary"
+                  className="btn btn-secondary"
                   data-bs-dismiss="modal"
                   onClick={() => {
                     setEdicion(null);
                     setPsiSeleccionado("");
                   }}
                 >
+                  <X className="me-1" size={18} strokeWidth={1.75} aria-hidden />
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-sm btn-primary"
+                  className="btn btn-primary"
                   disabled={guardando || !edicion}
                 >
-                  {guardando ? "Guardando…" : "Guardar"}
+                  {guardando ? (
+                    "Guardando…"
+                  ) : (
+                    <>
+                      <Save className="me-1 text-white" size={18} strokeWidth={1.75} aria-hidden />
+                      Guardar
+                    </>
+                  )}
                 </button>
               </div>
             </form>
@@ -349,7 +378,7 @@ export default function Area() {
             </tr>
           </thead>
           <tbody>
-            {areas.map((area) => (
+            {areasPagina.map((area) => (
               <tr key={area.areaCodigo}>
                 <td>{area.areaCodigo}</td>
                 <td>{area.areaNombre}</td>
@@ -375,6 +404,16 @@ export default function Area() {
           </tbody>
         </table>
       )}
+
+      {!loading && areas.length > 0 ? (
+        <PaginacionTablaMinimal
+          paginaActual={paginaAreasSegura}
+          totalPaginas={totalPaginasAreas}
+          onCambiarPagina={setPaginaLista}
+          ocultarSiVacio
+          totalItems={areas.length}
+        />
+      ) : null}
     </div>
   );
 }

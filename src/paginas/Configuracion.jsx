@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { X } from "lucide-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../estilos/principal.css";
 import "../estilos/configuracion.css";
@@ -307,6 +308,7 @@ export default function Configuracion() {
                 className="btn btn-secondary"
                 onClick={() => setMostrarModalCredenciales(false)}
               >
+                <X className="me-1" size={18} strokeWidth={1.75} aria-hidden />
                 {t("config.cancel")}
               </button>
             </div>

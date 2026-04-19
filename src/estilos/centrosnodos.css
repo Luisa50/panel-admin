@@ -227,16 +227,7 @@ body.dark-mode .centro-container {
   color: #0f766e;
 }
 
-.icono-ver-centro {
-  color: #2563eb;
-  text-decoration: none;
-  line-height: 1;
-}
-
-.icono-ver-centro:hover,
-.icono-ver-centro:focus {
-  color: #1d4ed8;
-}
+/* .icono-ver-centro: estilos globales en tablas-unificadas.css */
 
 .nodos-stack-wrap {
   display: flex;
@@ -253,4 +244,56 @@ body.dark-mode .centro-container {
   color: #1f2937;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
+}
+
+/* Buscador + botón “+” en la misma línea (Programa / Nivel de formación) */
+.encabezado-buscar-mas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: min(260px, 100%);
+}
+
+.encabezado-buscar-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto !important;
+  max-width: 100%;
+}
+
+.encabezado-buscar-mas .btn-primary {
+  flex-shrink: 0;
+}
+
+/* Modales listado: por encima de la barra lateral y tamaño acotado (mismo criterio que usuarios.css) */
+.modal-listado-root.modal {
+  z-index: 11050 !important;
+  padding-left: clamp(0.5rem, 2vw, 1rem);
+  padding-right: clamp(0.5rem, 2vw, 1rem);
+}
+
+.modal-listado-root + .modal-backdrop {
+  z-index: 11040 !important;
+}
+
+.modal-listado-root .modal-dialog {
+  margin-left: auto;
+  margin-right: auto;
+  width: auto;
+  max-width: min(800px, calc(100vw - 1.5rem));
+}
+
+.modal-listado-root .modal-content {
+  max-height: min(90vh, calc(100vh - 2rem));
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-listado-root .modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  max-height: min(72vh, calc(100vh - 9rem));
 }

@@ -1,4 +1,5 @@
 import React from "react";
+import { X, Save } from "lucide-react";
 
 export default function ModalFicha({
   modo,
@@ -25,7 +26,14 @@ export default function ModalFicha({
               {modo === "ver" && "Ficha"}
             </h5>
 
-            <button className="btn-close" data-bs-dismiss="modal"></button>
+            <button
+              type="button"
+              className="btn btn-link p-1 text-secondary text-decoration-none border-0 lh-1 ms-auto"
+              data-bs-dismiss="modal"
+              aria-label="Cerrar"
+            >
+              <X size={20} strokeWidth={1.75} />
+            </button>
           </div>
 
           <form onSubmit={enviar}>
@@ -144,12 +152,14 @@ export default function ModalFicha({
 
    
             <div className="modal-footer">
-              <button className="btn btn-secondary" data-bs-dismiss="modal">
-                Cerrar
+              <button className="btn btn-secondary" data-bs-dismiss="modal" type="button">
+                <X className="me-1" size={18} strokeWidth={1.75} aria-hidden />
+                {modo === "ver" ? "Cerrar" : "Cancelar"}
               </button>
 
               {modo !== "ver" && (
-                <button className="btn btn-success" type="submit">
+                <button className="btn btn-primary" type="submit">
+                  <Save className="me-1 text-white" size={18} strokeWidth={1.75} aria-hidden />
                   Guardar
                 </button>
               )}

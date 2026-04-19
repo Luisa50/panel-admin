@@ -55,11 +55,16 @@ export default function ModalPerfilCliente({ open, onClose }) {
           <h2 id="modal-perfil-titulo">Tu cuenta</h2>
           <button
             type="button"
-            className="modal-perfil-close"
+            className="btn btn-link p-1 text-secondary text-decoration-none border-0 lh-1 ms-auto"
             aria-label="Cerrar"
             onClick={onClose}
           >
-            <X size={22} />
+            <X
+              size={20}
+              strokeWidth={1.75}
+              className="text-secondary"
+              aria-hidden
+            />
           </button>
         </div>
 
@@ -90,16 +95,6 @@ export default function ModalPerfilCliente({ open, onClose }) {
               Conectado con credenciales guardadas de forma segura en este
               navegador.
             </div>
-          </div>
-
-          <div className="modal-perfil-actions">
-            <button
-              type="button"
-              className="modal-perfil-btn modal-perfil-btn--secondary"
-              onClick={onClose}
-            >
-              Cerrar
-            </button>
           </div>
         </div>
       </div>
