@@ -14,14 +14,14 @@ export default function SidebarNotificaciones({ variant = "sidebar" }) {
   const { t } = useLanguage();
   const esHeader = variant === "header";
   const navigate = useNavigate();
-  const { notificaciones, marcarComoLeida } = useContext(AppContext);
+  const { notificaciones, marcarComoLeida, cantidadNoLeidas } = useContext(AppContext);
 
   const [abierto, setAbierto] = useState(false);
   const triggerRef = useRef(null);
   const panelRef = useRef(null);
   const [pos, setPos] = useState({ top: 0, left: 0 });
 
-  const noLeidas = notificaciones.filter((n) => !n.leida).length;
+  const noLeidas = cantidadNoLeidas;
 
   const actualizarPosicion = useCallback(() => {
     const el = triggerRef.current;
@@ -148,7 +148,13 @@ export default function SidebarNotificaciones({ variant = "sidebar" }) {
                       className={`sidebar-notif-item ${
                         n.leida ? "sidebar-notif-item--leida" : "sidebar-notif-item--nueva"
                       }`}
-                      onClick={() => marcarComoLeida(n.id)}
+                      onClick={() => {
+                        marcarComoLeida(n.id);
+                        setAbierto(false);
+                        if (n.tipo === "reporte") {
+                          navigate("/reportes");
+                        }
+                      }}
                     >
                       <div className="sidebar-notif-item-main">
                         {!n.leida ? (

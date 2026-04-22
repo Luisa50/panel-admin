@@ -1,69 +1,105 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
+import { fetchWithAuth, getToken } from "../services/auth";
+import { API_URL } from "../config.js";
 
 export const AppContext = createContext();
 
-const reportesMockDesarrollo = [
-  {
-    id: 1,
-    titulo: "Error al cargar dashboard",
-    descripcion: "La página queda en blanco al iniciar sesión.",
-    estado: "Pendiente",
-    fecha: "2025-01-05",
-  },
-  {
-    id: 2,
-    titulo: "Demora en asignación de psicóloga",
-    descripcion: "La plataforma tarda demasiado en asignar profesional.",
-    estado: "Pendiente",
-    fecha: "2025-01-06",
-  },
-];
+const LEIDAS_KEY = "healthymind_admin_notif_reportes_leidas";
+const POLL_INTERVAL_MS = 60_000;
+
+function cargarLeidas() {
+  try {
+    const raw = localStorage.getItem(LEIDAS_KEY);
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function persistirLeidas(set) {
+  try {
+    localStorage.setItem(LEIDAS_KEY, JSON.stringify(Array.from(set)));
+  } catch {
+    /* localStorage lleno o bloqueado: sin persistencia, sin ruido */
+  }
+}
 
 export const AppProvider = ({ children }) => {
-  const [reportes, setReportes] = useState(() =>
-    import.meta.env.DEV ? reportesMockDesarrollo : []
-  );
+  const [reportes, setReportes] = useState([]);
+  const [reportesActivos, setReportesActivos] = useState([]);
+  const [leidas, setLeidas] = useState(cargarLeidas);
 
-  const [notificaciones, setNotificaciones] = useState([]);
+  const recargarReportesActivos = useCallback(async () => {
+    if (!getToken()) return;
+    try {
+      const res = await fetchWithAuth(`${API_URL}/Reporte?estado=creado`);
+      if (!res || !res.ok) return;
+      const data = await res.json();
+      setReportesActivos(Array.isArray(data) ? data : []);
+    } catch {
+      /* ignorado: sin red, badge queda con el último valor conocido */
+    }
+  }, []);
 
-  const crearNotificacionReporte = (reporte) => {
-    const nuevaNotificacion = {
-      id: Date.now(),
-      texto: `Nuevo reporte creado: ${reporte.titulo}`,
-      fecha: new Date().toLocaleDateString(),
-      referenciaId: reporte.id,
-      leida: false,
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- carga inicial asíncrona; no bloquea el render
+    void recargarReportesActivos();
+    const onFocus = () => void recargarReportesActivos();
+    window.addEventListener("focus", onFocus);
+    window.addEventListener("healthymind-admin-token-refreshed", onFocus);
+    const id = setInterval(recargarReportesActivos, POLL_INTERVAL_MS);
+    return () => {
+      clearInterval(id);
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("healthymind-admin-token-refreshed", onFocus);
     };
+  }, [recargarReportesActivos]);
 
-    setNotificaciones((prev) => [nuevaNotificacion, ...prev]);
-  };
+  const notificaciones = useMemo(() => {
+    return reportesActivos.map((r) => ({
+      id: `reporte-${r.id}`,
+      referenciaId: r.id,
+      tipo: "reporte",
+      titulo: "Nuevo reporte",
+      texto: `Reporte #${r.id} — ${r.titulo ?? "Sin título"}`,
+      mensaje: r.descripcion ?? "",
+      fecha: r.fecha ?? "",
+      leida: leidas.has(`reporte-${r.id}`),
+    }));
+  }, [reportesActivos, leidas]);
 
-  const agregarReporte = (nuevoReporte) => {
-    const reporteConId = {
-      ...nuevoReporte,
-      id: Date.now(),
-    };
+  const marcarComoLeida = useCallback((id) => {
+    setLeidas((prev) => {
+      if (prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.add(id);
+      persistirLeidas(next);
+      return next;
+    });
+  }, []);
 
-    setReportes((prev) => [reporteConId, ...prev]);
-    crearNotificacionReporte(reporteConId);
-  };
+  const marcarTodasComoLeidas = useCallback(() => {
+    setLeidas((prev) => {
+      const next = new Set(prev);
+      notificaciones.forEach((n) => next.add(n.id));
+      persistirLeidas(next);
+      return next;
+    });
+  }, [notificaciones]);
 
-  const marcarComoLeida = (id) => {
-    setNotificaciones((prev) =>
-      prev.map((n) =>
-        n.id === id ? { ...n, leida: true } : n
-      )
-    );
-  };
+  const cantidadNoLeidas = notificaciones.filter((n) => !n.leida).length;
 
   return (
     <AppContext.Provider
       value={{
         reportes,
         setReportes,
+        reportesActivos,
+        recargarReportesActivos,
         notificaciones,
-        agregarReporte,
-        marcarComoLeida, 
+        marcarComoLeida,
+        marcarTodasComoLeidas,
+        cantidadNoLeidas,
       }}
     >
       {children}

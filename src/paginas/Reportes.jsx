@@ -10,14 +10,14 @@ const REPORTE_API = `${API_URL}/Reporte`;
 
 function etiquetaEstadoReporte(estado) {
   switch (estado) {
-    case "pendiente":
-      return "Pendiente";
+    case "creado":
+      return "Creado";
     case "proceso":
       return "En proceso";
     case "resuelto":
       return "Resuelto";
-    case "cancelado":
-      return "Cancelado";
+    case "cerrado":
+      return "Cerrado";
     default:
       return estado ? String(estado) : "Sin estado";
   }
@@ -86,19 +86,30 @@ export default function Reportes() {
     if (!reporteSeleccionado) return;
 
     try {
-      const patchRes = await fetchWithAuth(
-        `${REPORTE_API}/${reporteSeleccionado.id}/estado`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            estado: nuevoEstado,
-          }),
-        }
-      );
-      if (!patchRes) return;
+      if (nuevoEstado && nuevoEstado !== reporteSeleccionado.estado) {
+        const patchRes = await fetchWithAuth(
+          `${REPORTE_API}/${reporteSeleccionado.id}/estado`,
+          {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ estado: nuevoEstado }),
+          }
+        );
+        if (!patchRes || !patchRes.ok) return;
+      }
+
+      const comentario = notaInterna.trim();
+      if (comentario) {
+        const comentarioRes = await fetchWithAuth(
+          `${REPORTE_API}/${reporteSeleccionado.id}/comentario`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ comentario }),
+          }
+        );
+        if (!comentarioRes || !comentarioRes.ok) return;
+      }
 
       const res = await fetchWithAuth(REPORTE_API);
       if (!res) return;
@@ -107,19 +118,19 @@ export default function Reportes() {
 
       cerrarModal();
     } catch (error) {
-      console.error("Error al cambiar estado:", error);
+      console.error("Error al guardar cambios del reporte:", error);
     }
   };
 
   const colorEstadoBadge = (estado) => {
     switch (estado) {
-      case "pendiente":
+      case "creado":
         return "danger";
       case "proceso":
         return "warning";
       case "resuelto":
         return "success";
-      case "cancelado":
+      case "cerrado":
         return "secondary";
       default:
         return "secondary";
@@ -158,13 +169,13 @@ export default function Reportes() {
   const resumenReportes = useMemo(() => {
     const lista = Array.isArray(reportes) ? reportes : [];
     const total = lista.length;
-    const pendiente = lista.filter((r) => r.estado === "pendiente").length;
+    const creado = lista.filter((r) => r.estado === "creado").length;
     const proceso = lista.filter((r) => r.estado === "proceso").length;
     const resuelto = lista.filter((r) => r.estado === "resuelto").length;
-    const cancelado = lista.filter((r) => r.estado === "cancelado").length;
-    const cerrados = resuelto + cancelado;
-    const pctCerrados = total > 0 ? Math.round((cerrados / total) * 100) : 0;
-    return { total, pendiente, proceso, resuelto, cancelado, pctCerrados };
+    const cerrado = lista.filter((r) => r.estado === "cerrado").length;
+    const finalizados = resuelto + cerrado;
+    const pctCerrados = total > 0 ? Math.round((finalizados / total) * 100) : 0;
+    return { total, creado, proceso, resuelto, cerrado, pctCerrados };
   }, [reportes]);
 
   const mostrar = filtrados.slice((page - 1) * porPagina, page * porPagina);
@@ -191,13 +202,14 @@ export default function Reportes() {
   const textoConclusion =
     resumenReportes.total === 0
       ? "Aún no hay reportes registrados. Cuando existan incidencias, aquí podrás filtrarlas, abrir el detalle y actualizar el estado."
-      : `Resumen: ${resumenReportes.pctCerrados}% cerrados o cancelados; ${resumenReportes.pendiente} pendientes y ${resumenReportes.proceso} en curso.`;
+      : `Resumen: ${resumenReportes.pctCerrados}% resueltos o cerrados; ${resumenReportes.creado} creados y ${resumenReportes.proceso} en curso.`;
 
   const filtros = [
     { id: "todas", label: "Todas", variant: "primary", outline: "outline-primary" },
-    { id: "pendiente", label: "Pendientes", variant: "danger", outline: "outline-danger" },
+    { id: "creado", label: "Creados", variant: "danger", outline: "outline-danger" },
     { id: "proceso", label: "En proceso", variant: "warning", outline: "outline-warning" },
     { id: "resuelto", label: "Resueltos", variant: "success", outline: "outline-success" },
+    { id: "cerrado", label: "Cerrados", variant: "secondary", outline: "outline-secondary" },
   ];
 
   return (
@@ -221,13 +233,13 @@ export default function Reportes() {
           <span className="reportes-kpi-label">Total</span>
           <strong className="reportes-kpi-valor">{resumenReportes.total}</strong>
           <span className="reportes-kpi-hint">
-            {resumenReportes.cancelado} cancelados
+            {resumenReportes.cerrado} cerrados
           </span>
         </article>
         <article className="reportes-kpi reportes-kpi--pendiente">
-          <span className="reportes-kpi-label">Pendientes</span>
+          <span className="reportes-kpi-label">Creados</span>
           <strong className="reportes-kpi-valor">
-            {resumenReportes.pendiente}
+            {resumenReportes.creado}
           </strong>
         </article>
         <article className="reportes-kpi reportes-kpi--proceso">
@@ -242,7 +254,7 @@ export default function Reportes() {
             {resumenReportes.resuelto}
           </strong>
           <span className="reportes-kpi-hint">
-            {resumenReportes.pctCerrados}% cerrados / cancel. del total
+            {resumenReportes.pctCerrados}% resueltos / cerrados del total
           </span>
         </article>
       </section>
@@ -445,10 +457,10 @@ export default function Reportes() {
               value={nuevoEstado}
               onChange={(e) => setNuevoEstado(e.target.value)}
             >
-              <option value="pendiente">Pendiente</option>
+              <option value="creado">Creado</option>
               <option value="proceso">En proceso</option>
               <option value="resuelto">Resuelto</option>
-              <option value="cancelado">Cancelado</option>
+              <option value="cerrado">Cerrado</option>
             </Form.Select>
           </Form.Group>
 
