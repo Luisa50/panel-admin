@@ -16,7 +16,7 @@ import {
 import ModalPerfilCliente from "./ModalPerfilCliente";
 import { logout } from "../services/auth.js";
 import { useLanguage } from "../context/LanguageContext";
-import "../estilos/barraLateral.css";
+import "../estilos/BarraLateral.css";
 
 const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
   const { t } = useLanguage();
