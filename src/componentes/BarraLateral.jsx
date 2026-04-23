@@ -124,15 +124,6 @@ const BarraLateral = ({ expandida = false, onToggleSidebar }) => {
                 >
                   {t("nav.psychologists")}
                 </div>
-
-                <div
-                  className={`menu-item ${
-                    esActivo("/accesos") ? "activo" : ""
-                  }`}
-                  onClick={() => navigate("/accesos")}
-                >
-                  {t("nav.access")}
-                </div>
               </div>
             </div>
 

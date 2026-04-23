@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manual de usuario — Panel administrativo HealthyMind</title>
+  <style>
+    :root { --azul: #1f3c88; --azul-claro: #e8edff; --texto: #222; --muted: #555; --borde: #d6ddf5; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; line-height: 1.55; color: var(--texto); background: #f2f4fb; }
+    .doc { max-width: 920px; margin: 0 auto; background: #fff; min-height: 100vh; box-shadow: 0 0 24px rgba(31, 60, 136, 0.08); }
+    .portada { background: linear-gradient(135deg, var(--azul) 0%, #2d4fa8 100%); color: #fff; padding: 2.5rem 2rem 2rem; text-align: center; }
+    .portada h1 { margin: 0 0 0.5rem; font-size: 1.65rem; font-weight: 600; }
+    .portada .sub { margin: 0; font-size: 0.95rem; opacity: 0.92; }
+    .portada .meta { margin-top: 1.5rem; font-size: 0.85rem; opacity: 0.88; }
+    .contenido { padding: 2rem; }
+    h2 { color: var(--azul); font-size: 1.25rem; margin: 2rem 0 0.75rem; border-bottom: 2px solid var(--borde); padding-bottom: 0.35rem; }
+    h3 { color: #2a3f7a; font-size: 1.05rem; margin: 1.25rem 0 0.5rem; }
+    p, li { font-size: 0.98rem; color: var(--texto); }
+    .muted { color: var(--muted); font-size: 0.92rem; }
+    .caja { background: var(--azul-claro); border-left: 4px solid var(--azul); padding: 0.9rem 1rem; margin: 1rem 0; border-radius: 0 6px 6px 0; }
+    .paso { background: #fafbff; border: 1px solid var(--borde); border-radius: 8px; padding: 0.9rem 1rem; margin: 0.75rem 0; }
+    .paso strong { color: var(--azul); }
+    ul { padding-left: 1.2rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 1rem 0; }
+    th, td { border: 1px solid var(--borde); padding: 0.5rem 0.65rem; text-align: left; }
+    th { background: #f0f3fc; color: #1a2b5c; }
+    .toc a { color: var(--azul); }
+    @media print { .doc { box-shadow: none; } body { background: #fff; } }
+  </style>
+</head>
+<body>
+  <div class="doc">
+    <header class="portada">
+      <h1>Manual de usuario</h1>
+      <p class="sub">Panel administrativo <strong>HealthyMind</strong></p>
+      <p class="meta">Documento para uso de personas sin formación técnica.<br />
+        Guía paso a paso para aprender a utilizar la plataforma con claridad y seguridad.</p>
+    </header>
+    <div class="contenido">
+      <h2>Índice</h2>
+      <ol class="toc">
+        <li><a href="#intro">1. Qué es esta plataforma</a></li>
+        <li><a href="#acceso">2. Cómo entrar al sistema</a></li>
+        <li><a href="#navegacion">3. Cómo se navega: menú, cabecera y cierre de sesión</a></li>
+        <li><a href="#flujo">4. Flujo de trabajo típico (lo más importante)</a></li>
+        <li><a href="#modulos">5. Módulos principales: qué hace cada parte</a></li>
+        <li><a href="#ejemplos">6. Ejemplos prácticos</a></li>
+        <li><a href="#faq">7. Preguntas frecuentes</a></li>
+        <li><a href="#problemas">8. Si algo no funciona (solución de problemas)</a></li>
+      </ol>
+      <h2 id="intro">1. Qué es esta plataforma</h2>
+      <p>Es un <strong>panel de administración</strong>: un sitio web donde, desde un solo lugar, puedes
+        <strong>consultar</strong>, <strong>registrar</strong>, <strong>corregir</strong> o <strong>organizar</strong> información
+        relacionada con aprendices, psicólogos, datos académicos, informes, reportes y ajustes de uso.</p>
+      <p class="muted">(Si ves la palabra <em>módulo</em> en este manual, significa simplemente una <strong>sección</strong> o <strong>área</strong> de la aplicación, como un menú de opciones.)</p>
+      <div class="caja"><strong>Objetivo del manual:</strong> que aprendas a usar la plataforma sin depender de términos técnicos, siguiendo los pasos en orden.</div>
+      <h2 id="acceso">2. Cómo entrar al sistema</h2>
+      <h3>2.1. Pantalla de inicio de sesión</h3>
+      <p>Al abrir el sitio verás un formulario de acceso. Allí deberás escribir:</p>
+      <ul>
+        <li><strong>Correo electrónico</strong> (el que te asignaron para el panel).</li>
+        <li><strong>Contraseña</strong>.</li>
+      </ul>
+      <p>Luego presiona el botón para <strong>ingresar</strong> o <strong>iniciar sesión</strong>.</p>
+      <div class="paso"><strong>Qué pasa si los datos son correctos:</strong> el sistema te lleva al <strong>inicio</strong> del panel (página principal).</div>
+      <div class="paso"><strong>Qué pasa si hay un error:</strong> verás un <strong>mensaje de aviso</strong> debajo de los campos. Léelo y vuelve a intentar. Mientras carga, el botón puede desactivarse: espera a que termine.</div>
+      <h2 id="navegacion">3. Cómo se navega: menú, cabecera y cierre de sesión</h2>
+      <h3>3.1. Menú lateral (izquierda)</h3>
+      <p>Es el mapa de la aplicación. Desde allí entras a cada módulo. Puede mostrarse <strong>expandido</strong> (con textos) o <strong>colapsado</strong> (solo iconos), según el botón de menú (tres rayas o "hamburguesa").</p>
+      <ul>
+        <li><strong>Inicio</strong> — acceso a la pantalla principal y a submenús de gestión, académico, informes, etc.</li>
+        <li>Algunas secciones tienen <strong>flecha</strong>: toca la sección o la flecha para <strong>abrir o cerrar</strong> el listado de opciones.</li>
+        <li>Al tocar un ítem, la aplicación <strong>cambia la pantalla central</strong> a ese módulo.</li>
+      </ul>
+      <h3>3.2. Parte superior (campana de notificaciones)</h3>
+      <p>En la cabecera suele haber un icono de <strong>campana</strong> para notificaciones. Al pulsarlo se abre un pequeño panel con avisos recientes. Puedes leer, marcar como leídas y, en algunos casos, ir a otras secciones (por ejemplo, reportes).</p>
+      <h3>3.3. Mi perfil y cerrar sesión</h3>
+      <p>En la parte inferior del menú lateral suelen aparecer:</p>
+      <ul>
+        <li><strong>Mi perfil</strong> — abre una ventana (modal) con datos básicos de tu cuenta: nombre visible, correo, rol, etc.</li>
+        <li><strong>Cerrar sesión</strong> — te saca de forma segura y vuelve a la pantalla de inicio de sesión.</li>
+      </ul>
+      <div class="caja"><strong>Si la sesión no es válida:</strong> la aplicación puede mostrar un mensaje de que <strong>debes iniciar sesión</strong> y un botón para <strong>ir al inicio de sesión</strong>. Úsalo y vuelve a entrar con tu usuario.</div>
+      <h2 id="flujo">4. Flujo de trabajo típico (lo más importante)</h2>
+      <p>Este es el recorrido que la mayoría de usuarios sigue cada día:</p>
+      <ol>
+        <li><strong>Iniciar sesión</strong> con correo y contraseña.</li>
+        <li>Revisar <strong>Inicio</strong> (resumen e indicadores si están disponibles).</li>
+        <li>Elegir en el <strong>menú lateral</strong> el módulo de tu tarea (aprendices, psicólogos, académicos, informes, etc.).</li>
+        <li>Usar <strong>buscador, filtros y paginación</strong> cuando haya listas largas.</li>
+        <li>Realizar la acción: <strong>crear</strong>, <strong>ver</strong>, <strong>editar</strong> o <strong>eliminar</strong> (según lo que permita cada pantalla).</li>
+        <li>Revisar <strong>notificaciones</strong> o <strong>reportes</strong> si corresponde.</li>
+        <li><strong>Cerrar sesión</strong> al terminar, sobre todo en equipos compartidos.</li>
+      </ol>
+      <h2 id="modulos">5. Módulos principales: qué hace cada parte</h2>
+      <p class="muted">La siguiente tabla resume el propósito de cada área. Los nombres en pantalla pueden coincidir con los del menú.</p>
+      <table>
+        <thead><tr><th>Área (módulo)</th><th>Para qué sirve en pocas palabras</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Inicio</strong></td><td>Pantalla de bienvenida con resumen. Suele mostrar cifras y gráficos para ver de un vistazo cómo va la operación.</td></tr>
+          <tr><td><strong>Aprendices / Usuarios</strong></td><td>Administrar la ficha de los aprendices: crear registros, buscar, editar, ver detalles o eliminar según lo permita la pantalla.</td></tr>
+          <tr><td><strong>Psicólogos</strong></td><td>Administrar datos de los profesionales y su situación en el sistema.</td></tr>
+          <tr><td><strong>Gestión académica</strong> (programas, fichas, niveles, área, centros, regionales, ciudades)</td><td>Organizar la estructura de formación. Algunas pantallas son solo de consulta.</td></tr>
+          <tr><td><strong>Informes</strong></td><td>Distintos tipos de informe; algunos con texto, tablas y, en el informe ampliado, gráficos y pestañas.</td></tr>
+          <tr><td><strong>Reportes e incidencias</strong></td><td>Ver casos, filtrar, abrir detalle, actualizar estado, notas e historial si la pantalla lo muestra.</td></tr>
+          <tr><td><strong>Configuración</strong></td><td>Idioma, apariencia, tamaño de letra, preferencias y consulta básica de acceso en un aviso emergente.</td></tr>
+          <tr><td><strong>Notificaciones (bandeja completa)</strong></td><td>Ver todos los avisos, marcar como leídos e ir a reportes si aplica.</td></tr>
+        </tbody>
+      </table>
+      <p class="muted">Algunas direcciones antiguas a "accesos" te llevan al inicio: es el comportamiento previsto.</p>
+      <h3>5.1. Acciones comunes en tablas y formularios</h3>
+      <ul>
+        <li><strong>Buscar:</strong> escribe palabras o números para acortar la lista.</li>
+        <li><strong>Filtrar o paginar:</strong> elige cuántas filas ver o pasa de página.</li>
+        <li><strong>Crear:</strong> se abre un formulario. Completa y guarda.</li>
+        <li><strong>Ver:</strong> solo lectura de detalles.</li>
+        <li><strong>Editar:</strong> formulario con datos cargados; guarda los cambios.</li>
+        <li><strong>Eliminar:</strong> suele pedir <strong>confirmación</strong> para evitar borrados por error.</li>
+      </ul>
+      <p>(A veces el navegador muestra un cuadro de "sí" o "no" para confirmar: es normal.)</p>
+      <h2 id="ejemplos">6. Ejemplos prácticos</h2>
+      <h3>Ejemplo A — Dar de alta un aprendiz</h3>
+      <ol>
+        <li>En el menú, entra a <strong>Aprendices / Usuarios</strong>.</li>
+        <li>Pulsa <strong>Nuevo</strong> o el botón con el símbolo <strong>+</strong>.</li>
+        <li>Completa los campos obligatorios.</li>
+        <li>Pulsa <strong>Guardar</strong> y confirma que el registro aparezca en la tabla o en la búsqueda.</li>
+      </ol>
+      <h3>Ejemplo B — Encontrar y editar un psicólogo</h3>
+      <ol>
+        <li>Entra a <strong>Psicólogos</strong>.</li>
+        <li>Usa el <strong>buscador</strong> con apellido o documento.</li>
+        <li>Pulsa <strong>Editar</strong> en la fila correcta.</li>
+        <li>Corrige y <strong>Guardar</strong>. Verifica en la lista.</li>
+      </ol>
+      <h3>Ejemplo C — Revisar un reporte o incidencia</h3>
+      <ol>
+        <li>Entra a <strong>Reportes</strong>.</li>
+        <li>Elige un <strong>estado</strong> o busca por palabras.</li>
+        <li>Abre un caso, actualiza el estado o deja nota interna según la pantalla.</li>
+        <li>Guarda. Si vino desde <strong>notificaciones</strong>, vuelve a la bandeja.</li>
+      </ol>
+      <h3>Ejemplo D — Revisar un informe</h3>
+      <ol>
+        <li>Entra a <strong>Informes</strong> y elige el tipo que necesites.</li>
+        <li>Lee el texto y la tabla. Usa <strong>imprimir</strong> o <strong>descargar</strong> si aparecen (el PDF final depende del navegador).</li>
+        <li>En el informe amplio, si pide fechas, elige <strong>desde / hasta</strong> y revisa sección por sección.</li>
+      </ol>
+      <h2 id="faq">7. Preguntas frecuentes</h2>
+      <h3>¿Necesito instalar un programa en el computador?</h3>
+      <p>Normalmente no: basta con un <strong>navegador web</strong> actualizado.</p>
+      <h3>¿Cómo sé si un cambio se guardó?</h3>
+      <p>Verás un <strong>aviso</strong> o el dato <strong>actualizado en la lista</strong>.</p>
+      <h3>¿Qué pasa si cierro la ventana sin cerrar sesión?</h3>
+      <p>Puede quedar la sesión activa. Usa <strong>Cerrar sesión</strong> al terminar.</p>
+      <h3>¿Puedo usarlo desde el teléfono?</h3>
+      <p>El menú puede colapsarse; en tablas anchas, gira el teléfono o amplía con dedos.</p>
+      <h2 id="problemas">8. Si algo no funciona (solución de problemas)</h2>
+      <h3>8.1. No puedo iniciar sesión</h3>
+      <ul>
+        <li>Revisa mayúsculas, espacios y el idioma del teclado.</li>
+        <li>Si sigue: pide al administrador que confirme tu usuario o restablecimiento de contraseña (si aplica).</li>
+      </ul>
+      <h3>8.2. Un botón no responde o tarda mucho</h3>
+      <ul>
+        <li>Revisa conexión a internet; espera unos segundos.</li>
+        <li>Actualiza la página (F5) o prueba otra ventana de incógnito.</li>
+      </ul>
+      <h3>8.3. No cargan listas, tablas o gráficos</h3>
+      <ul>
+        <li>Reintenta; comprueba conexión.</li>
+        <li>Quita filtros o limpia el buscador.</li>
+      </ul>
+      <h3>8.4. No veo un ítem o me pide volver a iniciar sesión</h3>
+      <ul>
+        <li>Amplía el menú lateral. Si pide inicio de sesión, vuelve a <strong>entrar</strong>.</li>
+      </ul>
+      <h3>8.5. Página en blanco o "no encontrada"</h3>
+      <ul>
+        <li>Revisa la dirección; usa el menú en lugar de escribir la URL a mano.</li>
+      </ul>
+      <p class="muted" style="margin-top:2.5rem;"><em>Nota:</em> textos y pantallas pueden variar según la versión o la institución. Ante dudas, contacte a su responsable o mesa de ayuda.</p>
+    </div>
+  </div>
+</body>
+</html>

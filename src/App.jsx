@@ -22,7 +22,6 @@ import NivelFormacion from "./paginas/NivelFormacion";
 import ProgramaFormacion from "./paginas/ProgramaFormacion";
 import Notificaciones from "./paginas/Notificaciones";
 import NotFound from "./paginas/NotFound";
-import GestionAccesos from "./paginas/GestionAccesos";
 import GestionAdministrativa from "./paginas/GestionAdministrativa";
 import InformeEstadistico from "./paginas/InformeEstadistico";
 
@@ -46,10 +45,10 @@ export default function App() {
         <Route path="/usuarios" element={<Usuarios />} />
         <Route path="/psicologos" element={<Psicologos />} />
         <Route path="/gestion" element={<GestionAdministrativa />} />
-        <Route path="/accesos" element={<GestionAccesos />} />
+        <Route path="/accesos" element={<Navigate to="/inicio" replace />} />
         <Route
           path="/gestion-accesos"
-          element={<Navigate to="/accesos" replace />}
+          element={<Navigate to="/inicio" replace />}
         />
 
         <Route path="/informes" element={<Informes />} />
